@@ -1,0 +1,23 @@
+{
+  "name": "embermate",
+  "version": "1.0.0",
+  "description": "Your Personal Health Companion for managing medications, vitals, and wellness",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "health",
+    "wellness",
+    "medication-tracking",
+    "vitals-monitoring",
+    "healthcare-app"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/embermate.git"
+  }
+}
