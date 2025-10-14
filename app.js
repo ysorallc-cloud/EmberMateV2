@@ -1,26 +1,7 @@
-// Tab switching functionality
+// Page navigation
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab buttons
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const tabName = this.getAttribute('data-tab');
-
-            // Remove active class from all buttons and contents
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-
-            // Add active class to clicked button and corresponding content
-            this.classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-        });
-    });
-
-    // Page navigation
     const navLinks = document.querySelectorAll('.nav-link');
-    const pages = document.querySelectorAll('.page-content');
+    const pages = document.querySelectorAll('.page-container');
 
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -33,90 +14,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Add active class to clicked link and corresponding page
             this.classList.add('active');
-            document.getElementById(`${pageName}-page`).classList.add('active');
-        });
-    });
-
-    // Medication checkbox interaction
-    const medCheckboxes = document.querySelectorAll('.med-checkbox:not(.checked)');
-    medCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('click', function() {
-            const medicationItem = this.closest('.medication-item');
-            
-            // Toggle completed state
-            this.classList.add('checked');
-            this.textContent = '✓';
-            medicationItem.classList.remove('pending');
-            medicationItem.classList.add('completed');
-            
-            // Update badge
-            const badge = medicationItem.querySelector('.med-badge');
-            badge.textContent = 'Completed';
-            badge.classList.remove('pending-badge');
-
-            // Show encouraging message
-            showEncouragement('Great job! Keep up the good work! 🎉');
-        });
-    });
-
-    // Add buttons
-    const addButtons = document.querySelectorAll('.add-button');
-    addButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const buttonText = this.textContent.trim();
-            if (buttonText.includes('Medication')) {
-                showEncouragement('Ready to add a new medication! 💊');
-            } else if (buttonText.includes('Reading')) {
-                showEncouragement('Time to log your vitals! ❤️');
-            } else if (buttonText.includes('Journal')) {
-                showEncouragement('Share your thoughts with us! 📝');
+            const targetPage = document.getElementById(`page-${pageName}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
             }
         });
     });
 });
 
-// Show encouraging messages
-function showEncouragement(message) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = 'encouragement-notification';
-    notification.textContent = message;
-    notification.style.cssText = `
+// Navigate to page function
+function navigateToPage(pageName) {
+    const navLink = document.querySelector(`[data-page="${pageName}"]`);
+    if (navLink) {
+        navLink.click();
+    }
+}
+
+// Toast notification
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    toast.style.cssText = `
         position: fixed;
-        top: 100px;
-        right: 20px;
-        background: linear-gradient(135deg, #1e88e5, #42a5f5);
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #0097a7, #1e88e5);
         color: white;
         padding: 1rem 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(30, 136, 229, 0.3);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         z-index: 1000;
-        animation: slideIn 0.4s ease, slideOut 0.4s ease 2.6s;
+        animation: slideInUp 0.3s ease, slideOutDown 0.3s ease 2.7s;
         font-weight: 500;
     `;
 
     // Add keyframes if not already present
-    if (!document.getElementById('encouragement-keyframes')) {
+    if (!document.getElementById('toast-keyframes')) {
         const style = document.createElement('style');
-        style.id = 'encouragement-keyframes';
+        style.id = 'toast-keyframes';
         style.textContent = `
-            @keyframes slideIn {
+            @keyframes slideInUp {
                 from {
-                    transform: translateX(400px);
+                    transform: translateY(100px);
                     opacity: 0;
                 }
                 to {
-                    transform: translateX(0);
+                    transform: translateY(0);
                     opacity: 1;
                 }
             }
-            @keyframes slideOut {
+            @keyframes slideOutDown {
                 from {
-                    transform: translateX(0);
+                    transform: translateY(0);
                     opacity: 1;
                 }
                 to {
-                    transform: translateX(400px);
+                    transform: translateY(100px);
                     opacity: 0;
                 }
             }
@@ -124,10 +78,10 @@ function showEncouragement(message) {
         document.head.appendChild(style);
     }
 
-    document.body.appendChild(notification);
+    document.body.appendChild(toast);
 
-    // Remove notification after animation
+    // Remove toast after animation
     setTimeout(() => {
-        notification.remove();
+        toast.remove();
     }, 3000);
 }
