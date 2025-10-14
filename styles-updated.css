@@ -813,4 +813,18 @@ body {
 
 .page-container.active {
     animation: fadeIn 0.3s ease;
+/* --- Mobile sidebar behavior --- */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 80vw;               /* readable panel */
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.mobile-open {        /* class JS toggles */
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;             /* content fills screen when sidebar is hidden */
+  }
 }
+
