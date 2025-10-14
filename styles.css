@@ -408,3 +408,12 @@ body {
 .mt-2 { margin-top: 16px; }
 .mt-3 { margin-top: 24px; }
 .mt-4 { margin-top: 32px; }
+/* --- Ensure UI remains clickable --- */
+.stat-card::before { pointer-events: none; }           /* decorative bar, don't block clicks */
+.hipaa-disclaimer, .navbar, .sidebar, .main-content { pointer-events: auto; }
+
+/* Primary interactive targets */
+button, .btn, .icon-btn, .tab, .sidebar-item, .badge { pointer-events: auto; }
+
+/* Defensive z-index so cards/buttons stay above backgrounds */
+.data-table-container, .btn, button, .tab, .sidebar-item { position: relative; z-index: 1; }
