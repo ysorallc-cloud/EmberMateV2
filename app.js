@@ -1,305 +1,161 @@
-// =====================================================
-// EMBERMATE - APPLICATION LOGIC
-// =====================================================
+// app.js — compatibility layer for current index.html structure
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
+document.addEventListener('DOMContentLoaded', () => {
+  // Nothing fancy on load; your HTML uses inline onclick handlers.
 });
 
-function initializeApp() {
-    setupNavigation();
-    setupSidebar();
-    setupTrackTabs();
-    setupMedicationTracking();
-    setupMoodButtons();
+/* ---------- Header / Notices ---------- */
+function dismissHipaaDisclaimer() {
+  const el = document.getElementById('hipaaDisclaimer');
+  if (el) el.style.display = 'none';
 }
 
-// =====================================================
-// NAVIGATION SYSTEM
-// =====================================================
-
-function setupNavigation() {
-    const menuItems = document.querySelectorAll('.menu-item');
-    const pages = document.querySelectorAll('.page');
-    
-    menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const targetPage = this.getAttribute('data-page');
-            
-            // Update active menu item
-            menuItems.forEach(mi => mi.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Show target page
-            pages.forEach(page => page.classList.remove('active'));
-            const targetPageElement = document.getElementById(`${targetPage}-page`);
-            if (targetPageElement) {
-                targetPageElement.classList.add('active');
-            }
-            
-            // Close sidebar on mobile
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && window.innerWidth <= 768) {
-                sidebar.classList.remove('open');
-            }
-        });
-    });
+/* ---------- Sidebar ---------- */
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.classList.toggle('open');
 }
 
-// =====================================================
-// SIDEBAR TOGGLE
-// =====================================================
-
-function setupSidebar() {
-    const hamburger = document.getElementById('hamburger');
-    const sidebar = document.getElementById('sidebar');
-    
-    if (hamburger && sidebar) {
-        hamburger.addEventListener('click', function() {
-            sidebar.classList.toggle('open');
-        });
-        
-        // Close sidebar when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
-                sidebar.classList.remove('open');
-            }
-        });
-    }
+function performUndo() {
+  // Stub for your undo button; fill in when you add state tracking.
+  showToast('Nothing to undo yet.', 'info');
 }
 
-// =====================================================
-// TRACK TABS
-// =====================================================
+/* ---------- Page navigation ---------- */
+// Ex: navigateTo('dashboard') -> shows #page-dashboard
+function navigateTo(section) {
+  const targetId = `page-${section}`;
+  document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(targetId);
+  if (target) target.classList.add('active');
 
-function setupTrackTabs() {
-    const trackTabs = document.querySelectorAll('.track-tab');
-    const trackContents = document.querySelectorAll('.track-content');
-    
-    trackTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const targetTrack = this.getAttribute('data-track');
-            
-            // Update active tab
-            trackTabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Show target content
-            trackContents.forEach(content => content.classList.remove('active'));
-            const targetContent = document.getElementById(`${targetTrack}-track`);
-            if (targetContent) {
-                targetContent.classList.add('active');
-            }
-        });
-    });
+  // Sidebar active state
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  // Best effort: mark the matching item active if its onclick contains the section
+  document.querySelectorAll('.sidebar-item').forEach(i => {
+    if ((i.getAttribute('onclick') || '').includes(`'${section}'`)) i.classList.add('active');
+  });
+
+  // Close sidebar on small screens
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar && window.innerWidth <= 768) sidebar.classList.remove('open');
 }
 
-// =====================================================
-// MEDICATION TRACKING
-// =====================================================
-
-function setupMedicationTracking() {
-    const medItems = document.querySelectorAll('.med-item.pending');
-    
-    medItems.forEach(item => {
-        item.addEventListener('click', function() {
-            if (this.classList.contains('pending')) {
-                // Mark as completed
-                this.classList.remove('pending');
-                this.classList.add('completed');
-                
-                // Update checkbox
-                const checkbox = this.querySelector('.med-checkbox');
-                checkbox.textContent = '✓';
-                checkbox.style.backgroundColor = 'var(--success)';
-                checkbox.style.color = 'white';
-                checkbox.style.border = 'none';
-                
-                // Update info text
-                const info = this.querySelector('.med-info p');
-                const medName = this.querySelector('.med-info h4').textContent;
-                const currentTime = new Date().toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
-                    minute: '2-digit',
-                    hour12: true 
-                });
-                info.textContent = `Taken at ${currentTime}`;
-                
-                // Show notification
-                showNotification(`Great job! ${medName} marked as taken.`, 'success');
-                
-                // Update badge count
-                updateMedicationBadge();
-            }
-        });
-    });
+/* ---------- Track tabs ---------- */
+// HTML calls switchTrackTab('medications' | 'vitals' | 'journal')
+function switchTrackTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.track-tab-content').forEach(c => c.classList.remove('active'));
+  const activeTab = document.querySelector(`.tab[onclick*="${tab}"]`);
+  const activePanel = document.getElementById(`track-${tab}`);
+  if (activeTab) activeTab.classList.add('active');
+  if (activePanel) activePanel.classList.add('active');
 }
 
-function updateMedicationBadge() {
-    const completedCount = document.querySelectorAll('.med-item.completed').length;
-    const totalCount = document.querySelectorAll('.med-item').length;
-    
-    // Update stat card
-    const statValue = document.querySelector('.medications-card .stat-value');
-    if (statValue) {
-        statValue.textContent = `${completedCount}/${totalCount}`;
-    }
-    
-    // Update tab badge
-    const tabBadge = document.querySelector('[data-track="medications"] .tab-badge');
-    if (tabBadge) {
-        tabBadge.textContent = `${completedCount}/${totalCount}`;
-    }
-    
-    // Update stat badge if all completed
-    if (completedCount === totalCount) {
-        const statBadge = document.querySelector('.medications-card .stat-badge');
-        if (statBadge) {
-            statBadge.textContent = 'Perfect!';
-            statBadge.className = 'stat-badge success';
-        }
-        showNotification('🎉 Amazing! All medications taken today!', 'success');
-    }
+/* ---------- Inline editing helpers ---------- */
+function makeEditable(td) {
+  if (!td) return;
+  td.setAttribute('contenteditable', 'true');
+  td.focus();
+  td.addEventListener('blur', () => td.removeAttribute('contenteditable'), { once: true });
 }
 
-// =====================================================
-// MOOD BUTTONS
-// =====================================================
-
-function setupMoodButtons() {
-    const moodButtons = document.querySelectorAll('.mood-btn');
-    
-    moodButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove selected from all buttons
-            moodButtons.forEach(btn => btn.classList.remove('selected'));
-            
-            // Add selected to clicked button
-            this.classList.add('selected');
-        });
-    });
+function deleteRow(btn) {
+  const tr = btn.closest('tr');
+  if (tr) tr.remove();
 }
 
-// =====================================================
-// NOTIFICATION SYSTEM
-// =====================================================
-
-function showNotification(message, type = 'info') {
-    // Remove existing notification
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-    
-    // Create notification
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    
-    const icon = getNotificationIcon(type);
-    const bgColor = getNotificationColor(type);
-    
-    notification.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span style="font-size: 1.3rem;">${icon}</span>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 140px;
-        right: 20px;
-        background-color: ${bgColor};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-        max-width: 400px;
-        font-size: 0.95rem;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
+/* ---------- Add-row helpers (kept simple) ---------- */
+function addInlineRow(kind) {
+  const map = {
+    medications: 'medicationsTable',
+    bp: 'bpTable',
+    glucose: 'glucoseTable',
+    weight: 'weightTable',
+    journal: 'journalTable'
+  };
+  const table = document.getElementById(map[kind]);
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = guessTemplate(kind);
+  tbody.appendChild(tr);
 }
 
-function getNotificationIcon(type) {
-    const icons = {
-        success: '✓',
-        info: 'ℹ',
-        warning: '⚠',
-        error: '✕'
-    };
-    return icons[type] || icons.info;
+function guessTemplate(kind) {
+  switch (kind) {
+    case 'medications':
+      return `
+        <td class="editable-cell" onclick="makeEditable(this)"><strong>New Med</strong></td>
+        <td class="editable-cell" onclick="makeEditable(this)">10mg</td>
+        <td class="editable-cell" onclick="makeEditable(this)">8:00 AM</td>
+        <td class="editable-cell" onclick="makeEditable(this)">Once daily</td>
+        <td><span class="badge badge-neutral" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Pending</span></td>
+        <td class="editable-cell" onclick="makeEditable(this)">—</td>
+        <td class="editable-cell" onclick="makeEditable(this)">Prescriber</td>
+        <td><button class="btn btn-secondary" style="padding:4px 8px;font-size:13px;" onclick="deleteRow(this)">🗑️</button></td>`;
+    case 'bp':
+      return `
+        <td><strong>${new Date().toLocaleString()}</strong></td>
+        <td class="editable-cell" onclick="makeEditable(this)">120</td>
+        <td class="editable-cell" onclick="makeEditable(this)">80</td>
+        <td class="editable-cell" onclick="makeEditable(this)">70 BPM</td>
+        <td class="editable-cell" onclick="makeEditable(this)">Sitting</td>
+        <td><span class="badge badge-neutral"><span class="badge-dot"></span>Pending</span></td>
+        <td><button class="btn btn-secondary" style="padding:4px 8px;font-size:13px;" onclick="deleteRow(this)">🗑️</button></td>`;
+    case 'glucose':
+      return `
+        <td><strong>${new Date().toLocaleString()}</strong></td>
+        <td class="editable-cell" onclick="makeEditable(this)">100</td>
+        <td class="editable-cell" onclick="makeEditable(this)">Fasting</td>
+        <td class="editable-cell" onclick="makeEditable(this)">—</td>
+        <td><span class="badge badge-neutral"><span class="badge-dot"></span>Pending</span></td>
+        <td><button class="btn btn-secondary" style="padding:4px 8px;font-size:13px;" onclick="deleteRow(this)">🗑️</button></td>`;
+    case 'weight':
+      return `
+        <td><strong>${new Date().toLocaleDateString()}</strong></td>
+        <td class="editable-cell" onclick="makeEditable(this)">170</td>
+        <td class="editable-cell" onclick="makeEditable(this)">98.6</td>
+        <td class="editable-cell" onclick="makeEditable(this)">—</td>
+        <td><button class="btn btn-secondary" style="padding:4px 8px;font-size:13px;" onclick="deleteRow(this)">🗑️</button></td>`;
+    case 'journal':
+      return `
+        <td><strong>${new Date().toLocaleDateString()}</strong></td>
+        <td><span class="badge badge-neutral">😐 Okay</span></td>
+        <td><span class="badge badge-neutral">🔋 Moderate</span></td>
+        <td class="editable-cell" onclick="makeEditable(this)">New note…</td>
+        <td><button class="btn btn-secondary" style="padding:4px 8px;font-size:13px;" onclick="deleteRow(this)">🗑️</button></td>`;
+    default:
+      return `<td colspan="8">New row</td>`;
+  }
 }
 
-function getNotificationColor(type) {
-    const colors = {
-        success: '#7FA88C',
-        info: '#82B5B8',
-        warning: '#E6A87C',
-        error: '#D89090'
-    };
-    return colors[type] || colors.info;
+/* ---------- Medication status cycle ---------- */
+function cycleMedStatus(el) {
+  if (!el) return;
+  const states = [
+    { cls: 'badge-neutral', text: 'Pending' },
+    { cls: 'badge-warning', text: 'Due Soon' },
+    { cls: 'badge-success', text: 'Taken' }
+  ];
+  const current = states.findIndex(s => el.classList.contains(s.cls));
+  const next = (current + 1) % states.length;
+  el.className = `badge ${states[next].cls}`;
+  el.innerHTML = `<span class="badge-dot"></span>${states[next].text}`;
 }
 
-// =====================================================
-// ADD ANIMATION STYLES
-// =====================================================
-
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// =====================================================
-// UTILITY FUNCTIONS
-// =====================================================
-
-// Add any additional utility functions here
-function getCurrentTime() {
-    const now = new Date();
-    return now.toLocaleTimeString('en-US', { 
-        hour: 'numeric', 
-        minute: '2-digit',
-        hour12: true 
-    });
-}
-
-function getCurrentDate() {
-    const now = new Date();
-    return now.toLocaleDateString('en-US', { 
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+/* ---------- Tiny toast ---------- */
+function showToast(msg, type = 'info') {
+  const old = document.querySelector('.notification');
+  if (old) old.remove();
+  const n = document.createElement('div');
+  n.className = `notification ${type}`;
+  n.textContent = msg;
+  Object.assign(n.style, {
+    position: 'fixed', top: '90px', right: '16px', zIndex: 10000,
+    background: 'rgba(0,0,0,.8)', color: '#fff', padding: '10px 14px',
+    borderRadius: '8px', fontSize: '14px', boxShadow: '0 4px 12px rgba(0,0,0,.2)'
+  });
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 2000);
 }
