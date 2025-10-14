@@ -1,33 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EmberMate - Health Management Dashboard</title>
-
-  <!-- Base CSS -->
-  <link rel="stylesheet" href="styles.css">
-
-  <!-- New color theme: must be AFTER styles.css -->
-  <link rel="stylesheet" href="theme-warm-ochre.css">
-
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-</head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmberMate - Health Management Dashboard</title>
+    <link rel="stylesheet" href="styles-updated.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <!-- HIPAA Disclaimer -->
     <div class="hipaa-disclaimer" id="hipaaDisclaimer">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 24px;">⚠️</span>
-            <div>
-                <strong style="font-size: 16px;">IMPORTANT - NOT HIPAA COMPLIANT:</strong>
-                <div style="margin-top: 4px; font-size: 14px;">This is a demonstration application only. Do not enter real personal health information.</div>
-            </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span>ℹ️</span>
+            <strong>Demo Notice:</strong> This is a demonstration application and is NOT HIPAA compliant. Do not enter real personal health information.
         </div>
-        <button onclick="dismissHipaaDisclaimer()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #92400e; padding: 8px;" title="Dismiss">×</button>
+        <button onclick="dismissHipaaDisclaimer()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #854d0e;">×</button>
     </div>
 
     <!-- Navigation -->
@@ -112,8 +99,6 @@
                 <p><strong>Welcome!</strong> Click any card below to quickly navigate to that section. Your most important health metrics are displayed here at a glance.</p>
             </div>
 
-            <h2 class="section-title">📊 Key Health Metrics</h2>
-
             <!-- Key Metrics -->
             <div class="stats-grid">
                 <div class="stat-card" onclick="navigateTo('track')">
@@ -165,8 +150,6 @@
                 </div>
             </div>
 
-            <h2 class="section-title">✅ Today's Tasks</h2>
-
             <!-- Today's Tasks -->
             <div class="data-table-container">
                 <div class="table-header">
@@ -216,10 +199,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Section Separator -->
-            <div class="section-separator-line"></div>
-            <h2 class="section-title">📊 Recent Activity</h2>
 
             <!-- Recent Activity -->
             <div class="data-table-container">
@@ -808,7 +787,6 @@
 
     </main>
 
-    <script src="app.js"></script>
-<script src="app.js" defer></script>
+    <script src="app-redesign.js"></script>
 </body>
 </html>
