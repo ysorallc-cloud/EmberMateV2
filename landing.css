@@ -1,0 +1,343 @@
+/* Minimal Colors Palette */
+:root {
+    --coral: #ED9687;
+    --lavender: #EBD9D7;
+    --cream: #F8E5D3;
+    --teal: #1D9D9A;
+    --dark: #1D0D0A;
+    
+    --primary: var(--teal);
+    --secondary: var(--coral);
+    --background: #FAFAFA;
+    --text-dark: var(--dark);
+    --text-light: #666;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background);
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+/* Navigation */
+.nav {
+    background: white;
+    border-bottom: 1px solid var(--lavender);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #158784;
+}
+
+.btn-large {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-large:hover {
+    background: #158784;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 157, 154, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 10px 32px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Container */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--lavender) 0%, var(--cream) 100%);
+    padding: 60px 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.hero p {
+    font-size: 18px;
+    color: var(--text-light);
+    margin-bottom: 32px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Features Section */
+.features {
+    padding: 60px 0;
+    background: white;
+}
+
+.features h2 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 40px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+.feature-card {
+    background: var(--background);
+    border: 2px solid var(--lavender);
+    border-radius: 10px;
+    padding: 28px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.feature-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.feature-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+}
+
+.feature-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+/* How It Works */
+.how-it-works {
+    padding: 60px 0;
+    background: var(--background);
+}
+
+.how-it-works h2 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 40px;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;
+}
+
+.step {
+    text-align: center;
+}
+
+.step-number {
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 auto 16px;
+}
+
+.step h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.step p {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+/* Notice Section */
+.notice {
+    padding: 40px 0;
+    background: white;
+}
+
+.notice-box {
+    background: linear-gradient(135deg, rgba(237, 150, 135, 0.12), rgba(237, 150, 135, 0.06));
+    border: 2px solid var(--coral);
+    border-radius: 8px;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.notice-box strong {
+    color: var(--coral);
+    font-weight: 700;
+}
+
+/* CTA Section */
+.cta {
+    padding: 60px 0;
+    background: var(--primary);
+    text-align: center;
+    color: white;
+}
+
+.cta h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.cta p {
+    font-size: 16px;
+    margin-bottom: 28px;
+    opacity: 0.95;
+}
+
+.cta .btn-large {
+    background: white;
+    color: var(--primary);
+}
+
+.cta .btn-large:hover {
+    background: var(--cream);
+    transform: translateY(-2px);
+}
+
+/* Footer */
+.footer {
+    background: var(--dark);
+    color: white;
+    padding: 32px 0;
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer .logo {
+    color: var(--coral);
+    margin-bottom: 8px;
+}
+
+.footer p {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 32px;
+    }
+    
+    .hero p {
+        font-size: 16px;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+    }
+    
+    .features h2,
+    .how-it-works h2,
+    .cta h2 {
+        font-size: 28px;
+    }
+    
+    .feature-grid,
+    .steps {
+        grid-template-columns: 1fr;
+    }
+}
