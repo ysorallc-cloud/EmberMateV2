@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmberMate - Personal Health Dashboard</title>
+    <link rel="stylesheet" href="styles-updated.css">
+</head>
+<body>
+    <!-- HIPAA Disclaimer Banner -->
+    <div class="hipaa-disclaimer">
+        <div class="disclaimer-content">
+            <span class="disclaimer-icon">⚠️</span>
+            <div>
+                <strong>IMPORTANT NOTICE:</strong> This application is NOT HIPAA compliant. 
+                Do not enter real protected health information. For demonstration purposes only.
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="logo">
+                <span class="logo-icon">🔥</span>
+                <span class="logo-text">EmberMate</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="icon-btn" title="Help">
+                <span>❓</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <a href="#" class="menu-item active" data-page="dashboard">
+                <span class="menu-icon">📊</span>
+                <span class="menu-text">Dashboard</span>
+            </a>
+            <a href="#" class="menu-item" data-page="track">
+                <span class="menu-icon">📝</span>
+                <span class="menu-text">Track</span>
+            </a>
+            <a href="#" class="menu-item" data-page="insights">
+                <span class="menu-icon">💡</span>
+                <span class="menu-text">Insights</span>
+            </a>
+            <a href="#" class="menu-item" data-page="settings">
+                <span class="menu-icon">⚙️</span>
+                <span class="menu-text">Settings</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page active">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Your health overview at a glance</p>
+            </div>
+
+            <!-- Quick Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card medications-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">💊</span>
+                        <h3>Medications</h3>
+                    </div>
+                    <div class="stat-value">3/5</div>
+                    <p class="stat-label">Taken Today</p>
+                    <div class="stat-badge success">On Track</div>
+                </div>
+
+                <div class="stat-card vitals-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">❤️</span>
+                        <h3>Vitals</h3>
+                    </div>
+                    <div class="stat-value">120/80</div>
+                    <p class="stat-label">Blood Pressure</p>
+                    <div class="stat-badge info">Normal</div>
+                </div>
+
+                <div class="stat-card journal-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">📔</span>
+                        <h3>Journal</h3>
+                    </div>
+                    <div class="stat-value">2</div>
+                    <p class="stat-label">Entries This Week</p>
+                    <div class="stat-badge warning">Keep Going!</div>
+                </div>
+
+                <div class="stat-card streak-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">🔥</span>
+                        <h3>Streak</h3>
+                    </div>
+                    <div class="stat-value">7 Days</div>
+                    <p class="stat-label">Consecutive Tracking</p>
+                    <div class="stat-badge success">Amazing!</div>
+                </div>
+            </div>
+
+            <!-- Today's Medications Table -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Today's Medications</h2>
+                    <button class="btn-add">+ Add</button>
+                </div>
+                <div class="table-container medications-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Medication</th>
+                                <th>Dosage</th>
+                                <th>Time</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="completed">
+                                <td><span class="status-indicator done">✓</span></td>
+                                <td><strong>Lisinopril</strong></td>
+                                <td>10mg</td>
+                                <td>8:00 AM</td>
+                                <td>With food</td>
+                                <td><button class="btn-action">View</button></td>
+                            </tr>
+                            <tr class="completed">
+                                <td><span class="status-indicator done">✓</span></td>
+                                <td><strong>Metformin</strong></td>
+                                <td>500mg</td>
+                                <td>8:00 AM</td>
+                                <td>Before meal</td>
+                                <td><button class="btn-action">View</button></td>
+                            </tr>
+                            <tr class="completed">
+                                <td><span class="status-indicator done">✓</span></td>
+                                <td><strong>Atorvastatin</strong></td>
+                                <td>20mg</td>
+                                <td>9:00 PM</td>
+                                <td>At bedtime</td>
+                                <td><button class="btn-action">View</button></td>
+                            </tr>
+                            <tr class="pending">
+                                <td><span class="status-indicator pending">○</span></td>
+                                <td><strong>Metformin</strong></td>
+                                <td>500mg</td>
+                                <td>6:00 PM</td>
+                                <td>Before dinner</td>
+                                <td><button class="btn-action primary">Take Now</button></td>
+                            </tr>
+                            <tr class="pending">
+                                <td><span class="status-indicator pending">○</span></td>
+                                <td><strong>Vitamin D</strong></td>
+                                <td>2000 IU</td>
+                                <td>9:00 PM</td>
+                                <td>Daily supplement</td>
+                                <td><button class="btn-action primary">Take Now</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Vitals Table -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Vitals</h2>
+                    <button class="btn-add">+ Log</button>
+                </div>
+                <div class="table-container vitals-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Blood Pressure</th>
+                                <th>Heart Rate</th>
+                                <th>Weight</th>
+                                <th>Temperature</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Today, 8:00 AM</strong></td>
+                                <td>120/80 mmHg</td>
+                                <td>72 bpm</td>
+                                <td>165 lbs</td>
+                                <td>98.6°F</td>
+                                <td><span class="badge-normal">Normal</span></td>
+                            </tr>
+                            <tr>
+                                <td>Yesterday, 8:15 AM</td>
+                                <td>118/78 mmHg</td>
+                                <td>70 bpm</td>
+                                <td>165 lbs</td>
+                                <td>98.4°F</td>
+                                <td><span class="badge-normal">Normal</span></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 12, 8:00 AM</td>
+                                <td>122/82 mmHg</td>
+                                <td>75 bpm</td>
+                                <td>166 lbs</td>
+                                <td>98.7°F</td>
+                                <td><span class="badge-normal">Normal</span></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 11, 7:45 AM</td>
+                                <td>119/79 mmHg</td>
+                                <td>73 bpm</td>
+                                <td>166 lbs</td>
+                                <td>98.5°F</td>
+                                <td><span class="badge-normal">Normal</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Journal Entries -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Journal Entries</h2>
+                    <button class="btn-add">+ New Entry</button>
+                </div>
+                <div class="table-container journal-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Mood</th>
+                                <th>Preview</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Today</strong></td>
+                                <td>Morning Reflection</td>
+                                <td><span class="mood-badge positive">😊 Good</span></td>
+                                <td>Feeling energized and ready for the day...</td>
+                                <td><button class="btn-action">Read</button></td>
+                            </tr>
+                            <tr>
+                                <td>Yesterday</td>
+                                <td>End of Day Thoughts</td>
+                                <td><span class="mood-badge neutral">😐 Okay</span></td>
+                                <td>Had some challenges but managed well...</td>
+                                <td><button class="btn-action">Read</button></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 12</td>
+                                <td>Weekly Review</td>
+                                <td><span class="mood-badge positive">😄 Great</span></td>
+                                <td>This week has been productive and healthy...</td>
+                                <td><button class="btn-action">Read</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Track Page -->
+        <div id="track-page" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Track Your Health</h1>
+                <p class="page-subtitle">Log medications, vitals, and journal entries</p>
+            </div>
+
+            <!-- Track Tabs -->
+            <div class="track-tabs">
+                <button class="track-tab active" data-track="medications">
+                    <span class="tab-icon">💊</span>
+                    <span>Medications</span>
+                    <span class="tab-badge">3/5</span>
+                </button>
+                <button class="track-tab" data-track="vitals">
+                    <span class="tab-icon">❤️</span>
+                    <span>Vitals</span>
+                    <span class="tab-badge">5h ago</span>
+                </button>
+                <button class="track-tab" data-track="journal">
+                    <span class="tab-icon">📔</span>
+                    <span>Journal</span>
+                    <span class="tab-badge">2 this week</span>
+                </button>
+            </div>
+
+            <!-- Medications Tab Content -->
+            <div id="medications-track" class="track-content active">
+                <div class="info-banner">
+                    <span class="info-icon">ℹ️</span>
+                    <p>Track your medications to earn completion badges! Mark medications as taken throughout the day.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Medication Schedule</h2>
+                        <button class="btn-add">+ Add Medication</button>
+                    </div>
+                    <div class="medication-schedule">
+                        <div class="med-item completed">
+                            <div class="med-checkbox">✓</div>
+                            <div class="med-info">
+                                <h4>Lisinopril 10mg</h4>
+                                <p>Morning dose - Taken at 9:00 AM</p>
+                            </div>
+                            <div class="med-time">8:00 AM</div>
+                        </div>
+                        <div class="med-item completed">
+                            <div class="med-checkbox">✓</div>
+                            <div class="med-info">
+                                <h4>Metformin 500mg</h4>
+                                <p>Morning dose - Taken at 9:15 AM</p>
+                            </div>
+                            <div class="med-time">8:00 AM</div>
+                        </div>
+                        <div class="med-item completed">
+                            <div class="med-checkbox">✓</div>
+                            <div class="med-info">
+                                <h4>Atorvastatin 20mg</h4>
+                                <p>Evening dose - Taken at 1:00 PM</p>
+                            </div>
+                            <div class="med-time">9:00 PM</div>
+                        </div>
+                        <div class="med-item pending">
+                            <div class="med-checkbox">○</div>
+                            <div class="med-info">
+                                <h4>Metformin 500mg</h4>
+                                <p>Evening dose - Due soon</p>
+                            </div>
+                            <div class="med-time">6:00 PM</div>
+                        </div>
+                        <div class="med-item pending">
+                            <div class="med-checkbox">○</div>
+                            <div class="med-info">
+                                <h4>Vitamin D 2000 IU</h4>
+                                <p>Evening supplement</p>
+                            </div>
+                            <div class="med-time">9:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vitals Tab Content -->
+            <div id="vitals-track" class="track-content">
+                <div class="info-banner">
+                    <span class="info-icon">ℹ️</span>
+                    <p>Log your vital signs regularly to track trends and identify patterns in your health data.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Log New Vitals</h2>
+                    </div>
+                    <div class="vitals-form">
+                        <div class="form-group">
+                            <label>Blood Pressure</label>
+                            <div class="bp-inputs">
+                                <input type="number" placeholder="Systolic" />
+                                <span>/</span>
+                                <input type="number" placeholder="Diastolic" />
+                                <span>mmHg</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Heart Rate</label>
+                            <input type="number" placeholder="72" />
+                            <span class="unit">bpm</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight</label>
+                            <input type="number" placeholder="165" step="0.1" />
+                            <span class="unit">lbs</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Temperature</label>
+                            <input type="number" placeholder="98.6" step="0.1" />
+                            <span class="unit">°F</span>
+                        </div>
+                        <button class="btn-primary full-width">Save Vitals</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journal Tab Content -->
+            <div id="journal-track" class="track-content">
+                <div class="info-banner">
+                    <span class="info-icon">ℹ️</span>
+                    <p>Regular journaling helps you reflect on your health journey and track your mental well-being.</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">New Journal Entry</h2>
+                    </div>
+                    <div class="journal-form">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" placeholder="Give your entry a title..." />
+                        </div>
+                        <div class="form-group">
+                            <label>How are you feeling?</label>
+                            <div class="mood-selector">
+                                <button class="mood-btn">😄 Great</button>
+                                <button class="mood-btn">😊 Good</button>
+                                <button class="mood-btn">😐 Okay</button>
+                                <button class="mood-btn">😔 Not Great</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Thoughts</label>
+                            <textarea rows="8" placeholder="Write about your day, how you're feeling, any health observations..."></textarea>
+                        </div>
+                        <button class="btn-primary full-width">Save Entry</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Page -->
+        <div id="insights-page" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Health Insights</h1>
+                <p class="page-subtitle">Personalized insights and trends from your data</p>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card positive">
+                    <span class="insight-icon">✨</span>
+                    <h3>Excellent Medication Adherence</h3>
+                    <p>You've maintained 95% medication adherence over the past month. Keep up the great work!</p>
+                </div>
+                <div class="insight-card info">
+                    <span class="insight-icon">📊</span>
+                    <h3>Blood Pressure Stable</h3>
+                    <p>Your blood pressure readings have been consistently in the normal range for 2 weeks.</p>
+                </div>
+                <div class="insight-card warning">
+                    <span class="insight-icon">💡</span>
+                    <h3>Journal More Often</h3>
+                    <p>Consider journaling 3-4 times per week to better track your mental and emotional well-being.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Your Achievements</h2>
+                <div class="achievements-grid">
+                    <div class="achievement earned">
+                        <div class="achievement-icon">🏆</div>
+                        <h4>7-Day Streak</h4>
+                        <p>Tracked for 7 consecutive days</p>
+                    </div>
+                    <div class="achievement earned">
+                        <div class="achievement-icon">⭐</div>
+                        <h4>Perfect Week</h4>
+                        <p>100% medication adherence</p>
+                    </div>
+                    <div class="achievement locked">
+                        <div class="achievement-icon">🎯</div>
+                        <h4>30-Day Streak</h4>
+                        <p>Keep going to unlock!</p>
+                    </div>
+                    <div class="achievement locked">
+                        <div class="achievement-icon">💎</div>
+                        <h4>Health Hero</h4>
+                        <p>90 days of consistent tracking</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings-page" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Manage your preferences and account</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Notifications</h2>
+                <div class="settings-group">
+                    <div class="setting-item">
+                        <div>
+                            <h4>Medication Reminders</h4>
+                            <p>Get notified when it's time to take your medications</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <h4>Vitals Reminders</h4>
+                            <p>Daily reminders to log your vital signs</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <h4>Journal Prompts</h4>
+                            <p>Weekly prompts to encourage journaling</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Display Preferences</h2>
+                <div class="settings-group">
+                    <div class="setting-item">
+                        <div>
+                            <h4>Units</h4>
+                            <p>Choose your preferred measurement units</p>
+                        </div>
+                        <select class="settings-select">
+                            <option>Imperial (lbs, °F)</option>
+                            <option>Metric (kg, °C)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <h4>Time Format</h4>
+                            <p>12-hour or 24-hour clock</p>
+                        </div>
+                        <select class="settings-select">
+                            <option>12-hour (AM/PM)</option>
+                            <option>24-hour</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="app-redesign.js"></script>
+</body>
+</html>
