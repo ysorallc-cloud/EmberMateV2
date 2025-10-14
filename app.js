@@ -408,7 +408,7 @@ function showToast(message) {
         position: fixed;
         bottom: 32px;
         right: 32px;
-        background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
+        background: linear-gradient(135deg, #1d9091, #6eb5b6);
         color: white;
         padding: 14px 20px;
         border-radius: 10px;
