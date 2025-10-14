@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EmberMate - Health Management Dashboard</title>
+
+  <!-- Styles: keep this first and load the consolidated stylesheet -->
+  <link rel="stylesheet" href="styles-updated.css">
+</head>
+<body>
+  <!-- Fixed Navbar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu" role="button" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="logo">🔥 EmberMate</div>
+    </div>
+    <div class="nav-right">
+      <div class="icon-btn" title="Notifications">🔔</div>
+      <div class="icon-btn" title="Profile">👤</div>
+    </div>
+  </header>
+
+  <!-- Sticky HIPAA Disclaimer (sits below fixed navbar) -->
+  <div id="hipaaDisclaimer" class="hipaa-disclaimer">
+    <strong>Disclaimer:</strong>
+    <span>This demo is not a medical device. Do not store PHI. For educational use only.</span>
+    <button class="btn btn-secondary" onclick="dismissHipaaDisclaimer()">Dismiss</button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar" aria-label="Sidebar">
+    <ul class="sidebar-menu">
+      <li class="sidebar-item active" onclick="navigateTo('dashboard')">🏠 Overview</li>
+      <li class="sidebar-item" onclick="navigateTo('track')">📊 Track</li>
+      <li class="sidebar-item" onclick="navigateTo('care')">🧩 Care</li>
+      <li class="sidebar-item" onclick="navigateTo('settings')">⚙️ Settings</li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Overview / Dashboard -->
+    <section id="page-dashboard" class="page-container active">
+      <div class="page-header">
+        <h1 class="page-title">Overview</h1>
+        <div class="page-subtitle">Your snapshot for today.</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-label">Medications</div>
+            <div class="stat-icon">💊</div>
+          </div>
+          <div class="stat-value">5</div>
+          <div class="stat-change positive">▲ On track</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-label">Blood Pressure</div>
+            <div class="stat-icon">🩺</div>
+          </div>
+          <div class="stat-value">120/80</div>
+          <div class="stat-change neutral">— Last check today</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-label">Glucose</div>
+            <div class="stat-icon">🧪</div>
+          </div>
+          <div class="stat-value">100</div>
+          <div class="stat-change neutral">— Fasting</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-label">Notes</div>
+            <div class="stat-icon">📝</div>
+          </div>
+          <div class="stat-value">3</div>
+          <div class="stat-change neutral">— Today</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Track Page -->
+    <section id="page-track" class="page-container">
+      <div class="page-header">
+        <h1 class="page-title">Track</h1>
+        <div class="page-subtitle">Log and review medications, vitals, and notes.</div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTrackTab('medications')">Medications</div>
+        <div class="tab" onclick="switchTrackTab('vitals')">Vitals</div>
+        <div class="tab" onclick="switchTrackTab('journal')">Journal</div>
+      </div>
+
+      <!-- Medications Panel -->
+      <div id="track-medications" class="track-tab-content active">
+        <div class="instruction-banner">
+          <p>Click any cell to edit. Use the + button to add an entry.</p>
+          <button class="btn btn-primary" onclick="addInlineRow('medications')">+ Add Medication</button>
+        </div>
+        <div class="data-table-container">
+          <div class="table-header">
+            <div class="table-title">Medication Log</div>
+          </div>
+          <table id="medicationsTable" class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th><th>Dose</th><th>Time</th><th>Frequency</th><th>Status</th><th>Notes</th><th>Prescriber</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="editable-cell" onclick="makeEditable(this)"><strong>Lisinopril</strong></td>
+                <td class="editable-cell" onclick="makeEditable(this)">10mg</td>
+                <td class="editable-cell" onclick="makeEditable(this)">8:00 AM</td>
+                <td class="editable-cell" onclick="makeEditable(this)">Daily</td>
+                <td><span class="badge badge-neutral" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Pending</span></td>
+                <td class="editable-cell" onclick="makeEditable(this)">—</td>
+                <td class="editable-cell" onclick="makeEditable(this)">Dr. Smith</td>
+                <td><button class="btn btn-secondary" style="padding:4px 8px;font-size:13px;" onclick="deleteRow(this)">🗑️</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Vitals Panel -->
+      <div id="track-vitals" class="track-tab-content">
+        <div class="instruction-banner">
+          <p>Log blood pressure, glucose and weight.</p>
+          <div style="display:flex; gap:8px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="addInlineRow('bp')">+ Add BP</button>
+            <button class="btn btn-primary" onclick="addInlineRow('glucose')">+ Add Glucose</button>
+            <button class="btn btn-primary" onclick="addInlineRow('weight')">+ Add Weight</button>
+          </div>
+        </div>
+
+        <div class="data-table-container mb-3">
+          <div class="table-header"><div class="table-title">Blood Pressure</div></div>
+          <table id="bpTable" class="data-table">
+            <thead><tr><th>Date/Time</th><th>Systolic</th><th>Diastolic</th><th>Pulse</th><th>Position</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="data-table-container mb-3">
+          <div class="table-header"><div class="table-title">Glucose</div></div>
+          <table id="glucoseTable" class="data-table">
+            <thead><tr><th>Date/Time</th><th>Glucose</th><th>Context</th><th>Notes</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="data-table-container">
+          <div class="table-header"><div class="table-title">Weight</div></div>
+          <table id="weightTable" class="data-table">
+            <thead><tr><th>Date</th><th>Weight</th><th>Temp</th><th>Notes</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Journal Panel -->
+      <div id="track-journal" class="track-tab-content">
+        <div class="instruction-banner">
+          <p>Quick daily log for mood, energy, and notes.</p>
+          <button class="btn btn-primary" onclick="addInlineRow('journal')">+ Add Entry</button>
+        </div>
+
+        <div class="data-table-container">
+          <div class="table-header"><div class="table-title">Daily Journal</div></div>
+          <table id="journalTable" class="data-table">
+            <thead><tr><th>Date</th><th>Mood</th><th>Energy</th><th>Notes</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Care Page -->
+    <section id="page-care" class="page-container">
+      <div class="page-header">
+        <h1 class="page-title">Care</h1>
+        <div class="page-subtitle">Team, tasks, and notes.</div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchCareTab('team')">Team</div>
+        <div class="tab" onclick="switchCareTab('tasks')">Tasks</div>
+        <div class="tab" onclick="switchCareTab('notes')">Notes</div>
+      </div>
+
+      <div id="care-team" class="care-tab-content active">
+        <div class="instruction-banner"><p>Add your care team details here.</p></div>
+        <div class="data-table-container">
+          <div class="table-header"><div class="table-title">Care Team</div></div>
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Email</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="editable-cell" onclick="makeEditable(this)">Jane Doe</td>
+                <td class="editable-cell" onclick="makeEditable(this)">Primary Care</td>
+                <td class="editable-cell" onclick="makeEditable(this)">(555) 010-0101</td>
+                <td class="editable-cell" onclick="makeEditable(this)">jane@example.com</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="care-tasks" class="care-tab-content">
+        <div class="instruction-banner"><p>Track care-related tasks.</p></div>
+        <div class="data-table-container">
+          <div class="table-header"><div class="table-title">Tasks</div></div>
+          <table class="data-table">
+            <thead><tr><th>Task</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="editable-cell" onclick="makeEditable(this)">Schedule follow-up</td>
+                <td class="editable-cell" onclick="makeEditable(this)">Next week</td>
+                <td><span class="badge badge-warning"><span class="badge-dot"></span>Due Soon</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="care-notes" class="care-tab-content">
+        <div class="instruction-banner"><p>Centralized notes for caregivers.</p></div>
+        <div class="data-table-container">
+          <div class="table-header"><div class="table-title">Notes</div></div>
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Today</strong></td>
+                <td class="editable-cell" onclick="makeEditable(this)">New note…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings Page (placeholder) -->
+    <section id="page-settings" class="page-container">
+      <div class="page-header">
+        <h1 class="page-title">Settings</h1>
+        <div class="page-subtitle">Coming soon.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="app-redesign.js" defer></script>
+</body>
+</html>
