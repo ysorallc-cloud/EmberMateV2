@@ -1,0 +1,214 @@
+# 🚀 Quick Start Guide - EmberMate v2.0
+
+## Get Started in 3 Steps
+
+### Step 1: Choose Your Starting Point
+
+**Option A: View the Landing Page** (Recommended for first-time users)
+```bash
+# Open landing.html in your browser
+open landing.html
+
+# Or on Windows
+start landing.html
+
+# Or on Linux
+xdg-open landing.html
+```
+
+**Option B: Jump Straight to the App**
+```bash
+# Open index.html in your browser
+open index.html
+```
+
+### Step 2: Use a Local Server (Optional but Recommended)
+
+```bash
+# Using Python 3
+python3 -m http.server 8000
+
+# Using Node.js
+npx http-server -p 8000
+
+# Using npm scripts (if you have package.json)
+npm start          # Opens landing page
+npm run start:app  # Opens main app
+```
+
+Then visit: `http://localhost:8000/landing.html`
+
+### Step 3: Deploy (When Ready)
+
+```bash
+# Deploy to Vercel
+npm run deploy
+
+# Or manually
+vercel --prod
+```
+
+---
+
+## 📁 Important Files
+
+| File | Purpose |
+|------|---------|
+| `landing.html` | **Start here!** - Modern landing page with features overview |
+| `index.html` | Main application - Health tracking dashboard |
+| `landing-styles.css` | Landing page styles |
+| `landing-script.js` | Landing page functionality |
+| `styles.css` | Main app styles |
+| `app.js` | Main app functionality |
+| `README-NEW.md` | **Read this!** - Complete documentation |
+| `IMPROVEMENT_SUMMARY.md` | Details of all improvements made |
+
+---
+
+## 🎯 What's New in v2.0
+
+✨ **New Landing Page**
+- Professional design
+- Feature showcase
+- How it works guide
+- FAQ section
+
+🔒 **Complete Deidentification**
+- All personal names removed
+- Generic placeholders
+- Privacy-focused
+
+📚 **Enhanced Documentation**
+- Comprehensive README
+- Deployment guides
+- Customization instructions
+
+🎨 **Modern Design**
+- Responsive layout
+- Smooth animations
+- Clean typography
+- Professional appearance
+
+---
+
+## 🔧 Quick Commands
+
+```bash
+# View landing page locally
+python3 -m http.server 8000
+# Visit: http://localhost:8000/landing.html
+
+# Deploy to Vercel
+vercel --prod
+
+# Deploy to Netlify
+netlify deploy --prod
+
+# Check what's been changed
+git status
+
+# Commit improvements
+git add .
+git commit -m "Add landing page and deidentification"
+git push
+```
+
+---
+
+## 📱 Test Checklist
+
+Before deploying, test these:
+
+- [ ] Landing page loads correctly
+- [ ] All navigation links work
+- [ ] "Launch App" button works
+- [ ] Main app loads and functions
+- [ ] Search works in main app
+- [ ] Medications can be added
+- [ ] Vitals can be recorded
+- [ ] Appointments can be scheduled
+- [ ] Data persists after refresh
+- [ ] Responsive on mobile
+- [ ] Works in different browsers
+
+---
+
+## 🎨 Customization Quick Wins
+
+### Change Colors (5 minutes)
+
+Edit these in `landing-styles.css` and `styles.css`:
+
+```css
+:root {
+    --primary-teal: #2D9B9B;      /* Your brand color */
+    --secondary-navy: #1E3A5F;    /* Your secondary color */
+    --accent-peach: #FFB347;      /* Your accent color */
+}
+```
+
+### Change App Name (2 minutes)
+
+Search and replace "EmberMate" in:
+- landing.html
+- index.html
+- README-NEW.md
+
+### Add Your Logo (3 minutes)
+
+Replace the emoji logo:
+
+```html
+<!-- Find this in landing.html and index.html -->
+<div class="logo-icon">💚</div>
+
+<!-- Replace with -->
+<div class="logo-icon">
+    <img src="your-logo.svg" alt="Your App Name" style="width: 40px; height: 40px;">
+</div>
+```
+
+---
+
+## 🐛 Troubleshooting
+
+**Problem:** Landing page looks broken
+**Solution:** Make sure `landing-styles.css` is in the same directory
+
+**Problem:** Main app doesn't work
+**Solution:** Check browser console for errors, ensure `app.js` is loaded
+
+**Problem:** Data doesn't persist
+**Solution:** Check if cookies/LocalStorage are enabled in browser
+
+**Problem:** Deployment fails
+**Solution:** Check `vercel.json` is present and valid
+
+---
+
+## 📞 Need Help?
+
+1. Read `README-NEW.md` for detailed documentation
+2. Check `IMPROVEMENT_SUMMARY.md` for what's been changed
+3. Review inline code comments
+4. Check browser developer console for errors
+
+---
+
+## ✅ You're All Set!
+
+Everything is ready to use. Just:
+
+1. Open `landing.html` to see your new homepage
+2. Click "Launch App" to use the application
+3. Deploy when you're happy with everything
+
+**Enjoy your improved EmberMate website! 💚**
+
+---
+
+Quick Links:
+- [Full Documentation](README-NEW.md)
+- [Improvement Details](IMPROVEMENT_SUMMARY.md)
+- [Deploy to Vercel](https://vercel.com/new)
+- [Deploy to Netlify](https://app.netlify.com/start)

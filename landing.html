@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmberMate - Your Personal Health Companion</title>
+    <meta name="description" content="EmberMate is a comprehensive health management platform for tracking medications, vitals, appointments, and maintaining your wellness journey.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing-styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">💚</div>
+                <span class="logo-text">EmberMate</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#benefits" class="nav-link">Benefits</a>
+                <a href="#faq" class="nav-link">FAQ</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-secondary" onclick="scrollToDemo()">View Demo</button>
+                <button class="btn-primary" onclick="launchApp()">Launch App</button>
+            </div>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-icon">✨</span>
+                    <span>Demo Application - Educational Purposes Only</span>
+                </div>
+                <h1 class="hero-title">
+                    Your Complete
+                    <span class="gradient-text">Health Companion</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Manage medications, track vitals, schedule appointments, and maintain your wellness journey—all in one intuitive platform.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn-hero-primary" onclick="launchApp()">
+                        <span>Try It Now</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                    <button class="btn-hero-secondary" onclick="scrollToDemo()">
+                        <span class="play-icon">▶</span>
+                        <span>Watch Demo</span>
+                    </button>
+                </div>
+                <div class="hero-notice">
+                    <span class="notice-icon">ℹ️</span>
+                    <span>No sign-up required • All data stays local • Free to use</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="dashboard-mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="mockup-content">
+                        <div class="mockup-card">
+                            <div class="card-icon">💊</div>
+                            <div class="card-info">
+                                <div class="card-title">Medications</div>
+                                <div class="card-value">3 due today</div>
+                            </div>
+                        </div>
+                        <div class="mockup-card">
+                            <div class="card-icon">📈</div>
+                            <div class="card-info">
+                                <div class="card-title">Vitals</div>
+                                <div class="card-value">All normal</div>
+                            </div>
+                        </div>
+                        <div class="mockup-card">
+                            <div class="card-icon">📅</div>
+                            <div class="card-info">
+                                <div class="card-title">Appointments</div>
+                                <div class="card-value">Next: Tomorrow</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Everything You Need</h2>
+                <p class="section-subtitle">Comprehensive health management tools designed for simplicity and effectiveness</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💊</div>
+                    <h3 class="feature-title">Medication Tracking</h3>
+                    <p class="feature-description">Never miss a dose with smart reminders and adherence tracking</p>
+                    <ul class="feature-list">
+                        <li>Customizable schedules</li>
+                        <li>Side effect logging</li>
+                        <li>Refill reminders</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Vitals Monitoring</h3>
+                    <p class="feature-description">Track blood pressure, glucose, heart rate, and more</p>
+                    <ul class="feature-list">
+                        <li>Visual trend analysis</li>
+                        <li>Automated alerts</li>
+                        <li>Export reports</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3 class="feature-title">Appointment Manager</h3>
+                    <p class="feature-description">Stay organized with all your medical appointments</p>
+                    <ul class="feature-list">
+                        <li>Calendar integration</li>
+                        <li>Provider contacts</li>
+                        <li>Transportation notes</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Health Analytics</h3>
+                    <p class="feature-description">Gain insights from your health data over time</p>
+                    <ul class="feature-list">
+                        <li>Interactive charts</li>
+                        <li>Trend detection</li>
+                        <li>Progress tracking</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3 class="feature-title">Health Journal</h3>
+                    <p class="feature-description">Document your daily health notes and symptoms</p>
+                    <ul class="feature-list">
+                        <li>Mood tracking</li>
+                        <li>Symptom logging</li>
+                        <li>Activity records</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Care Team</h3>
+                    <p class="feature-description">Manage your healthcare providers in one place</p>
+                    <ul class="feature-list">
+                        <li>Contact information</li>
+                        <li>Specialties tracking</li>
+                        <li>Quick access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Simple to Use</h2>
+                <p class="section-subtitle">Get started in three easy steps</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Launch the App</h3>
+                    <p class="step-description">Click "Launch App" to start - no sign-up or installation required. Works instantly in your browser.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Add Your Information</h3>
+                    <p class="step-description">Enter your medications, vitals, and appointments. All data is stored locally on your device.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Track & Manage</h3>
+                    <p class="step-description">Get reminders, view trends, and manage your health journey with ease.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits">
+        <div class="section-container">
+            <div class="benefits-content">
+                <div class="benefits-text">
+                    <h2 class="section-title">Why Choose EmberMate?</h2>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🔒</div>
+                        <div class="benefit-text">
+                            <h4>Privacy First</h4>
+                            <p>All your data stays on your device. No cloud storage, no third-party access.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">📱</div>
+                        <div class="benefit-text">
+                            <h4>Works Everywhere</h4>
+                            <p>Responsive design works seamlessly on desktop, tablet, and mobile devices.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">⚡</div>
+                        <div class="benefit-text">
+                            <h4>Lightning Fast</h4>
+                            <p>No loading times, no server delays. Everything happens instantly.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🎯</div>
+                        <div class="benefit-text">
+                            <h4>Easy to Use</h4>
+                            <p>Intuitive interface designed for all ages and technical abilities.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefits-visual">
+                    <div class="benefit-stat">
+                        <div class="stat-value">100%</div>
+                        <div class="stat-label">Local Storage</div>
+                    </div>
+                    <div class="benefit-stat">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Sign-ups Required</div>
+                    </div>
+                    <div class="benefit-stat">
+                        <div class="stat-value">∞</div>
+                        <div class="stat-label">Free Forever</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="demo-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">See It In Action</h2>
+                <p class="section-subtitle">Experience the full functionality of EmberMate</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-placeholder">
+                    <div class="demo-icon">▶</div>
+                    <p>Interactive demo preview</p>
+                    <button class="btn-primary" onclick="launchApp()">Launch Full App</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h4 class="faq-question">Is EmberMate HIPAA compliant?</h4>
+                    <p class="faq-answer">No, EmberMate is a demonstration application and is NOT HIPAA compliant. Do not use it for real personal health information. It's designed for educational purposes only.</p>
+                </div>
+                <div class="faq-item">
+                    <h4 class="faq-question">Where is my data stored?</h4>
+                    <p class="faq-answer">All data is stored locally in your browser using LocalStorage. Nothing is sent to any server or cloud service.</p>
+                </div>
+                <div class="faq-item">
+                    <h4 class="faq-question">Do I need to create an account?</h4>
+                    <p class="faq-answer">No account is required! Just launch the app and start using it immediately.</p>
+                </div>
+                <div class="faq-item">
+                    <h4 class="faq-question">Does it work offline?</h4>
+                    <p class="faq-answer">Yes, once loaded, the app works completely offline. You only need an internet connection for the initial load.</p>
+                </div>
+                <div class="faq-item">
+                    <h4 class="faq-question">Can I export my data?</h4>
+                    <p class="faq-answer">Yes, you can export your health data and reports from the Analytics section.</p>
+                </div>
+                <div class="faq-item">
+                    <h4 class="faq-question">What browsers are supported?</h4>
+                    <p class="faq-answer">EmberMate works on all modern browsers including Chrome, Firefox, Safari, and Edge.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <h2 class="cta-title">Ready to Take Control of Your Health?</h2>
+            <p class="cta-subtitle">Start tracking your health journey today—no commitment required</p>
+            <button class="btn-cta" onclick="launchApp()">
+                <span>Launch EmberMate</span>
+                <span class="btn-arrow">→</span>
+            </button>
+            <p class="cta-note">
+                <span class="notice-icon">ℹ️</span>
+                Remember: This is a demo application for educational purposes only
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo-icon">💚</div>
+                    <span class="logo-text">EmberMate</span>
+                </div>
+                <p class="footer-tagline">Your Personal Health Companion</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4 class="footer-title">Product</h4>
+                    <a href="#features" class="footer-link">Features</a>
+                    <a href="#how-it-works" class="footer-link">How It Works</a>
+                    <a href="#demo" class="footer-link">Demo</a>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-title">Support</h4>
+                    <a href="#faq" class="footer-link">FAQ</a>
+                    <a href="https://github.com/yourusername/embermate" class="footer-link" target="_blank">GitHub</a>
+                    <a href="mailto:support@example.com" class="footer-link">Contact</a>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-title">Legal</h4>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Demo Notice</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 EmberMate. Educational demonstration application.</p>
+            <p class="footer-disclaimer">Not for use with real health information. Not HIPAA compliant.</p>
+        </div>
+    </footer>
+
+    <script src="landing-script.js"></script>
+</body>
+</html>
