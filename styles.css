@@ -25,39 +25,41 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: var(--background);
+    background: #F5EFE7;
     color: var(--text-dark);
     line-height: 1.6;
 }
 
 /* HIPAA Disclaimer */
 .hipaa-disclaimer {
-    background: linear-gradient(135deg, rgba(237, 150, 135, 0.15), rgba(237, 150, 135, 0.08));
-    border: 2px solid var(--coral);
-    border-radius: 8px;
-    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1));
+    border: 3px solid #DC2626;
+    border-radius: 10px;
+    padding: 16px 24px;
     margin: 20px auto;
     max-width: 1200px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: 0 2px 8px rgba(237, 150, 135, 0.2);
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
 }
 
 .disclaimer-icon {
-    font-size: 24px;
+    font-size: 28px;
     flex-shrink: 0;
 }
 
 .disclaimer-content {
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.6;
     color: var(--text-dark);
+    font-weight: 500;
 }
 
 .disclaimer-content strong {
-    color: var(--coral);
-    font-weight: 700;
+    color: #DC2626;
+    font-weight: 800;
+    font-size: 15px;
 }
 
 /* Navigation */
@@ -202,8 +204,8 @@ body {
     background: white;
     border-radius: 12px;
     padding: 28px;
-    margin-bottom: 32px;
-    box-shadow: 0 2px 8px var(--shadow);
+    margin-bottom: 48px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .section-header {
@@ -212,7 +214,7 @@ body {
     align-items: center;
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 2px solid var(--lavender);
+    border-bottom: 3px solid var(--lavender);
 }
 
 .section-header h2 {
@@ -260,23 +262,24 @@ body {
 /* Table Container - Different colors for each section */
 .table-container {
     overflow-x: auto;
-    border-radius: 8px;
-    border: 2px solid;
+    border-radius: 10px;
+    border: 3px solid;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .medications-table {
     border-color: var(--coral);
-    background: linear-gradient(to bottom, rgba(237, 150, 135, 0.03), transparent);
+    background: linear-gradient(to bottom, rgba(237, 150, 135, 0.08), rgba(237, 150, 135, 0.02));
 }
 
 .appointments-table {
     border-color: var(--teal);
-    background: linear-gradient(to bottom, rgba(29, 157, 154, 0.03), transparent);
+    background: linear-gradient(to bottom, rgba(29, 157, 154, 0.08), rgba(29, 157, 154, 0.02));
 }
 
 .notes-table {
     border-color: #C8A8A4;
-    background: linear-gradient(to bottom, rgba(235, 217, 215, 0.05), transparent);
+    background: linear-gradient(to bottom, rgba(235, 217, 215, 0.12), rgba(235, 217, 215, 0.03));
 }
 
 /* Tables */
