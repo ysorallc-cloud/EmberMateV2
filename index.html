@@ -3,168 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmberMate - Health Tracking Dashboard</title>
+    <title>EmberMate - Health Management Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <!-- Blue Background Pattern -->
-    <div class="background-pattern"></div>
+    <!-- HIPAA Disclaimer -->
+    <div class="hipaa-disclaimer" id="hipaaDisclaimer">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">⚠️</span>
+            <div>
+                <strong style="font-size: 16px;">IMPORTANT - NOT HIPAA COMPLIANT:</strong>
+                <div style="margin-top: 4px; font-size: 14px;">This is a demonstration application only. Do not enter real personal health information.</div>
+            </div>
+        </div>
+        <button onclick="dismissHipaaDisclaimer()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #92400e; padding: 8px;" title="Dismiss">×</button>
+    </div>
 
-    <!-- Top Navigation -->
-    <nav class="top-nav">
-        <div class="nav-content">
-            <div class="nav-brand">
-                <div class="brand-icon">🔥</div>
-                <span class="brand-name">EmberMate</span>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link active" data-page="dashboard">Dashboard</a>
-                <a href="#" class="nav-link" data-page="medications">Medications</a>
-                <a href="#" class="nav-link" data-page="vitals">Vitals</a>
-                <a href="#" class="nav-link" data-page="journal">Journal</a>
-                <a href="#" class="nav-link" data-page="analytics">Analytics</a>
+            <div class="logo">
+                <div class="logo-icon">💚</div>
+                <span>EmberMate</span>
             </div>
-            <div class="nav-user">
-                <span class="user-greeting">Welcome, User</span>
+        </div>
+
+        <div class="nav-right">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search...">
             </div>
+            <div class="icon-btn" onclick="performUndo()" title="Undo last action" id="undoBtn" style="opacity: 0.5;">
+                ↶
+            </div>
+            <div class="icon-btn" title="Notifications">
+                🔔
+            </div>
+            <div class="user-avatar">U</div>
         </div>
     </nav>
 
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li class="sidebar-item" onclick="window.location.href='landing-updated.html'" title="Welcome">
+                <span class="sidebar-icon">🏠</span>
+                <span>Home</span>
+            </li>
+            <li class="sidebar-item active" onclick="navigateTo('dashboard')" title="Dashboard Overview">
+                <span class="sidebar-icon">📊</span>
+                <span>Overview</span>
+            </li>
+            <li class="sidebar-item" onclick="navigateTo('track')" title="Track Daily Health">
+                <span class="sidebar-icon">📝</span>
+                <span>Track</span>
+            </li>
+            <li class="sidebar-item" onclick="navigateTo('insights')" title="Analytics & Insights">
+                <span class="sidebar-icon">📈</span>
+                <span>Insights</span>
+            </li>
+            <li class="sidebar-item" onclick="navigateTo('care')" title="Care Team & Appointments">
+                <span class="sidebar-icon">👥</span>
+                <span>Care</span>
+            </li>
+            <li class="sidebar-item" onclick="navigateTo('settings')" title="Settings & Help">
+                <span class="sidebar-icon">⚙️</span>
+                <span>Settings</span>
+            </li>
+        </ul>
+    </aside>
+
     <!-- Main Content -->
-    <main class="main-container">
+    <main class="main-content">
         
-        <!-- Dashboard Page -->
+        <!-- Overview Page -->
         <div class="page-container active" id="page-dashboard">
-            <div class="page-header-section">
-                <h1 class="page-main-title">Health Dashboard</h1>
-                <p class="page-description">Your complete health overview at a glance</p>
+            <div class="page-header">
+                <h1 class="page-title">Health Overview</h1>
+                <p class="page-subtitle">Monday, October 13, 2025</p>
             </div>
 
-            <!-- Stats Cards -->
+            <!-- Inspirational Quote -->
+            <div class="quote-card">
+                <div class="quote-icon">✨</div>
+                <p class="quote-text">"Caring for yourself is not selfish—it's essential."</p>
+                <p class="quote-author">— Eleanor Brownn</p>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instruction-banner">
+                <span class="instruction-icon">💡</span>
+                <p><strong>Welcome!</strong> Click any card below to quickly navigate to that section. Your most important health metrics are displayed here at a glance.</p>
+            </div>
+
+            <h2 class="section-title">📊 Key Health Metrics</h2>
+
+            <!-- Key Metrics -->
             <div class="stats-grid">
-                <div class="stat-card stat-green">
+                <div class="stat-card" onclick="navigateTo('track')">
                     <div class="stat-header">
+                        <span class="stat-label">Medications Due</span>
                         <span class="stat-icon">💊</span>
-                        <span class="stat-label">Medications Taken</span>
                     </div>
-                    <div class="stat-value">3/5</div>
-                    <div class="stat-subtext">Today</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-change negative">
+                        <span>⚠</span>
+                        <span>2 pending doses</span>
+                    </div>
                 </div>
 
-                <div class="stat-card stat-blue">
+                <div class="stat-card" onclick="navigateTo('care')">
                     <div class="stat-header">
-                        <span class="stat-icon">❤️</span>
+                        <span class="stat-label">Next Appointment</span>
+                        <span class="stat-icon">📅</span>
+                    </div>
+                    <div class="stat-value">Tomorrow</div>
+                    <div class="stat-change neutral">
+                        <span>📍</span>
+                        <span>Primary Care • 2:00 PM</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" onclick="navigateTo('track')">
+                    <div class="stat-header">
                         <span class="stat-label">Blood Pressure</span>
+                        <span class="stat-icon">📈</span>
                     </div>
-                    <div class="stat-value">120/80</div>
-                    <div class="stat-subtext">Last Reading: 2hrs ago</div>
+                    <div class="stat-value">128/82</div>
+                    <div class="stat-change positive">
+                        <span>✓</span>
+                        <span>Normal range</span>
+                    </div>
                 </div>
 
-                <div class="stat-card stat-purple">
+                <div class="stat-card">
                     <div class="stat-header">
-                        <span class="stat-icon">📝</span>
-                        <span class="stat-label">Journal Entries</span>
+                        <span class="stat-label">Care Streak</span>
+                        <span class="stat-icon">🔥</span>
                     </div>
-                    <div class="stat-value">2</div>
-                    <div class="stat-subtext">This Week</div>
-                </div>
-
-                <div class="stat-card stat-orange">
-                    <div class="stat-header">
-                        <span class="stat-icon">🎯</span>
-                        <span class="stat-label">Streak</span>
+                    <div class="stat-value">7</div>
+                    <div class="stat-change positive">
+                        <span>↑</span>
+                        <span>Days tracked</span>
                     </div>
-                    <div class="stat-value">7 Days</div>
-                    <div class="stat-subtext">Keep it up!</div>
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2 class="section-title">Quick Actions</h2>
-                </div>
-                <div class="quick-actions-grid">
-                    <button class="action-card" onclick="navigateToPage('medications')">
-                        <span class="action-icon">💊</span>
-                        <span class="action-label">Log Medication</span>
-                    </button>
-                    <button class="action-card" onclick="navigateToPage('vitals')">
-                        <span class="action-icon">🩺</span>
-                        <span class="action-label">Record Vitals</span>
-                    </button>
-                    <button class="action-card" onclick="navigateToPage('journal')">
-                        <span class="action-icon">📔</span>
-                        <span class="action-label">New Journal Entry</span>
-                    </button>
-                    <button class="action-card" onclick="navigateToPage('analytics')">
-                        <span class="action-icon">📊</span>
-                        <span class="action-label">View Analytics</span>
+            <h2 class="section-title">✅ Today's Tasks</h2>
+
+            <!-- Today's Tasks -->
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Today's Tasks</h3>
+                    <button class="btn btn-primary" onclick="navigateTo('track')">
+                        <span>+ Add Task</span>
                     </button>
                 </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Take Lisinopril</strong></td>
+                            <td>8:00 AM</td>
+                            <td>Medication</td>
+                            <td><span class="badge badge-success"><span class="badge-dot"></span>Completed</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Log Side Effects</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Take Metformin</strong></td>
+                            <td>12:00 PM</td>
+                            <td>Medication</td>
+                            <td><span class="badge badge-warning"><span class="badge-dot"></span>Due Soon</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Mark Taken</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Check Blood Pressure</strong></td>
+                            <td>7:00 PM</td>
+                            <td>Vitals</td>
+                            <td><span class="badge badge-neutral"><span class="badge-dot"></span>Pending</span></td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Log Reading</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <!-- Section Separator -->
+            <div class="section-separator-line"></div>
+            <h2 class="section-title">📊 Recent Activity</h2>
 
             <!-- Recent Activity -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2 class="section-title">Recent Activity</h2>
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Recent Activity</h3>
                 </div>
-                <div class="activity-list">
-                    <div class="activity-item">
-                        <span class="activity-icon">💊</span>
-                        <div class="activity-content">
-                            <div class="activity-title">Took Lisinopril 10mg</div>
-                            <div class="activity-time">8:15 AM today</div>
-                        </div>
-                        <span class="activity-badge green">Completed</span>
-                    </div>
-                    <div class="activity-item">
-                        <span class="activity-icon">❤️</span>
-                        <div class="activity-content">
-                            <div class="activity-title">Logged Blood Pressure</div>
-                            <div class="activity-time">2 hours ago</div>
-                        </div>
-                        <span class="activity-badge blue">Vitals</span>
-                    </div>
-                    <div class="activity-item">
-                        <span class="activity-icon">📝</span>
-                        <div class="activity-content">
-                            <div class="activity-title">Added Journal Entry</div>
-                            <div class="activity-time">Yesterday</div>
-                        </div>
-                        <span class="activity-badge purple">Journal</span>
-                    </div>
-                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Date & Time</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Lisinopril Taken</strong></td>
+                            <td>Today, 8:15 AM</td>
+                            <td><span class="badge badge-neutral">💊 Medication</span></td>
+                            <td>10mg dose</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Blood Pressure Reading</strong></td>
+                            <td>Today, 7:30 AM</td>
+                            <td><span class="badge badge-neutral">📈 Vitals</span></td>
+                            <td>128/82 mmHg, HR 72</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Journal Entry</strong></td>
+                            <td>Yesterday, 9:00 PM</td>
+                            <td><span class="badge badge-neutral">📝 Note</span></td>
+                            <td>Feeling great today</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Medications Page -->
-        <div class="page-container" id="page-medications">
-            <div class="page-header-section">
-                <h1 class="page-main-title">Medications</h1>
-                <p class="page-description">Manage and track your medication schedule</p>
+        <!-- Track Page (Consolidated: Medications, Vitals, Journal) -->
+        <div class="page-container" id="page-track">
+            <div class="page-header">
+                <h1 class="page-title">Track Health</h1>
+                <p class="page-subtitle">Log medications, vitals, and notes</p>
             </div>
 
-            <div class="section-card">
-                <div class="table-header">
-                    <div class="table-title">
-                        <h2>Medication List</h2>
-                    </div>
-                    <div class="table-controls">
-                        <div class="table-search">
-                            <span class="table-search-icon">🔍</span>
-                            <input type="text" class="table-search-input" placeholder="Search medications...">
-                        </div>
-                        <button class="table-btn" onclick="showToast('Export feature')">📥 Export</button>
-                        <button class="table-btn-primary" onclick="showToast('Add medication')">➕ Add Medication</button>
-                    </div>
-                </div>
+            <!-- Inspirational Quote -->
+            <div class="quote-card">
+                <div class="quote-icon">💪</div>
+                <p class="quote-text">"Small daily improvements are the key to staggering long-term results."</p>
+                <p class="quote-author">— Robin Sharma</p>
+            </div>
 
-                <div class="custom-table-wrapper">
-                    <table class="custom-table">
+            <!-- Instructions -->
+            <div class="instruction-banner">
+                <span class="instruction-icon">📝</span>
+                <p><strong>How to use:</strong> Click the tabs below to switch between tracking types. Click any cell to edit it inline, and use the status badges to quickly update medication status.</p>
+            </div>
+
+            <!-- Tabs for different tracking types -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchTrackTab('medications')">💊 Medications</div>
+                <div class="tab" onclick="switchTrackTab('vitals')">📈 Vitals</div>
+                <div class="tab" onclick="switchTrackTab('journal')">📔 Journal</div>
+            </div>
+
+            <!-- Medications Tab Content -->
+            <div class="track-tab-content active" id="track-medications">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Medications</h3>
+                        <button class="btn btn-primary" onclick="addInlineRow('medications')">
+                            <span>+ Add Medication</span>
+                        </button>
+                    </div>
+                    <table class="data-table" id="medicationsTable">
                         <thead>
                             <tr>
-                                <th style="width: 50px;"><input type="checkbox" class="table-checkbox"></th>
                                 <th>Medication</th>
                                 <th>Dosage</th>
                                 <th>Time</th>
@@ -172,131 +295,198 @@
                                 <th>Status</th>
                                 <th>Side Effects</th>
                                 <th>Prescriber</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input type="checkbox" class="table-checkbox"></td>
-                                <td><strong>Lisinopril</strong></td>
-                                <td>10mg</td>
-                                <td>8:00 AM</td>
+                                <td class="editable-cell" onclick="makeEditable(this)"><strong>Lisinopril</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">10mg</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">8:00 AM</td>
                                 <td>Once daily</td>
-                                <td><span class="status-badge green">Taken</span></td>
-                                <td><span class="status-badge teal">None reported</span></td>
-                                <td>Dr. Smith</td>
+                                <td><span class="badge badge-success" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Taken</span></td>
+                                <td><span class="badge badge-neutral">None</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Primary Care</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" class="table-checkbox"></td>
-                                <td><strong>Metformin</strong></td>
-                                <td>500mg</td>
-                                <td>8:00 AM</td>
+                                <td class="editable-cell" onclick="makeEditable(this)"><strong>Metformin</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">500mg</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">12:00 PM</td>
                                 <td>Twice daily</td>
-                                <td><span class="status-badge green">Taken</span></td>
-                                <td><span class="status-badge teal">None reported</span></td>
-                                <td>Dr. Jones</td>
+                                <td><span class="badge badge-warning" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Due Soon</span></td>
+                                <td><span class="badge badge-warning">Mild nausea</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Specialist</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" class="table-checkbox"></td>
-                                <td><strong>Atorvastatin</strong></td>
-                                <td>20mg</td>
-                                <td>8:00 PM</td>
+                                <td class="editable-cell" onclick="makeEditable(this)"><strong>Atorvastatin</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">20mg</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">8:00 PM</td>
                                 <td>Once daily</td>
-                                <td><span class="status-badge green">Taken</span></td>
-                                <td><span class="status-badge teal">None reported</span></td>
-                                <td>Dr. Johnson</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" class="table-checkbox"></td>
-                                <td><strong>Aspirin</strong></td>
-                                <td>81mg</td>
-                                <td>8:00 AM</td>
-                                <td>Once daily</td>
-                                <td><span class="status-badge yellow">Pending</span></td>
-                                <td><span class="status-badge teal">None reported</span></td>
-                                <td>Dr. Brown</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" class="table-checkbox"></td>
-                                <td><strong>Vitamin D</strong></td>
-                                <td>2000 IU</td>
-                                <td>12:00 PM</td>
-                                <td>Once daily</td>
-                                <td><span class="status-badge yellow">Pending</span></td>
-                                <td><span class="status-badge teal">None reported</span></td>
-                                <td>Dr. Smith</td>
+                                <td><span class="badge badge-neutral" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Pending</span></td>
+                                <td><span class="badge badge-neutral">None</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Primary Care</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
-                <div class="table-pagination">
-                    <div class="pagination-info">Showing 1-5 of 5</div>
-                    <div class="pagination-controls">
-                        <button class="pagination-btn" disabled>← Previous</button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn" disabled>Next →</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vitals Page -->
-        <div class="page-container" id="page-vitals">
-            <div class="page-header-section">
-                <h1 class="page-main-title">Vitals Tracking</h1>
-                <p class="page-description">Monitor blood pressure, blood glucose, and other health metrics</p>
             </div>
 
-            <div class="section-card">
-                <div class="table-header">
-                    <div class="table-title">
-                        <h2>Vital Signs Log</h2>
+            <!-- Vitals Tab Content -->
+            <div class="track-tab-content" id="track-vitals">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Blood Pressure</h3>
+                        <button class="btn btn-primary" onclick="addInlineRow('bp')">
+                            <span>+ Log Reading</span>
+                        </button>
                     </div>
-                    <div class="table-controls">
-                        <button class="table-btn-primary" onclick="showToast('Log reading')">📊 Log Reading</button>
-                    </div>
-                </div>
-
-                <div class="custom-table-wrapper">
-                    <table class="custom-table">
+                    <table class="data-table" id="bpTable">
                         <thead>
                             <tr>
-                                <th>Date/Time</th>
-                                <th>Blood Pressure</th>
+                                <th>Date & Time</th>
+                                <th>Systolic</th>
+                                <th>Diastolic</th>
                                 <th>Heart Rate</th>
-                                <th>Blood Glucose</th>
-                                <th>Weight</th>
-                                <th>Temperature</th>
-                                <th>Notes</th>
+                                <th>Position</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Today, 8:00 AM</td>
-                                <td><span class="status-badge green">120/80</span></td>
-                                <td>72 bpm</td>
-                                <td>95 mg/dL</td>
-                                <td>165 lbs</td>
-                                <td>98.6°F</td>
-                                <td>Feeling good</td>
+                                <td><strong>Today, 3:45 PM</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">152</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">95</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">78 BPM</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Sitting</td>
+                                <td><span class="badge badge-danger"><span class="badge-dot"></span>High</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
-                                <td>Yesterday, 6:00 PM</td>
-                                <td><span class="status-badge green">118/78</span></td>
-                                <td>68 bpm</td>
-                                <td>92 mg/dL</td>
-                                <td>165 lbs</td>
-                                <td>98.4°F</td>
-                                <td>After dinner</td>
+                                <td><strong>Today, 7:30 AM</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">128</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">82</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">72 BPM</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Sitting</td>
+                                <td><span class="badge badge-success"><span class="badge-dot"></span>Normal</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Blood Glucose</h3>
+                        <button class="btn btn-primary" onclick="addInlineRow('glucose')">
+                            <span>+ Log Reading</span>
+                        </button>
+                    </div>
+                    <table class="data-table" id="glucoseTable">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Level (mg/dL)</th>
+                                <th>Meal Context</th>
+                                <th>Notes</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Today, 2:00 PM</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">145</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">After lunch</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">—</td>
+                                <td><span class="badge badge-success"><span class="badge-dot"></span>Normal</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
-                                <td>2 days ago, 8:00 AM</td>
-                                <td><span class="status-badge green">122/82</span></td>
-                                <td>74 bpm</td>
-                                <td>98 mg/dL</td>
-                                <td>166 lbs</td>
-                                <td>98.7°F</td>
-                                <td>Morning reading</td>
+                                <td><strong>Today, 7:00 AM</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">98</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Fasting</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">—</td>
+                                <td><span class="badge badge-success"><span class="badge-dot"></span>Normal</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Weight & Temperature</h3>
+                        <button class="btn btn-primary" onclick="addInlineRow('weight')">
+                            <span>+ Log Reading</span>
+                        </button>
+                    </div>
+                    <table class="data-table" id="weightTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Weight (lbs)</th>
+                                <th>Temp (°F)</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Today</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">175</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">98.6</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Morning reading</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Journal Tab Content -->
+            <div class="track-tab-content" id="track-journal">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Health Journal</h3>
+                        <button class="btn btn-primary" onclick="addInlineRow('journal')">
+                            <span>+ Add Entry</span>
+                        </button>
+                    </div>
+                    <table class="data-table" id="journalTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 140px;">Date</th>
+                                <th style="width: 120px;">Mood</th>
+                                <th style="width: 120px;">Energy Level</th>
+                                <th>Notes</th>
+                                <th style="width: 100px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Today</strong></td>
+                                <td><span class="badge badge-success">😊 Good</span></td>
+                                <td><span class="badge badge-success">⚡ High</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Slept well, feeling energized. Morning walk helped.</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Yesterday</strong></td>
+                                <td><span class="badge badge-neutral">😐 Okay</span></td>
+                                <td><span class="badge badge-warning">🔋 Moderate</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Slight headache in afternoon, but managed well.</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Oct 11</strong></td>
+                                <td><span class="badge badge-success">😊 Good</span></td>
+                                <td><span class="badge badge-success">⚡ High</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Great day overall, no issues to report.</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -304,118 +494,309 @@
             </div>
         </div>
 
-        <!-- Journal Page -->
-        <div class="page-container" id="page-journal">
-            <div class="page-header-section">
-                <h1 class="page-main-title">Health Journal</h1>
-                <p class="page-description">Track your daily health notes and observations</p>
+        <!-- Insights Page -->
+        <div class="page-container" id="page-insights">
+            <div class="page-header">
+                <h1 class="page-title">Health Insights</h1>
+                <p class="page-subtitle">Analytics and trends</p>
             </div>
 
-            <div class="section-card">
-                <div class="table-header">
-                    <div class="table-title">
-                        <h2>Journal Entries</h2>
+            <!-- Inspirational Quote -->
+            <div class="quote-card">
+                <div class="quote-icon">📊</div>
+                <p class="quote-text">"What gets measured gets managed."</p>
+                <p class="quote-author">— Peter Drucker</p>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instruction-banner">
+                <span class="instruction-icon">📈</span>
+                <p><strong>Understanding your data:</strong> The charts below show trends over time. Look for patterns that can help you and your healthcare team make informed decisions.</p>
+            </div>
+
+            <!-- Analytics Grid -->
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Blood Pressure Trend</h3>
+                        <select class="chart-filter">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 90 Days</option>
+                        </select>
                     </div>
-                    <div class="table-controls">
-                        <button class="table-btn-primary" onclick="showToast('New entry')">📝 New Entry</button>
-                    </div>
+                    <canvas id="bpChart"></canvas>
                 </div>
 
-                <div class="journal-entries">
-                    <div class="journal-card">
-                        <div class="journal-header">
-                            <div class="journal-date">Today, 9:30 AM</div>
-                            <div class="journal-mood">😊 Feeling good</div>
-                        </div>
-                        <div class="journal-content">
-                            Feeling energetic this morning. Slept well for 8 hours. Looking forward to my afternoon walk. All medications taken on time.
-                        </div>
-                        <div class="journal-footer">
-                            <span class="journal-tag">💊 Medications</span>
-                            <span class="journal-tag">😴 Sleep</span>
-                            <span class="journal-tag">🚶 Exercise</span>
-                        </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Medication Adherence</h3>
+                        <select class="chart-filter">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                        </select>
                     </div>
+                    <canvas id="adherenceChart"></canvas>
+                </div>
+            </div>
 
-                    <div class="journal-card">
-                        <div class="journal-header">
-                            <div class="journal-date">Yesterday, 6:45 PM</div>
-                            <div class="journal-mood">😌 Calm</div>
-                        </div>
-                        <div class="journal-content">
-                            Had a productive day. Took all medications on time. Blood pressure reading was good. Feeling grateful for good health.
-                        </div>
-                        <div class="journal-footer">
-                            <span class="journal-tag">💊 Medications</span>
-                            <span class="journal-tag">❤️ Vitals</span>
-                        </div>
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Blood Glucose Levels</h3>
+                        <select class="chart-filter">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                        </select>
                     </div>
+                    <canvas id="glucoseChart"></canvas>
+                </div>
 
-                    <div class="journal-card">
-                        <div class="journal-header">
-                            <div class="journal-date">2 days ago, 8:15 AM</div>
-                            <div class="journal-mood">😐 Okay</div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Weekly Summary</h3>
+                        <span class="chart-badge">This Week</span>
+                    </div>
+                    <div class="summary-stats">
+                        <div class="summary-item">
+                            <div class="summary-label">Medications Taken</div>
+                            <div class="summary-value">21/21</div>
+                            <div class="summary-progress">
+                                <div class="progress-bar" style="width: 100%; background: var(--success-green);"></div>
+                            </div>
                         </div>
-                        <div class="journal-content">
-                            Woke up feeling a bit tired but took all morning medications. Need to improve sleep schedule.
+                        <div class="summary-item">
+                            <div class="summary-label">Vitals Logged</div>
+                            <div class="summary-value">14/14</div>
+                            <div class="summary-progress">
+                                <div class="progress-bar" style="width: 100%; background: var(--success-green);"></div>
+                            </div>
                         </div>
-                        <div class="journal-footer">
-                            <span class="journal-tag">😴 Sleep</span>
-                            <span class="journal-tag">💊 Medications</span>
+                        <div class="summary-item">
+                            <div class="summary-label">Journal Entries</div>
+                            <div class="summary-value">7/7</div>
+                            <div class="summary-progress">
+                                <div class="progress-bar" style="width: 100%; background: var(--success-green);"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Analytics Page -->
-        <div class="page-container" id="page-analytics">
-            <div class="page-header-section">
-                <h1 class="page-main-title">Health Analytics</h1>
-                <p class="page-description">View trends and insights from your health data</p>
+        <!-- Care Page (Appointments & Care Team) -->
+        <div class="page-container" id="page-care">
+            <div class="page-header">
+                <h1 class="page-title">Care Coordination</h1>
+                <p class="page-subtitle">Appointments and care team</p>
             </div>
 
-            <div class="section-card">
-                <div class="section-header">
-                    <h2 class="section-title">Weekly Summary</h2>
+            <!-- Inspirational Quote -->
+            <div class="quote-card">
+                <div class="quote-icon">🤝</div>
+                <p class="quote-text">"Alone we can do so little; together we can do so much."</p>
+                <p class="quote-author">— Helen Keller</p>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instruction-banner">
+                <span class="instruction-icon">📅</span>
+                <p><strong>Stay organized:</strong> Switch between tabs to manage appointments and your care team. Click any cell to edit details inline.</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchCareTab('appointments')">📅 Appointments</div>
+                <div class="tab" onclick="switchCareTab('team')">👥 Care Team</div>
+            </div>
+
+            <!-- Appointments Tab -->
+            <div class="care-tab-content active" id="care-appointments">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Upcoming Appointments</h3>
+                        <button class="btn btn-primary" onclick="addInlineRow('appointments')">
+                            <span>+ Add Appointment</span>
+                        </button>
+                    </div>
+                    <table class="data-table" id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Provider</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Tomorrow, 2:00 PM</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Dr. Sarah Johnson</td>
+                                <td><span class="badge badge-neutral">Check-up</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Main Clinic, Room 205</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Annual physical</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Oct 20, 10:00 AM</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Dr. Michael Chen</td>
+                                <td><span class="badge badge-warning">Follow-up</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Cardiology Center</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Blood pressure review</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Oct 27, 3:30 PM</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Dr. Emily Rodriguez</td>
+                                <td><span class="badge badge-neutral">Consultation</span></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Endocrine Specialists</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Diabetes management</td>
+                                <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="analytics-grid">
-                    <div class="analytics-card">
-                        <div class="analytics-icon">📈</div>
-                        <div class="analytics-title">Medication Adherence</div>
-                        <div class="analytics-value">85%</div>
-                        <div class="analytics-trend green">↑ 5% from last week</div>
+            </div>
+
+            <!-- Care Team Tab -->
+            <div class="care-tab-content" id="care-team">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Your Care Team</h3>
+                        <button class="btn btn-primary" onclick="addInlineRow('careteam')">
+                            <span>+ Add Team Member</span>
+                        </button>
                     </div>
-                    <div class="analytics-card">
-                        <div class="analytics-icon">❤️</div>
-                        <div class="analytics-title">Avg Blood Pressure</div>
-                        <div class="analytics-value">120/80</div>
-                        <div class="analytics-trend green">Healthy range</div>
+                    <table class="data-table" id="careTeamTable">
+                        <thead>
+                            <tr>
+                                <th>Provider</th>
+                                <th>Specialty</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Last Visit</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="editable-cell" onclick="makeEditable(this)"><strong>Dr. Sarah Johnson</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Primary Care Physician</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">(555) 123-4567</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">sjohnson@clinic.com</td>
+                                <td>Sept 15, 2025</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Contact</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editable-cell" onclick="makeEditable(this)"><strong>Dr. Michael Chen</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Cardiologist</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">(555) 987-6543</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">mchen@cardio.com</td>
+                                <td>Aug 22, 2025</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Contact</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editable-cell" onclick="makeEditable(this)"><strong>Dr. Emily Rodriguez</strong></td>
+                                <td class="editable-cell" onclick="makeEditable(this)">Endocrinologist</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">(555) 456-7890</td>
+                                <td class="editable-cell" onclick="makeEditable(this)">erodriguez@endo.com</td>
+                                <td>July 10, 2025</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Contact</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="page-container" id="page-settings">
+            <div class="page-header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Customize your experience</p>
+            </div>
+
+            <!-- Inspirational Quote -->
+            <div class="quote-card">
+                <div class="quote-icon">⚙️</div>
+                <p class="quote-text">"The secret of change is to focus all of your energy not on fighting the old, but on building the new."</p>
+                <p class="quote-author">— Socrates</p>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">App Preferences</h3>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">Theme</label>
+                        <select style="width: 100%; max-width: 400px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 14px;">
+                            <option>Light (Default)</option>
+                            <option>Dark</option>
+                            <option>Auto (System)</option>
+                        </select>
                     </div>
-                    <div class="analytics-card">
-                        <div class="analytics-icon">📝</div>
-                        <div class="analytics-title">Journal Entries</div>
-                        <div class="analytics-value">2</div>
-                        <div class="analytics-trend blue">This week</div>
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">Time Format</label>
+                        <select style="width: 100%; max-width: 400px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 14px;">
+                            <option>12-hour (AM/PM)</option>
+                            <option>24-hour</option>
+                        </select>
                     </div>
-                    <div class="analytics-card">
-                        <div class="analytics-icon">🎯</div>
-                        <div class="analytics-title">Current Streak</div>
-                        <div class="analytics-value">7 days</div>
-                        <div class="analytics-trend green">Keep going!</div>
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">
+                            <input type="checkbox" style="margin-right: 8px;">
+                            Show inspirational quotes
+                        </label>
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">
+                            <input type="checkbox" style="margin-right: 8px;">
+                            Enable sound notifications
+                        </label>
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">
+                            <input type="checkbox" checked style="margin-right: 8px;">
+                            Show instruction banners
+                        </label>
                     </div>
+                    <button class="btn btn-primary">Save Preferences</button>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Data Management</h3>
+                </div>
+                <div style="padding: 24px;">
+                    <p style="margin-bottom: 16px; color: var(--gray-600);">
+                        <strong>Privacy Note:</strong> All data is stored locally in your browser. We do not collect, transmit, or store any personal health information on external servers.
+                    </p>
+                    <button class="btn btn-secondary" style="margin-right: 12px;">📥 Export Data</button>
+                    <button class="btn btn-secondary" style="margin-right: 12px;">📤 Import Data</button>
+                    <button class="btn btn-secondary" style="margin-right: 12px; background: var(--danger-red); color: white;">🗑️ Clear All Data</button>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Help & Support</h3>
+                </div>
+                <div style="padding: 24px;">
+                    <p style="margin-bottom: 16px; color: var(--gray-600);">Need help? Check out our resources:</p>
+                    <button class="btn btn-secondary" style="margin-right: 12px;">📚 Documentation</button>
+                    <button class="btn btn-secondary" style="margin-right: 12px;">❓ FAQ</button>
+                    <button class="btn btn-secondary">💬 Contact Support</button>
                 </div>
             </div>
         </div>
 
     </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p class="footer-text">Your health information is protected. We follow HIPAA guidelines to keep your data secure.</p>
-        </div>
-    </footer>
 
     <script src="app.js"></script>
 </body>
