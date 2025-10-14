@@ -56,14 +56,23 @@ function toggleSidebar() {
 }
 
 // Tab Switching
+// Replace existing switchTrackTab with this
 function switchTrackTab(tab) {
-    // Update tab active states
-    document.querySelectorAll('#page-track .tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    // Update content
-    document.querySelectorAll('.track-tab-content').forEach(content => content.classList.remove('active'));
-    document.getElementById(`track-${tab}`).classList.add('active');
+  // Deactivate all tabs and panels
+  document.querySelectorAll('#page-track .tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.track-tab-content').forEach(c => c.classList.remove('active'));
+
+  // Activate the tab whose onclick references the requested tab
+  const match = Array.from(document.querySelectorAll('#page-track .tab')).find(t => {
+    const on = t.getAttribute('onclick') || '';
+    return on.includes(`'${tab}'`) || on.includes(`"${tab}"`);
+  });
+  if (match) match.classList.add('active');
+
+  // Activate matching content
+  const panel = document.getElementById(`track-${tab}`);
+  if (panel) panel.classList.add('active');
+
 }
 
 function switchCareTab(tab) {
