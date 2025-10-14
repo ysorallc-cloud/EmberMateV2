@@ -838,7 +838,19 @@ body {
   }
   .main-content {
     margin-left: 0;
-  }
+  }/* --- Fixed header spacing / stacking --- */
+.hipaa-disclaimer {
+  position: sticky;
+  top: 60px;
+  z-index: 950;
+}
+
+/* Align measurements on small screens */
+@media (max-width: 768px) {
+  .navbar { height: 56px; }
+  .main-content { margin-top: 56px; }
+  .hipaa-disclaimer { top: 56px; }
+}.stat-card::before { pointer-events: none; }
 }
 
 
