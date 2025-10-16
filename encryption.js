@@ -1,372 +1,440 @@
 // EmberMate Encryption Module
-// Handles encryption/decryption of health data using AES-256
+// Handles AES-256 encryption/decryption of health data using CryptoJS
 
 const EncryptionManager = {
     // Encryption key stored in memory (never persisted)
     encryptionKey: null,
     isEncryptionEnabled: false,
     
-    // Storage keys that should be encrypted
-    encryptedKeys: [
-        'embermate_medications',
-        'embermate_bp_readings',
-        'embermate_glucose_readings',
-        'embermate_weight_readings',
-        'embermate_journal_entries',
-        'embermate_appointments',
-        'embermate_care_team'
-    ],
-
     // Initialize encryption system
     init() {
-        console.log('EncryptionManager: Initializing...');
-        
         // Check if encryption was previously enabled
         const encryptionStatus = localStorage.getItem('embermate_encryption_enabled');
         this.isEncryptionEnabled = encryptionStatus === 'true';
         
-        if (this.isEncryptionEnabled) {
-            console.log('EncryptionManager: Encryption is enabled, prompting for password');
-            this.promptForPassword();
-        }
-        
-        // Add encryption controls to settings page after DOM loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.addEncryptionControls());
-        } else {
-            this.addEncryptionControls();
-        }
+        console.log('Encryption Manager initialized. Encryption enabled:', this.isEncryptionEnabled);
     },
-
-    // Prompt user for password
-    promptForPassword() {
-        const password = prompt('🔒 Enter your encryption password to unlock your data:');
-        if (password) {
-            if (this.verifyPassword(password)) {
-                this.setEncryptionKey(password);
-                alert('✓ Data unlocked successfully!');
-            } else {
-                alert('❌ Incorrect password. Your data remains encrypted.');
-                // Try again
-                this.promptForPassword();
-            }
-        } else {
-            alert('⚠️ Password required to access encrypted data.');
-            // Try again
-            this.promptForPassword();
-        }
-    },
-
-    // Set up encryption with password
-    setupEncryption() {
-        const password = prompt('🔐 Create a strong password for data encryption:\n\n⚠️ IMPORTANT: Store this password securely. If lost, your data CANNOT be recovered!');
-        
+    
+    // Set encryption key
+    setEncryptionKey(password) {
         if (!password || password.length < 8) {
-            alert('❌ Password must be at least 8 characters long.');
+            this.showError('Encryption password must be at least 8 characters');
             return false;
         }
-
-        const confirmPassword = prompt('🔐 Confirm your password:');
         
-        if (password !== confirmPassword) {
-            alert('❌ Passwords do not match. Please try again.');
-            return false;
-        }
-
         this.encryptionKey = password;
-        this.isEncryptionEnabled = true;
-        
-        // Store password hash for verification
-        const passwordHash = CryptoJS.SHA256(password).toString();
-        localStorage.setItem('embermate_password_hash', passwordHash);
-        localStorage.setItem('embermate_encryption_enabled', 'true');
-        
-        // Encrypt all existing data
-        this.encryptAllData();
-        
-        alert('✓ Encryption enabled successfully!\n\n🔒 Your data is now encrypted. You will need to enter your password each time you use the app.');
-        
-        // Update UI
-        this.updateEncryptionStatus();
+        console.log('Encryption key set successfully');
         return true;
     },
-
+    
+    // Enable encryption
+    enableEncryption(password) {
+        if (!password || password.length < 8) {
+            this.showError('Encryption password must be at least 8 characters');
+            return false;
+        }
+        
+        const confirmPassword = prompt('Confirm encryption password:');
+        
+        if (password !== confirmPassword) {
+            this.showError('Passwords do not match');
+            return false;
+        }
+        
+        this.encryptionKey = password;
+        this.isEncryptionEnabled = true;
+        localStorage.setItem('embermate_encryption_enabled', 'true');
+        
+        // Encrypt existing data
+        this.encryptAllData();
+        
+        this.showSuccess('Encryption enabled successfully!');
+        console.log('Encryption enabled');
+        return true;
+    },
+    
     // Disable encryption
     disableEncryption() {
         if (!this.isEncryptionEnabled) {
-            alert('ℹ️ Encryption is not currently enabled.');
+            this.showInfo('Encryption is not enabled');
             return;
         }
-
-        const password = prompt('🔐 Enter your password to disable encryption:');
         
-        if (!this.verifyPassword(password)) {
-            alert('❌ Incorrect password.');
+        const password = prompt('Enter your encryption password to disable encryption:');
+        
+        if (!password || password !== this.encryptionKey) {
+            this.showError('Incorrect password');
             return false;
         }
-
-        const confirm = window.confirm('⚠️ WARNING: This will decrypt all your data and store it unencrypted.\n\nAre you sure you want to continue?');
         
-        if (confirm) {
-            this.decryptAllData();
-            this.encryptionKey = null;
-            this.isEncryptionEnabled = false;
-            localStorage.setItem('embermate_encryption_enabled', 'false');
-            localStorage.removeItem('embermate_password_hash');
-            alert('✓ Encryption disabled. Your data is now stored unencrypted.');
-            
-            // Update UI
-            this.updateEncryptionStatus();
-            return true;
-        }
+        // Decrypt all data
+        this.decryptAllData();
         
-        return false;
+        this.encryptionKey = null;
+        this.isEncryptionEnabled = false;
+        localStorage.setItem('embermate_encryption_enabled', 'false');
+        
+        this.showSuccess('Encryption disabled successfully');
+        console.log('Encryption disabled');
+        return true;
     },
-
-    // Set encryption key
-    setEncryptionKey(password) {
-        this.encryptionKey = password;
-    },
-
-    // Verify password
-    verifyPassword(password) {
-        if (!password) return false;
-        
-        const storedHash = localStorage.getItem('embermate_password_hash');
-        if (!storedHash) return false;
-        
-        const passwordHash = CryptoJS.SHA256(password).toString();
-        return passwordHash === storedHash;
-    },
-
+    
     // Encrypt data
     encrypt(data) {
-        if (!this.encryptionKey) {
-            console.error('Encryption key not set');
+        if (!this.isEncryptionEnabled || !this.encryptionKey) {
             return data;
         }
         
         try {
-            const encrypted = CryptoJS.AES.encrypt(data, this.encryptionKey).toString();
+            if (typeof CryptoJS === 'undefined') {
+                console.error('CryptoJS library not loaded');
+                return data;
+            }
+            
+            const dataString = typeof data === 'string' ? data : JSON.stringify(data);
+            const encrypted = CryptoJS.AES.encrypt(dataString, this.encryptionKey).toString();
             return encrypted;
         } catch (error) {
             console.error('Encryption error:', error);
             return data;
         }
     },
-
+    
     // Decrypt data
     decrypt(encryptedData) {
-        if (!this.encryptionKey) {
-            console.error('Encryption key not set');
+        if (!this.isEncryptionEnabled || !this.encryptionKey) {
             return encryptedData;
         }
         
         try {
+            if (typeof CryptoJS === 'undefined') {
+                console.error('CryptoJS library not loaded');
+                return encryptedData;
+            }
+            
             const decrypted = CryptoJS.AES.decrypt(encryptedData, this.encryptionKey);
-            return decrypted.toString(CryptoJS.enc.Utf8);
+            const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
+            
+            if (!decryptedString) {
+                console.error('Decryption failed - incorrect password or corrupted data');
+                return null;
+            }
+            
+            try {
+                return JSON.parse(decryptedString);
+            } catch {
+                return decryptedString;
+            }
         } catch (error) {
             console.error('Decryption error:', error);
-            return encryptedData;
+            return null;
         }
     },
-
-    // Encrypt all data in localStorage
+    
+    // Encrypt all health data
     encryptAllData() {
-        if (!this.encryptionKey) {
-            console.error('Encryption key not set');
-            return;
-        }
+        console.log('Encrypting all health data...');
         
-        this.encryptedKeys.forEach(key => {
+        const dataKeys = [
+            'embermate_medications',
+            'embermate_vitals',
+            'embermate_appointments',
+            'embermate_journal',
+            'embermate_care_team',
+            'embermate_health_profile'
+        ];
+        
+        dataKeys.forEach(key => {
             const data = localStorage.getItem(key);
-            if (data) {
-                // Check if already encrypted (starts with U2FsdGVk which is base64 for "Salted__")
-                if (!data.startsWith('U2FsdGVk')) {
-                    const encrypted = this.encrypt(data);
-                    localStorage.setItem(key, encrypted);
-                    console.log(`Encrypted: ${key}`);
-                }
+            if (data && !this.isEncrypted(data)) {
+                const encrypted = this.encrypt(data);
+                localStorage.setItem(key, encrypted);
+                console.log(`Encrypted: ${key}`);
             }
         });
         
         console.log('All data encrypted');
     },
-
-    // Decrypt all data in localStorage
+    
+    // Decrypt all health data
     decryptAllData() {
-        if (!this.encryptionKey) {
-            console.error('Encryption key not set');
-            return;
-        }
+        console.log('Decrypting all health data...');
         
-        this.encryptedKeys.forEach(key => {
+        const dataKeys = [
+            'embermate_medications',
+            'embermate_vitals',
+            'embermate_appointments',
+            'embermate_journal',
+            'embermate_care_team',
+            'embermate_health_profile'
+        ];
+        
+        dataKeys.forEach(key => {
             const data = localStorage.getItem(key);
-            if (data) {
-                // Check if encrypted (starts with U2FsdGVk)
-                if (data.startsWith('U2FsdGVk')) {
-                    const decrypted = this.decrypt(data);
-                    if (decrypted) {
-                        localStorage.setItem(key, decrypted);
-                        console.log(`Decrypted: ${key}`);
-                    }
+            if (data && this.isEncrypted(data)) {
+                const decrypted = this.decrypt(data);
+                if (decrypted) {
+                    const decryptedString = typeof decrypted === 'string' ? decrypted : JSON.stringify(decrypted);
+                    localStorage.setItem(key, decryptedString);
+                    console.log(`Decrypted: ${key}`);
                 }
             }
         });
         
         console.log('All data decrypted');
     },
-
-    // Get data (automatically decrypt if needed)
-    getData(key) {
+    
+    // Check if data is encrypted
+    isEncrypted(data) {
+        if (!data) return false;
+        
+        // Simple check: encrypted data typically doesn't start with { or [
+        const trimmed = data.trim();
+        return !trimmed.startsWith('{') && !trimmed.startsWith('[');
+    },
+    
+    // Save encrypted item
+    saveEncrypted(key, data) {
+        const encrypted = this.encrypt(data);
+        localStorage.setItem(key, encrypted);
+        console.log(`Saved encrypted: ${key}`);
+    },
+    
+    // Load encrypted item
+    loadEncrypted(key) {
         const data = localStorage.getItem(key);
         if (!data) return null;
         
-        // If encryption is enabled and data looks encrypted, decrypt it
-        if (this.isEncryptionEnabled && this.encryptionKey && data.startsWith('U2FsdGVk')) {
+        if (this.isEncryptionEnabled && this.isEncrypted(data)) {
             return this.decrypt(data);
         }
         
-        return data;
-    },
-
-    // Set data (automatically encrypt if needed)
-    setData(key, value) {
-        if (this.isEncryptionEnabled && this.encryptionKey) {
-            const encrypted = this.encrypt(value);
-            localStorage.setItem(key, encrypted);
-        } else {
-            localStorage.setItem(key, value);
+        try {
+            return JSON.parse(data);
+        } catch {
+            return data;
         }
     },
-
-    // Add encryption controls to settings page
-    addEncryptionControls() {
-        // Wait for settings page to exist
-        const settingsPage = document.getElementById('page-settings');
-        if (!settingsPage) {
-            console.log('Settings page not found, will retry...');
-            setTimeout(() => this.addEncryptionControls(), 500);
-            return;
-        }
-
-        // Check if already added
-        if (document.getElementById('encryption-settings')) {
-            return;
-        }
-
-        // Create encryption settings section
-        const encryptionSection = document.createElement('div');
-        encryptionSection.id = 'encryption-settings';
-        encryptionSection.className = 'data-table-container';
-        encryptionSection.innerHTML = `
-            <div class="table-header">
-                <h3 class="table-title">🔐 Data Encryption</h3>
-            </div>
-            <div style="padding: 24px;">
-                <div id="encryption-status-display" style="margin-bottom: 16px; padding: 12px; border-radius: 6px; background: #f3f4f6;">
-                    <strong>Status:</strong> <span id="encryption-status-text">Loading...</span>
-                </div>
-                <p style="margin-bottom: 16px; color: var(--gray-600);">
-                    Encrypt your health data with AES-256 encryption. Your password never leaves your device.
-                </p>
-                <button id="toggle-encryption-btn" class="btn btn-primary" style="margin-right: 12px;">
-                    Enable Encryption
-                </button>
-                <button id="change-password-btn" class="btn btn-secondary" style="display: none;">
-                    Change Password
-                </button>
-            </div>
-        `;
-
-        // Insert before Data Management section
-        const dataManagementSection = settingsPage.querySelector('.data-table-container');
-        if (dataManagementSection) {
-            dataManagementSection.parentNode.insertBefore(encryptionSection, dataManagementSection);
-        }
-
-        // Add event listeners
-        document.getElementById('toggle-encryption-btn').addEventListener('click', () => {
-            if (this.isEncryptionEnabled) {
-                this.disableEncryption();
-            } else {
-                this.setupEncryption();
+    
+    // Generate encryption report
+    getEncryptionStatus() {
+        const dataKeys = [
+            'embermate_medications',
+            'embermate_vitals',
+            'embermate_appointments',
+            'embermate_journal',
+            'embermate_care_team',
+            'embermate_health_profile'
+        ];
+        
+        const status = {
+            enabled: this.isEncryptionEnabled,
+            hasKey: !!this.encryptionKey,
+            encryptedItems: []
+        };
+        
+        dataKeys.forEach(key => {
+            const data = localStorage.getItem(key);
+            if (data) {
+                status.encryptedItems.push({
+                    key: key,
+                    encrypted: this.isEncrypted(data),
+                    size: data.length
+                });
             }
         });
-
-        document.getElementById('change-password-btn').addEventListener('click', () => {
-            this.changePassword();
-        });
-
-        // Update status display
-        this.updateEncryptionStatus();
-    },
-
-    // Update encryption status display
-    updateEncryptionStatus() {
-        const statusText = document.getElementById('encryption-status-text');
-        const statusDisplay = document.getElementById('encryption-status-display');
-        const toggleBtn = document.getElementById('toggle-encryption-btn');
-        const changePasswordBtn = document.getElementById('change-password-btn');
-
-        if (!statusText || !statusDisplay || !toggleBtn) return;
-
-        if (this.isEncryptionEnabled) {
-            statusText.textContent = '🔒 Enabled (Data is encrypted)';
-            statusDisplay.style.background = '#d1fae5';
-            statusDisplay.style.color = '#065f46';
-            toggleBtn.textContent = 'Disable Encryption';
-            toggleBtn.className = 'btn btn-secondary';
-            if (changePasswordBtn) changePasswordBtn.style.display = 'inline-block';
-        } else {
-            statusText.textContent = '🔓 Disabled (Data is not encrypted)';
-            statusDisplay.style.background = '#fee2e2';
-            statusDisplay.style.color = '#991b1b';
-            toggleBtn.textContent = 'Enable Encryption';
-            toggleBtn.className = 'btn btn-primary';
-            if (changePasswordBtn) changePasswordBtn.style.display = 'none';
-        }
-    },
-
-    // Change password
-    changePassword() {
-        const oldPassword = prompt('🔐 Enter your current password:');
         
-        if (!this.verifyPassword(oldPassword)) {
-            alert('❌ Incorrect password.');
+        return status;
+    },
+    
+    // Change encryption password
+    changePassword() {
+        if (!this.isEncryptionEnabled) {
+            this.showError('Encryption is not enabled');
             return false;
         }
-
-        const newPassword = prompt('🔐 Enter new password (min 8 characters):');
+        
+        const currentPassword = prompt('Enter your current encryption password:');
+        
+        if (!currentPassword || currentPassword !== this.encryptionKey) {
+            this.showError('Incorrect current password');
+            return false;
+        }
+        
+        const newPassword = prompt('Enter new encryption password (min 8 characters):');
         
         if (!newPassword || newPassword.length < 8) {
-            alert('❌ Password must be at least 8 characters long.');
+            this.showError('New password must be at least 8 characters');
             return false;
         }
-
-        const confirmPassword = prompt('🔐 Confirm new password:');
+        
+        const confirmPassword = prompt('Confirm new password:');
         
         if (newPassword !== confirmPassword) {
-            alert('❌ Passwords do not match.');
+            this.showError('Passwords do not match');
             return false;
         }
-
+        
         // Decrypt with old password
-        this.setEncryptionKey(oldPassword);
         this.decryptAllData();
-
+        
+        // Set new password
+        this.encryptionKey = newPassword;
+        
         // Encrypt with new password
-        this.setEncryptionKey(newPassword);
-        const passwordHash = CryptoJS.SHA256(newPassword).toString();
-        localStorage.setItem('embermate_password_hash', passwordHash);
         this.encryptAllData();
-
-        alert('✓ Password changed successfully!');
+        
+        this.showSuccess('Encryption password changed successfully!');
+        console.log('Encryption password changed');
         return true;
+    },
+    
+    // Export encrypted backup
+    exportEncryptedBackup() {
+        const backupData = {
+            version: '2.0',
+            exportDate: new Date().toISOString(),
+            encrypted: this.isEncryptionEnabled,
+            data: {}
+        };
+        
+        const dataKeys = [
+            'embermate_medications',
+            'embermate_vitals',
+            'embermate_appointments',
+            'embermate_journal',
+            'embermate_care_team',
+            'embermate_health_profile'
+        ];
+        
+        dataKeys.forEach(key => {
+            const data = localStorage.getItem(key);
+            if (data) {
+                backupData.data[key] = data;
+            }
+        });
+        
+        return backupData;
+    },
+    
+    // Import encrypted backup
+    importEncryptedBackup(backupData) {
+        if (!backupData || !backupData.data) {
+            this.showError('Invalid backup data');
+            return false;
+        }
+        
+        if (backupData.encrypted && !this.encryptionKey) {
+            this.showError('Please enter your encryption password first');
+            return false;
+        }
+        
+        try {
+            Object.keys(backupData.data).forEach(key => {
+                localStorage.setItem(key, backupData.data[key]);
+            });
+            
+            this.showSuccess('Backup imported successfully!');
+            console.log('Imported backup from:', backupData.exportDate);
+            return true;
+        } catch (error) {
+            console.error('Import error:', error);
+            this.showError('Failed to import backup');
+            return false;
+        }
+    },
+    
+    // Show error message
+    showError(message) {
+        this.showNotification(message, 'error');
+    },
+    
+    // Show success message
+    showSuccess(message) {
+        this.showNotification(message, 'success');
+    },
+    
+    // Show info message
+    showInfo(message) {
+        this.showNotification(message, 'info');
+    },
+    
+    // Show notification
+    showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `encryption-notification encryption-notification-${type}`;
+        notification.textContent = message;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Style notification
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.padding = '1rem 1.5rem';
+        notification.style.borderRadius = '0.5rem';
+        notification.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+        notification.style.zIndex = '10000';
+        notification.style.fontWeight = '500';
+        notification.style.fontSize = '0.875rem';
+        notification.style.maxWidth = '300px';
+        notification.style.animation = 'slideInRight 0.3s ease-out';
+        
+        // Type-specific styling
+        if (type === 'error') {
+            notification.style.background = '#fee2e2';
+            notification.style.color = '#991b1b';
+            notification.style.border = '1px solid #fecaca';
+        } else if (type === 'success') {
+            notification.style.background = '#d1fae5';
+            notification.style.color = '#065f46';
+            notification.style.border = '1px solid #a7f3d0';
+        } else {
+            notification.style.background = '#dbeafe';
+            notification.style.color = '#1e40af';
+            notification.style.border = '1px solid #bfdbfe';
+        }
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000);
     }
 };
 
-// Initialize when DOM is ready
+// Add animation styles
+const style = document.createElement('style');
+style.textContent = `
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+}
+`;
+document.head.appendChild(style);
+
+// Initialize on page load
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         EncryptionManager.init();
@@ -375,5 +443,5 @@ if (document.readyState === 'loading') {
     EncryptionManager.init();
 }
 
-// Make it globally available
+// Make available globally
 window.EncryptionManager = EncryptionManager;
