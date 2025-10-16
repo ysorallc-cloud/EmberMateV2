@@ -191,7 +191,7 @@ body::before {
 /* Buttons */
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
-    color: var(--white);
+    color: var(--white) !important;
     padding: 10px 24px;
     border-radius: 8px;
     text-decoration: none;
