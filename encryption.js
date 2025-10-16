@@ -1,395 +1,379 @@
-/**
- * EmberMate Encryption Module
- * 
- * Provides AES-256 encryption for health data stored in localStorage.
- * No data ever leaves the user's device - encryption happens client-side.
- * 
- * Dependencies: crypto-js (included via CDN in index.html)
- */
+// EmberMate Encryption Module
+// Handles encryption/decryption of health data using AES-256
 
-const EmberSecurity = {
-    isLocked: false,
-    password: null,
+const EncryptionManager = {
+    // Encryption key stored in memory (never persisted)
+    encryptionKey: null,
+    isEncryptionEnabled: false,
     
-    /**
-     * Initialize encryption system on page load
-     */
+    // Storage keys that should be encrypted
+    encryptedKeys: [
+        'embermate_medications',
+        'embermate_bp_readings',
+        'embermate_glucose_readings',
+        'embermate_weight_readings',
+        'embermate_journal_entries',
+        'embermate_appointments',
+        'embermate_care_team'
+    ],
+
+    // Initialize encryption system
     init() {
-        // Check if app is password-protected
-        const locked = localStorage.getItem('ember_locked');
-        const hasData = localStorage.getItem('medications') || 
-                       localStorage.getItem('vitals') || 
-                       localStorage.getItem('appointments');
+        console.log('EncryptionManager: Initializing...');
         
-        if (locked === 'true' && hasData) {
-            this.isLocked = true;
-            this.showUnlockScreen();
+        // Check if encryption was previously enabled
+        const encryptionStatus = localStorage.getItem('embermate_encryption_enabled');
+        this.isEncryptionEnabled = encryptionStatus === 'true';
+        
+        if (this.isEncryptionEnabled) {
+            console.log('EncryptionManager: Encryption is enabled, prompting for password');
+            this.promptForPassword();
+        }
+        
+        // Add encryption controls to settings page after DOM loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.addEncryptionControls());
+        } else {
+            this.addEncryptionControls();
         }
     },
-    
-    /**
-     * Show password setup screen for first-time users
-     */
-    showPasswordSetup() {
-        const modal = document.createElement('div');
-        modal.className = 'security-modal';
-        modal.innerHTML = `
-            <div class="security-modal-content">
-                <div class="security-header">
-                    <span class="security-icon">🔒</span>
-                    <h2>Protect Your Health Data</h2>
-                    <p>Set a master password to encrypt all your health information</p>
-                </div>
-                <div class="security-form">
-                    <div class="form-group">
-                        <label>Master Password</label>
-                        <input type="password" id="setupPassword" 
-                               placeholder="Enter a strong password" 
-                               minlength="8" required>
-                        <small>Minimum 8 characters. Choose something memorable - there's no password reset.</small>
-                    </div>
-                    <div class="form-group">
-                        <label>Confirm Password</label>
-                        <input type="password" id="confirmPassword" 
-                               placeholder="Re-enter password" required>
-                    </div>
-                    <div class="security-warning">
-                        <strong>⚠️ Important:</strong> There is no password recovery. 
-                        If you forget this password, you'll lose access to your encrypted data.
-                    </div>
-                    <div class="security-actions">
-                        <button class="btn-secondary" onclick="EmberSecurity.skipEncryption()">
-                            Skip (Not Recommended)
-                        </button>
-                        <button class="btn-primary" onclick="EmberSecurity.setupPassword()">
-                            Enable Encryption
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
+
+    // Prompt user for password
+    promptForPassword() {
+        const password = prompt('🔒 Enter your encryption password to unlock your data:');
+        if (password) {
+            if (this.verifyPassword(password)) {
+                this.setEncryptionKey(password);
+                alert('✓ Data unlocked successfully!');
+            } else {
+                alert('❌ Incorrect password. Your data remains encrypted.');
+                // Try again
+                this.promptForPassword();
+            }
+        } else {
+            alert('⚠️ Password required to access encrypted data.');
+            // Try again
+            this.promptForPassword();
+        }
     },
-    
-    /**
-     * Show unlock screen when app starts with encrypted data
-     */
-    showUnlockScreen() {
-        // Hide main app content
-        const appContent = document.getElementById('app-content');
-        if (appContent) appContent.style.display = 'none';
-        
-        const modal = document.createElement('div');
-        modal.className = 'security-modal';
-        modal.id = 'unlockModal';
-        modal.innerHTML = `
-            <div class="security-modal-content unlock-screen">
-                <div class="security-header">
-                    <span class="security-icon">🔐</span>
-                    <h2>EmberMate is Locked</h2>
-                    <p>Enter your master password to access your health data</p>
-                </div>
-                <div class="security-form">
-                    <div class="form-group">
-                        <input type="password" id="unlockPassword" 
-                               placeholder="Master password" 
-                               onkeypress="if(event.key==='Enter') EmberSecurity.unlock()">
-                        <div id="unlockError" class="error-message" style="display:none;"></div>
-                    </div>
-                    <div class="security-actions">
-                        <button class="btn-primary btn-block" onclick="EmberSecurity.unlock()">
-                            🔓 Unlock EmberMate
-                        </button>
-                    </div>
-                    <div class="security-footer">
-                        <a href="#" onclick="EmberSecurity.showForgotPassword()">Forgot password?</a>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        
-        // Focus password field
-        setTimeout(() => {
-            document.getElementById('unlockPassword')?.focus();
-        }, 100);
-    },
-    
-    /**
-     * Set up master password and encrypt existing data
-     */
-    setupPassword() {
-        const password = document.getElementById('setupPassword').value;
-        const confirm = document.getElementById('confirmPassword').value;
+
+    // Set up encryption with password
+    setupEncryption() {
+        const password = prompt('🔐 Create a strong password for data encryption:\n\n⚠️ IMPORTANT: Store this password securely. If lost, your data CANNOT be recovered!');
         
         if (!password || password.length < 8) {
-            showToast('Password must be at least 8 characters', 'error');
-            return;
+            alert('❌ Password must be at least 8 characters long.');
+            return false;
         }
+
+        const confirmPassword = prompt('🔐 Confirm your password:');
         
-        if (password !== confirm) {
-            showToast('Passwords do not match', 'error');
-            return;
+        if (password !== confirmPassword) {
+            alert('❌ Passwords do not match. Please try again.');
+            return false;
         }
+
+        this.encryptionKey = password;
+        this.isEncryptionEnabled = true;
         
-        // Store password in session (not in localStorage!)
-        this.password = password;
-        localStorage.setItem('ember_locked', 'true');
+        // Store password hash for verification
+        const passwordHash = CryptoJS.SHA256(password).toString();
+        localStorage.setItem('embermate_password_hash', passwordHash);
+        localStorage.setItem('embermate_encryption_enabled', 'true');
         
         // Encrypt all existing data
         this.encryptAllData();
         
-        // Remove modal
-        document.querySelector('.security-modal').remove();
+        alert('✓ Encryption enabled successfully!\n\n🔒 Your data is now encrypted. You will need to enter your password each time you use the app.');
         
-        showToast('🔒 Encryption enabled! Your data is now protected.', 'success');
+        // Update UI
+        this.updateEncryptionStatus();
+        return true;
     },
-    
-    /**
-     * Skip encryption setup (not recommended)
-     */
-    skipEncryption() {
-        if (confirm('Are you sure? Your health data will NOT be encrypted and anyone with access to your device can read it.')) {
-            localStorage.setItem('ember_locked', 'false');
-            document.querySelector('.security-modal').remove();
-            showToast('Encryption skipped. You can enable it later in Settings.', 'warning');
-        }
-    },
-    
-    /**
-     * Unlock the app with master password
-     */
-    unlock() {
-        const password = document.getElementById('unlockPassword').value;
-        
-        if (!password) {
-            this.showError('Please enter your password');
+
+    // Disable encryption
+    disableEncryption() {
+        if (!this.isEncryptionEnabled) {
+            alert('ℹ️ Encryption is not currently enabled.');
             return;
         }
+
+        const password = prompt('🔐 Enter your password to disable encryption:');
         
-        // Try to decrypt a test value to verify password
-        try {
-            const testData = localStorage.getItem('medications');
-            if (testData) {
-                // Try to decrypt - if it fails, password is wrong
-                const decrypted = CryptoJS.AES.decrypt(testData, password);
-                const decryptedStr = decrypted.toString(CryptoJS.enc.Utf8);
-                
-                if (!decryptedStr) {
-                    throw new Error('Invalid password');
-                }
-                
-                // Password is correct!
-                this.password = password;
-                this.isLocked = false;
-                
-                // Remove unlock screen
-                document.getElementById('unlockModal').remove();
-                
-                // Show app content
-                const appContent = document.getElementById('app-content');
-                if (appContent) appContent.style.display = 'block';
-                
-                showToast('🔓 Welcome back!', 'success');
-                
-                // Refresh data displays
-                if (typeof loadDashboardData === 'function') {
-                    loadDashboardData();
-                }
-            }
-        } catch (error) {
-            this.showError('Incorrect password. Please try again.');
-            document.getElementById('unlockPassword').value = '';
+        if (!this.verifyPassword(password)) {
+            alert('❌ Incorrect password.');
+            return false;
         }
-    },
-    
-    /**
-     * Show error message on unlock screen
-     */
-    showError(message) {
-        const errorDiv = document.getElementById('unlockError');
-        if (errorDiv) {
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 3000);
+
+        const confirm = window.confirm('⚠️ WARNING: This will decrypt all your data and store it unencrypted.\n\nAre you sure you want to continue?');
+        
+        if (confirm) {
+            this.decryptAllData();
+            this.encryptionKey = null;
+            this.isEncryptionEnabled = false;
+            localStorage.setItem('embermate_encryption_enabled', 'false');
+            localStorage.removeItem('embermate_password_hash');
+            alert('✓ Encryption disabled. Your data is now stored unencrypted.');
+            
+            // Update UI
+            this.updateEncryptionStatus();
+            return true;
         }
-    },
-    
-    /**
-     * Show forgot password help
-     */
-    showForgotPassword() {
-        alert(
-            '⚠️ Password Recovery Not Available\n\n' +
-            'EmberMate uses client-side encryption with no server backup. ' +
-            'If you\'ve forgotten your password, your encrypted data cannot be recovered.\n\n' +
-            'Options:\n' +
-            '1. Keep trying passwords you might have used\n' +
-            '2. Contact support if you have a recent unencrypted backup\n' +
-            '3. Reset app data (WARNING: This deletes everything)\n\n' +
-            'This is the privacy trade-off: your data is 100% secure because only YOU have the key.'
-        );
+        
         return false;
     },
-    
-    /**
-     * Encrypt a single piece of data
-     */
+
+    // Set encryption key
+    setEncryptionKey(password) {
+        this.encryptionKey = password;
+    },
+
+    // Verify password
+    verifyPassword(password) {
+        if (!password) return false;
+        
+        const storedHash = localStorage.getItem('embermate_password_hash');
+        if (!storedHash) return false;
+        
+        const passwordHash = CryptoJS.SHA256(password).toString();
+        return passwordHash === storedHash;
+    },
+
+    // Encrypt data
     encrypt(data) {
-        if (!this.password) return data;
+        if (!this.encryptionKey) {
+            console.error('Encryption key not set');
+            return data;
+        }
         
         try {
-            const jsonStr = JSON.stringify(data);
-            return CryptoJS.AES.encrypt(jsonStr, this.password).toString();
+            const encrypted = CryptoJS.AES.encrypt(data, this.encryptionKey).toString();
+            return encrypted;
         } catch (error) {
             console.error('Encryption error:', error);
             return data;
         }
     },
-    
-    /**
-     * Decrypt a single piece of data
-     */
+
+    // Decrypt data
     decrypt(encryptedData) {
-        if (!this.password || !encryptedData) return encryptedData;
+        if (!this.encryptionKey) {
+            console.error('Encryption key not set');
+            return encryptedData;
+        }
         
         try {
-            const bytes = CryptoJS.AES.decrypt(encryptedData, this.password);
-            const decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
-            return decryptedStr ? JSON.parse(decryptedStr) : encryptedData;
+            const decrypted = CryptoJS.AES.decrypt(encryptedData, this.encryptionKey);
+            return decrypted.toString(CryptoJS.enc.Utf8);
         } catch (error) {
             console.error('Decryption error:', error);
-            return null;
+            return encryptedData;
         }
     },
-    
-    /**
-     * Encrypt all existing localStorage data
-     */
+
+    // Encrypt all data in localStorage
     encryptAllData() {
-        if (!this.password) return;
+        if (!this.encryptionKey) {
+            console.error('Encryption key not set');
+            return;
+        }
         
-        const keys = ['medications', 'vitals', 'appointments', 'careTeam', 'journal', 'reminders'];
-        
-        keys.forEach(key => {
+        this.encryptedKeys.forEach(key => {
             const data = localStorage.getItem(key);
-            if (data && !this.isEncrypted(data)) {
-                try {
-                    const parsed = JSON.parse(data);
-                    const encrypted = this.encrypt(parsed);
+            if (data) {
+                // Check if already encrypted (starts with U2FsdGVk which is base64 for "Salted__")
+                if (!data.startsWith('U2FsdGVk')) {
+                    const encrypted = this.encrypt(data);
                     localStorage.setItem(key, encrypted);
-                } catch (error) {
-                    console.error(`Error encrypting ${key}:`, error);
+                    console.log(`Encrypted: ${key}`);
                 }
             }
         });
+        
+        console.log('All data encrypted');
     },
-    
-    /**
-     * Check if data is already encrypted
-     */
-    isEncrypted(data) {
-        try {
-            JSON.parse(data);
-            return false; // If it parses as JSON, it's not encrypted
-        } catch {
-            return true; // If it doesn't parse, it's likely encrypted
+
+    // Decrypt all data in localStorage
+    decryptAllData() {
+        if (!this.encryptionKey) {
+            console.error('Encryption key not set');
+            return;
         }
+        
+        this.encryptedKeys.forEach(key => {
+            const data = localStorage.getItem(key);
+            if (data) {
+                // Check if encrypted (starts with U2FsdGVk)
+                if (data.startsWith('U2FsdGVk')) {
+                    const decrypted = this.decrypt(data);
+                    if (decrypted) {
+                        localStorage.setItem(key, decrypted);
+                        console.log(`Decrypted: ${key}`);
+                    }
+                }
+            }
+        });
+        
+        console.log('All data decrypted');
     },
-    
-    /**
-     * Save encrypted data to localStorage
-     */
-    saveEncrypted(key, data) {
-        const encrypted = this.encrypt(data);
-        localStorage.setItem(key, encrypted);
-    },
-    
-    /**
-     * Load and decrypt data from localStorage
-     */
-    loadEncrypted(key) {
+
+    // Get data (automatically decrypt if needed)
+    getData(key) {
         const data = localStorage.getItem(key);
         if (!data) return null;
         
-        if (this.password && this.isEncrypted(data)) {
+        // If encryption is enabled and data looks encrypted, decrypt it
+        if (this.isEncryptionEnabled && this.encryptionKey && data.startsWith('U2FsdGVk')) {
             return this.decrypt(data);
         }
         
-        // Data is not encrypted, return as-is
-        try {
-            return JSON.parse(data);
-        } catch {
-            return null;
+        return data;
+    },
+
+    // Set data (automatically encrypt if needed)
+    setData(key, value) {
+        if (this.isEncryptionEnabled && this.encryptionKey) {
+            const encrypted = this.encrypt(value);
+            localStorage.setItem(key, encrypted);
+        } else {
+            localStorage.setItem(key, value);
         }
     },
-    
-    /**
-     * Change master password
-     */
-    changePassword(oldPassword, newPassword) {
-        if (oldPassword !== this.password) {
-            showToast('Current password is incorrect', 'error');
-            return false;
+
+    // Add encryption controls to settings page
+    addEncryptionControls() {
+        // Wait for settings page to exist
+        const settingsPage = document.getElementById('page-settings');
+        if (!settingsPage) {
+            console.log('Settings page not found, will retry...');
+            setTimeout(() => this.addEncryptionControls(), 500);
+            return;
         }
-        
-        // Decrypt all data with old password
-        const keys = ['medications', 'vitals', 'appointments', 'careTeam', 'journal', 'reminders'];
-        const decryptedData = {};
-        
-        keys.forEach(key => {
-            const data = this.loadEncrypted(key);
-            if (data) {
-                decryptedData[key] = data;
+
+        // Check if already added
+        if (document.getElementById('encryption-settings')) {
+            return;
+        }
+
+        // Create encryption settings section
+        const encryptionSection = document.createElement('div');
+        encryptionSection.id = 'encryption-settings';
+        encryptionSection.className = 'data-table-container';
+        encryptionSection.innerHTML = `
+            <div class="table-header">
+                <h3 class="table-title">🔐 Data Encryption</h3>
+            </div>
+            <div style="padding: 24px;">
+                <div id="encryption-status-display" style="margin-bottom: 16px; padding: 12px; border-radius: 6px; background: #f3f4f6;">
+                    <strong>Status:</strong> <span id="encryption-status-text">Loading...</span>
+                </div>
+                <p style="margin-bottom: 16px; color: var(--gray-600);">
+                    Encrypt your health data with AES-256 encryption. Your password never leaves your device.
+                </p>
+                <button id="toggle-encryption-btn" class="btn btn-primary" style="margin-right: 12px;">
+                    Enable Encryption
+                </button>
+                <button id="change-password-btn" class="btn btn-secondary" style="display: none;">
+                    Change Password
+                </button>
+            </div>
+        `;
+
+        // Insert before Data Management section
+        const dataManagementSection = settingsPage.querySelector('.data-table-container');
+        if (dataManagementSection) {
+            dataManagementSection.parentNode.insertBefore(encryptionSection, dataManagementSection);
+        }
+
+        // Add event listeners
+        document.getElementById('toggle-encryption-btn').addEventListener('click', () => {
+            if (this.isEncryptionEnabled) {
+                this.disableEncryption();
+            } else {
+                this.setupEncryption();
             }
         });
-        
-        // Update password
-        this.password = newPassword;
-        
-        // Re-encrypt all data with new password
-        Object.keys(decryptedData).forEach(key => {
-            this.saveEncrypted(key, decryptedData[key]);
+
+        document.getElementById('change-password-btn').addEventListener('click', () => {
+            this.changePassword();
         });
-        
-        showToast('🔒 Master password updated successfully', 'success');
-        return true;
+
+        // Update status display
+        this.updateEncryptionStatus();
     },
-    
-    /**
-     * Disable encryption (decrypt all data)
-     */
-    disableEncryption(password) {
-        if (password !== this.password) {
-            showToast('Password is incorrect', 'error');
+
+    // Update encryption status display
+    updateEncryptionStatus() {
+        const statusText = document.getElementById('encryption-status-text');
+        const statusDisplay = document.getElementById('encryption-status-display');
+        const toggleBtn = document.getElementById('toggle-encryption-btn');
+        const changePasswordBtn = document.getElementById('change-password-btn');
+
+        if (!statusText || !statusDisplay || !toggleBtn) return;
+
+        if (this.isEncryptionEnabled) {
+            statusText.textContent = '🔒 Enabled (Data is encrypted)';
+            statusDisplay.style.background = '#d1fae5';
+            statusDisplay.style.color = '#065f46';
+            toggleBtn.textContent = 'Disable Encryption';
+            toggleBtn.className = 'btn btn-secondary';
+            if (changePasswordBtn) changePasswordBtn.style.display = 'inline-block';
+        } else {
+            statusText.textContent = '🔓 Disabled (Data is not encrypted)';
+            statusDisplay.style.background = '#fee2e2';
+            statusDisplay.style.color = '#991b1b';
+            toggleBtn.textContent = 'Enable Encryption';
+            toggleBtn.className = 'btn btn-primary';
+            if (changePasswordBtn) changePasswordBtn.style.display = 'none';
+        }
+    },
+
+    // Change password
+    changePassword() {
+        const oldPassword = prompt('🔐 Enter your current password:');
+        
+        if (!this.verifyPassword(oldPassword)) {
+            alert('❌ Incorrect password.');
             return false;
         }
+
+        const newPassword = prompt('🔐 Enter new password (min 8 characters):');
         
-        // Decrypt all data
-        const keys = ['medications', 'vitals', 'appointments', 'careTeam', 'journal', 'reminders'];
+        if (!newPassword || newPassword.length < 8) {
+            alert('❌ Password must be at least 8 characters long.');
+            return false;
+        }
+
+        const confirmPassword = prompt('🔐 Confirm new password:');
         
-        keys.forEach(key => {
-            const data = this.loadEncrypted(key);
-            if (data) {
-                localStorage.setItem(key, JSON.stringify(data));
-            }
-        });
-        
-        // Clear encryption flag
-        localStorage.setItem('ember_locked', 'false');
-        this.password = null;
-        this.isLocked = false;
-        
-        showToast('Encryption disabled. Your data is no longer protected.', 'warning');
+        if (newPassword !== confirmPassword) {
+            alert('❌ Passwords do not match.');
+            return false;
+        }
+
+        // Decrypt with old password
+        this.setEncryptionKey(oldPassword);
+        this.decryptAllData();
+
+        // Encrypt with new password
+        this.setEncryptionKey(newPassword);
+        const passwordHash = CryptoJS.SHA256(newPassword).toString();
+        localStorage.setItem('embermate_password_hash', passwordHash);
+        this.encryptAllData();
+
+        alert('✓ Password changed successfully!');
         return true;
     }
 };
 
-// Auto-initialize when DOM is ready
+// Initialize when DOM is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => EmberSecurity.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        EncryptionManager.init();
+    });
 } else {
-    EmberSecurity.init();
+    EncryptionManager.init();
 }
+
+// Make it globally available
+window.EncryptionManager = EncryptionManager;
