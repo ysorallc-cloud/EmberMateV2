@@ -6,7 +6,17 @@
     <title>EmberMate - Health Management Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-</head>
+    <!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00b4d8">
+
+<!-- Crypto-JS Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<!-- EmberMate V2 Features -->
+<link rel="stylesheet" href="encryption.css">
+<script src="encryption.js" defer></script>
+<script src="backup.js" defer></script></head>
 <body>
     <!-- HIPAA Disclaimer -->
     <div class="hipaa-disclaimer" id="hipaaDisclaimer">
@@ -314,7 +324,12 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">Primary Care</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
-                        </tbody>
+                            <!-- Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+}
+</script>                        </tbody>
                     </table>
                 </div>
             </div>
