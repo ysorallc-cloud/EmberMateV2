@@ -1,0 +1,324 @@
+/**
+ * EmberMate Security Styles
+ * Professional encryption UI components
+ */
+
+/* Security Modal Overlay */
+.security-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 28, 31, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Security Modal Content */
+.security-modal-content {
+    background: linear-gradient(135deg, #0a1c1f 0%, #1a2f35 100%);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(0, 180, 216, 0.1);
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.unlock-screen {
+    max-width: 400px;
+}
+
+/* Security Header */
+.security-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.security-icon {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 16px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.security-header h2 {
+    color: var(--text-primary, #ffffff);
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+}
+
+.security-header p {
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Security Form */
+.security-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--text-primary, #ffffff);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.form-group input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 16px;
+    color: var(--text-primary, #ffffff);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-teal, #00b4d8);
+    background: rgba(0, 180, 216, 0.05);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.form-group small {
+    color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Security Warning Box */
+.security-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    color: #ffc107;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.security-warning strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+/* Security Actions */
+.security-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.security-actions .btn-primary,
+.security-actions .btn-secondary {
+    flex: 1;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.security-actions .btn-primary {
+    background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+    color: white;
+}
+
+.security-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #0096c7 0%, #005f8a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+}
+
+.security-actions .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.security-actions .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Security Footer */
+.security-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.security-footer a {
+    color: var(--primary-teal, #00b4d8);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.security-footer a:hover {
+    color: #48cae4;
+    text-decoration: underline;
+}
+
+/* Error Message */
+.error-message {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 8px;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .security-modal-content {
+        padding: 30px 24px;
+        max-width: 95%;
+    }
+    
+    .security-icon {
+        font-size: 48px;
+    }
+    
+    .security-header h2 {
+        font-size: 24px;
+    }
+    
+    .security-header p {
+        font-size: 14px;
+    }
+    
+    .security-actions {
+        flex-direction: column;
+    }
+    
+    .security-actions .btn-primary,
+    .security-actions .btn-secondary {
+        width: 100%;
+    }
+}
+
+/* Loading State */
+.security-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+}
+
+.security-loading .spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(0, 180, 216, 0.2);
+    border-top-color: var(--primary-teal, #00b4d8);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Success State */
+.security-success {
+    text-align: center;
+    padding: 40px;
+}
+
+.security-success .success-icon {
+    font-size: 72px;
+    margin-bottom: 20px;
+    animation: bounceIn 0.6s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.security-success h3 {
+    color: var(--success-green, #4caf50);
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.security-success p {
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+    font-size: 16px;
+}
