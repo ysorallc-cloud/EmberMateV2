@@ -2,10 +2,12 @@ const CACHE_NAME = 'embermate-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/styles.css',
-  '/app.js',
   '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
   // Add your CSS and JS files here
+  // '/css/style.css',
+  // '/js/app.js',
 ];
 
 // Install event - cache assets
