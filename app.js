@@ -44,7 +44,7 @@ function updateOnboardingStep() {
     
     // Show current step
     const currentStep = document.querySelector(`.onboarding-step[data-step="${currentOnboardingStep}"]`);
-if (currentStep) {
+currentStep.classList.add('active');{
     }
     
     // Update progress dots
