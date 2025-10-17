@@ -801,6 +801,8 @@ function addVitals() {
 // ============================================
 
 let vitalsChart = null;
+let currentTimeScale = 7; // Default to 7 days
+let overlayMode = false;
 
 function initChart() {
     const ctx = document.getElementById('vitalsChart').getContext('2d');
@@ -815,15 +817,58 @@ function initChart() {
                     .getPropertyValue('--chart-bp').trim(),
                 backgroundColor: 'rgba(255, 107, 53, 0.1)',
                 tension: 0.4,
-                fill: true
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: getComputedStyle(document.documentElement)
+                    .getPropertyValue('--chart-bp').trim(),
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
             plugins: {
                 legend: {
-                    display: false
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: getComputedStyle(document.documentElement)
+                            .getPropertyValue('--text-primary').trim(),
+                        usePointStyle: true,
+                        padding: 15
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: getComputedStyle(document.documentElement)
+                        .getPropertyValue('--bg-secondary').trim(),
+                    titleColor: getComputedStyle(document.documentElement)
+                        .getPropertyValue('--text-primary').trim(),
+                    bodyColor: getComputedStyle(document.documentElement)
+                        .getPropertyValue('--text-secondary').trim(),
+                    borderColor: getComputedStyle(document.documentElement)
+                        .getPropertyValue('--border-color').trim(),
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += Math.round(context.parsed.y * 100) / 100;
+                            }
+                            return label;
+                        }
+                    }
                 }
             },
             scales: {
@@ -855,31 +900,36 @@ function initChart() {
 }
 
 function updateChart(type) {
+    if (overlayMode) {
+        updateOverlayChart();
+        return;
+    }
+    
     let data = [];
     let label = '';
     let color = '';
     
     switch(type) {
         case 'bp':
-            data = appState.vitals.bloodPressure.slice(-30).map(d => d.systolic);
+            data = appState.vitals.bloodPressure.slice(-currentTimeScale).map(d => d.systolic);
             label = 'Blood Pressure (Systolic)';
             color = getComputedStyle(document.documentElement)
                 .getPropertyValue('--chart-bp').trim();
             break;
         case 'hr':
-            data = appState.vitals.heartRate.slice(-30).map(d => d.value);
+            data = appState.vitals.heartRate.slice(-currentTimeScale).map(d => d.value);
             label = 'Heart Rate';
             color = getComputedStyle(document.documentElement)
                 .getPropertyValue('--chart-hr').trim();
             break;
         case 'weight':
-            data = appState.vitals.weight.slice(-30).map(d => d.value);
+            data = appState.vitals.weight.slice(-currentTimeScale).map(d => d.value);
             label = 'Weight';
             color = getComputedStyle(document.documentElement)
                 .getPropertyValue('--chart-weight').trim();
             break;
         case 'glucose':
-            data = appState.vitals.glucose.slice(-30).map(d => d.value);
+            data = appState.vitals.glucose.slice(-currentTimeScale).map(d => d.value);
             label = 'Glucose';
             color = getComputedStyle(document.documentElement)
                 .getPropertyValue('--chart-glucose').trim();
@@ -893,16 +943,128 @@ function updateChart(type) {
     });
     
     vitalsChart.data.labels = labels;
-    vitalsChart.data.datasets[0].label = label;
-    vitalsChart.data.datasets[0].data = data;
-    vitalsChart.data.datasets[0].borderColor = color;
-    vitalsChart.data.datasets[0].backgroundColor = color + '20';
+    vitalsChart.data.datasets = [{
+        label: label,
+        data: data,
+        borderColor: color,
+        backgroundColor: color + '20',
+        tension: 0.4,
+        fill: true,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: color,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+    }];
+    vitalsChart.options.plugins.legend.display = false;
+    vitalsChart.update();
+}
+
+function updateOverlayChart() {
+    const selectedVitals = Array.from(document.querySelectorAll('.overlay-option:checked'))
+        .map(checkbox => checkbox.value);
+    
+    if (selectedVitals.length === 0) {
+        // If no vitals selected, show empty chart
+        vitalsChart.data.labels = [];
+        vitalsChart.data.datasets = [];
+        vitalsChart.update();
+        return;
+    }
+    
+    const datasets = [];
+    const vitalConfigs = {
+        bp: {
+            label: 'Blood Pressure (Systolic)',
+            data: appState.vitals.bloodPressure.slice(-currentTimeScale).map(d => d.systolic),
+            color: getComputedStyle(document.documentElement).getPropertyValue('--chart-bp').trim(),
+            yAxisID: 'y'
+        },
+        hr: {
+            label: 'Heart Rate',
+            data: appState.vitals.heartRate.slice(-currentTimeScale).map(d => d.value),
+            color: getComputedStyle(document.documentElement).getPropertyValue('--chart-hr').trim(),
+            yAxisID: 'y'
+        },
+        weight: {
+            label: 'Weight',
+            data: appState.vitals.weight.slice(-currentTimeScale).map(d => d.value),
+            color: getComputedStyle(document.documentElement).getPropertyValue('--chart-weight').trim(),
+            yAxisID: 'y1'
+        },
+        glucose: {
+            label: 'Glucose',
+            data: appState.vitals.glucose.slice(-currentTimeScale).map(d => d.value),
+            color: getComputedStyle(document.documentElement).getPropertyValue('--chart-glucose').trim(),
+            yAxisID: 'y'
+        }
+    };
+    
+    // Find the longest dataset for labels
+    let maxLength = 0;
+    selectedVitals.forEach(vital => {
+        const config = vitalConfigs[vital];
+        if (config && config.data.length > maxLength) {
+            maxLength = config.data.length;
+        }
+    });
+    
+    const labels = Array.from({length: maxLength}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (maxLength - 1 - i));
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+    
+    selectedVitals.forEach(vital => {
+        const config = vitalConfigs[vital];
+        if (config) {
+            datasets.push({
+                label: config.label,
+                data: config.data,
+                borderColor: config.color,
+                backgroundColor: config.color + '20',
+                tension: 0.4,
+                fill: false,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                pointBackgroundColor: config.color,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                yAxisID: config.yAxisID
+            });
+        }
+    });
+    
+    vitalsChart.data.labels = labels;
+    vitalsChart.data.datasets = datasets;
+    vitalsChart.options.plugins.legend.display = true;
+    
+    // Configure multiple y-axes if weight is included
+    if (selectedVitals.includes('weight')) {
+        vitalsChart.options.scales.y1 = {
+            type: 'linear',
+            position: 'right',
+            grid: {
+                drawOnChartArea: false
+            },
+            ticks: {
+                color: getComputedStyle(document.documentElement)
+                    .getPropertyValue('--text-secondary').trim()
+            }
+        };
+    } else {
+        delete vitalsChart.options.scales.y1;
+    }
+    
     vitalsChart.update();
 }
 
 // ============================================
 // MOTIVATION
 // ============================================
+// NOTE: All motivational quotes are stored client-side (no external API calls)
+// to maintain 100% privacy guarantee. Quotes are randomly selected from the
+// local array below.
 
 function displayMotivation() {
     const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
@@ -1375,6 +1537,18 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addMedicationBtn').addEventListener('click', () => openModal('medicationModal'));
     document.getElementById('addAppointmentBtn').addEventListener('click', () => openModal('appointmentModal'));
     document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
+    
+    // Prominent log vitals button
+    document.getElementById('logTodayVitalsBtn').addEventListener('click', () => {
+        // Set default datetime to now
+        const now = new Date();
+        const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+        document.getElementById('vitalsDateTime').value = localDateTime;
+        openModal('vitalsModal');
+    });
+    
     document.getElementById('addVitalsBtn').addEventListener('click', () => {
         // Set default datetime to now
         const now = new Date();
@@ -1400,7 +1574,52 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Chart selector
     document.getElementById('chartSelector').addEventListener('change', (e) => {
-        updateChart(e.target.value);
+        if (!overlayMode) {
+            updateChart(e.target.value);
+        }
+    });
+    
+    // Time scale buttons
+    document.querySelectorAll('.time-scale-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Remove active class from all buttons
+            document.querySelectorAll('.time-scale-btn').forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            e.target.classList.add('active');
+            // Update time scale
+            currentTimeScale = parseInt(e.target.dataset.days);
+            // Refresh chart
+            const chartType = document.getElementById('chartSelector').value;
+            updateChart(chartType);
+        });
+    });
+    
+    // Overlay toggle
+    document.getElementById('overlayToggle').addEventListener('click', () => {
+        overlayMode = !overlayMode;
+        const overlaySelector = document.getElementById('overlaySelector');
+        const chartSelector = document.getElementById('chartSelector');
+        
+        if (overlayMode) {
+            overlaySelector.style.display = 'flex';
+            chartSelector.disabled = true;
+            chartSelector.style.opacity = '0.5';
+            updateOverlayChart();
+        } else {
+            overlaySelector.style.display = 'none';
+            chartSelector.disabled = false;
+            chartSelector.style.opacity = '1';
+            // Uncheck all overlay options
+            document.querySelectorAll('.overlay-option').forEach(cb => cb.checked = false);
+            updateChart(chartSelector.value);
+        }
+    });
+    
+    // Overlay checkboxes
+    document.querySelectorAll('.overlay-option').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateOverlayChart();
+        });
     });
     
     // Refresh quote

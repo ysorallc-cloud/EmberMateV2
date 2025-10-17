@@ -57,8 +57,16 @@
         <div class="container">
             <!-- Welcome Section -->
             <section class="welcome-section">
-                <h1 class="welcome-title">Welcome back! 👋</h1>
-                <p class="welcome-subtitle">Here's your health overview for today</p>
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h1 class="welcome-title">Welcome back! 👋</h1>
+                        <p class="welcome-subtitle">Here's your health overview for today</p>
+                    </div>
+                    <button class="btn-log-vitals" id="logTodayVitalsBtn">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-text">Log Today's Vitals</span>
+                    </button>
+                </div>
             </section>
 
             <!-- Dashboard Grid -->
@@ -148,12 +156,41 @@
                 <div class="widget vitals-chart">
                     <div class="widget-header">
                         <h2 class="widget-title">Vitals Trends</h2>
-                        <select class="chart-selector" id="chartSelector">
-                            <option value="bp">Blood Pressure</option>
-                            <option value="hr">Heart Rate</option>
-                            <option value="weight">Weight</option>
-                            <option value="glucose">Glucose</option>
-                        </select>
+                        <div class="chart-controls">
+                            <select class="chart-selector" id="chartSelector">
+                                <option value="bp">Blood Pressure</option>
+                                <option value="hr">Heart Rate</option>
+                                <option value="weight">Weight</option>
+                                <option value="glucose">Glucose</option>
+                            </select>
+                            <button class="btn-icon" id="overlayToggle" title="Overlay multiple vitals">
+                                <span>📊</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-time-scale">
+                        <button class="time-scale-btn active" data-days="7">7 Days</button>
+                        <button class="time-scale-btn" data-days="30">30 Days</button>
+                        <button class="time-scale-btn" data-days="90">90 Days</button>
+                        <button class="time-scale-btn" data-days="365">1 Year</button>
+                    </div>
+                    <div class="overlay-selector" id="overlaySelector" style="display: none;">
+                        <label class="overlay-checkbox">
+                            <input type="checkbox" value="bp" class="overlay-option">
+                            <span>Blood Pressure</span>
+                        </label>
+                        <label class="overlay-checkbox">
+                            <input type="checkbox" value="hr" class="overlay-option">
+                            <span>Heart Rate</span>
+                        </label>
+                        <label class="overlay-checkbox">
+                            <input type="checkbox" value="weight" class="overlay-option">
+                            <span>Weight</span>
+                        </label>
+                        <label class="overlay-checkbox">
+                            <input type="checkbox" value="glucose" class="overlay-option">
+                            <span>Glucose</span>
+                        </label>
                     </div>
                     <div class="chart-container">
                         <canvas id="vitalsChart"></canvas>
