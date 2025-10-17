@@ -225,7 +225,7 @@ body {
 }
 
 .welcome-section {
-    margin-bottom: var(--spacing-2xl);
+    margin-bottom: 1.5rem;
 }
 
 .welcome-content {
@@ -310,7 +310,7 @@ body {
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: var(--spacing-lg);
+    gap: 1rem;
 }
 
 /* Widget Base Styles */
