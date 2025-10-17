@@ -14,7 +14,6 @@
     --border-color: #dee2e6;
     --shadow: rgba(0, 0, 0, 0.1);
     --shadow-lg: rgba(0, 0, 0, 0.15);
-    
     /* Brand Colors */
     --primary: #ff6b35;
     --primary-dark: #e85a2a;
@@ -24,13 +23,11 @@
     --warning: #ffbe0b;
     --danger: #ff006e;
     --info: #4cc9f0;
-    
     /* Chart Colors */
     --chart-bp: #ff6b35;
     --chart-hr: #e63946;
     --chart-weight: #4ecdc4;
     --chart-glucose: #ffd93d;
-    
     /* Spacing */
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
@@ -38,14 +35,12 @@
     --spacing-lg: 1.5rem;
     --spacing-xl: 2rem;
     --spacing-2xl: 3rem;
-    
     /* Border Radius */
     --radius-sm: 0.375rem;
     --radius-md: 0.5rem;
     --radius-lg: 1rem;
     --radius-xl: 1.5rem;
     --radius-full: 9999px;
-    
     /* Transitions */
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s ease;
@@ -228,6 +223,19 @@ body {
     margin-bottom: var(--spacing-2xl);
 }
 
+.welcome-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.welcome-text {
+    flex: 1;
+    min-width: 250px;
+}
+
 .welcome-title {
     font-size: 2rem;
     font-weight: 700;
@@ -238,6 +246,56 @@ body {
 .welcome-subtitle {
     font-size: 1.125rem;
     color: var(--text-secondary);
+}
+
+/* Prominent Log Vitals Button */
+.btn-log-vitals {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    white-space: nowrap;
+}
+
+.btn-log-vitals:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.btn-log-vitals:active {
+    transform: translateY(0);
+}
+
+.btn-log-vitals .btn-icon {
+    font-size: 1.5rem;
+}
+
+.btn-log-vitals .btn-text {
+    font-weight: 600;
+}
+
+/* Mobile responsiveness for log vitals button */
+@media (max-width: 768px) {
+    .welcome-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-log-vitals {
+        width: 100%;
+        justify-content: center;
+        font-size: 1.25rem;
+        padding: var(--spacing-lg);
+    }
 }
 
 /* ============================================
@@ -547,6 +605,12 @@ body {
     grid-column: span 2;
 }
 
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 .chart-selector {
     padding: var(--spacing-sm) var(--spacing-md);
     border: 1px solid var(--border-color);
@@ -560,6 +624,71 @@ body {
 
 .chart-selector:hover {
     border-color: var(--primary);
+}
+
+.chart-time-scale {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.time-scale-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.time-scale-btn:hover {
+    border-color: var(--primary);
+    color: var(--text-primary);
+}
+
+.time-scale-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.overlay-selector {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+}
+
+.overlay-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+}
+
+.overlay-checkbox:hover {
+    color: var(--text-primary);
+}
+
+.overlay-checkbox input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.overlay-checkbox input[type="checkbox"]:checked + span {
+    color: var(--primary);
+    font-weight: 600;
 }
 
 .chart-container {
