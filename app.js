@@ -43,9 +43,8 @@ function updateOnboardingStep() {
     });
     
     // Show current step
-    const currentStep = document.querySelector(`[data-step="${currentOnboardingStep}"]`);
-    if (currentStep && currentStep.classList.contains('onboarding-step')) {
-        currentStep.classList.add('active');
+    const currentStep = document.querySelector(`.onboarding-step[data-step="${currentOnboardingStep}"]`);
+if (currentStep) {
     }
     
     // Update progress dots
