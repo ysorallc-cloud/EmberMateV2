@@ -15,21 +15,23 @@
     --shadow: rgba(0, 0, 0, 0.1);
     --shadow-lg: rgba(0, 0, 0, 0.15);
     
-    /* Brand Colors */
-    --primary: #ff6b35;
-    --primary-dark: #e85a2a;
-    --secondary: #4ecdc4;
-    --accent: #ffd93d;
-    --success: #6bcf7f;
-    --warning: #ffbe0b;
-    --danger: #ff006e;
-    --info: #4cc9f0;
+    /* Brand Colors - Teal/Navy EmberMate */
+    --primary: #14b8a6; /* teal */
+    --primary-dark: #0f766e; /* deep teal */
+    --secondary: #0b3c5d; /* navy */
+    --accent: #38bdf8; /* sky blue */
+    --success: #22c55e; /* green */
+    --warning: #f59e0b; /* amber */
+    --danger: #ef4444; /* red */
+    --info: #0ea5a6; /* teal */
     
     /* Chart Colors */
-    --chart-bp: #ff6b35;
-    --chart-hr: #e63946;
-    --chart-weight: #4ecdc4;
-    --chart-glucose: #ffd93d;
+    --chart-bp: #14b8a6;      /* BP (systolic) */
+    --chart-hr: #ef4444;      /* Heart Rate */
+    --chart-weight: #3b82f6;  /* Weight */
+    --chart-glucose: #f59e0b; /* Glucose */
+    --chart-temp: #8b5cf6;    /* Temperature */
+    --chart-spo2: #22c55e;    /* SpO2 */
     
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -1014,6 +1016,135 @@ body {
 .btn-secondary:hover {
     background: var(--border-color);
 }
+
+/* ============================================
+   ALERTS & BADGES
+   ============================================ */
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    box-shadow: 0 2px 8px var(--shadow);
+    margin-bottom: var(--spacing-lg);
+}
+
+.alert-info { border-left: 4px solid var(--primary); }
+.alert-warning { border-left: 4px solid var(--warning); }
+.alert-danger { border-left: 4px solid var(--danger); }
+
+.alert-title {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.alert-text {
+    color: var(--text-secondary);
+}
+
+.alert-dismissible {
+    position: relative;
+}
+
+.alert-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.alert-close:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.badge-neutral { background: #94a3b81a; color: #64748b; }
+.badge-success { background: #22c55e1a; color: #16a34a; }
+.badge-warning { background: #f59e0b1a; color: #b45309; }
+.badge-danger { background: #ef44441a; color: #b91c1c; }
+
+/* ============================================
+   NAV DRAWER (Hamburger Menu)
+   ============================================ */
+
+.hamburger-btn {
+    background: var(--bg-tertiary);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: var(--transition);
+}
+
+.hamburger-btn:hover { background: var(--border-color); transform: scale(1.05); }
+
+.drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+    z-index: 1100;
+}
+
+.drawer-overlay.active { opacity: 1; visibility: visible; }
+
+.nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    box-shadow: 8px 0 24px var(--shadow-lg);
+    transform: translateX(-100%);
+    transition: var(--transition);
+    z-index: 1200;
+    padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.nav-drawer.active { transform: translateX(0); }
+
+.nav-drawer .drawer-title {
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+}
+
+.nav-drawer .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.nav-drawer .nav-link { color: var(--text-primary); text-decoration: none; padding: 0.5rem 0.75rem; border-radius: var(--radius-md); display: block; }
+.nav-drawer .nav-link:hover { background: var(--bg-tertiary); }
+
+/* ============================================
+   SYMPTOM JOURNAL
+   ============================================ */
+
+.symptom-list { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+.symptom-item { background: var(--bg-tertiary); border-radius: var(--radius-md); padding: var(--spacing-md); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--spacing-md); }
+.symptom-meta { font-size: 0.875rem; color: var(--text-secondary); }
 
 /* ============================================
    MODALS
