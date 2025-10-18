@@ -44,8 +44,7 @@ function updateOnboardingStep() {
     
     // Show current step
     const currentStep = document.querySelector(`.onboarding-step[data-step="${currentOnboardingStep}"]`);
-    if (currentStep) {
-        currentStep.classList.add('active');
+currentStep.classList.add('active');{
     }
     
     // Update progress dots
@@ -168,7 +167,16 @@ const achievementDefinitions = [
     { id: 'goal_setter', name: 'Goal Getter', icon: '🎯', rarity: 'common', condition: () => appState.goals.length >= 1 },
     { id: 'appointment_keeper', name: 'Schedule Star', icon: '📅', rarity: 'common', condition: () => appState.appointments.length >= 1 },
     { id: 'data_collector', name: 'Data Devotee', icon: '📊', rarity: 'epic', condition: () => appState.vitals.bloodPressure.length >= 30 },
-    { id: 'health_champion', name: 'Health Hero', icon: '🏆', rarity: 'legendary', condition: () => appState.streak >= 60 }
+    { id: 'health_champion', name: 'Health Hero', icon: '🏆', rarity: 'legendary', condition: () => appState.streak >= 60 },
+    { id: 'quick_logger', name: 'Quick Logger', icon: '⚡', rarity: 'common', condition: () => appState.vitals.bloodPressure.length >= 5 },
+    { id: 'vital_victor', name: 'Vital Victor', icon: '💪', rarity: 'rare', condition: () => appState.vitals.bloodPressure.length >= 15 && appState.vitals.heartRate.length >= 15 },
+    { id: 'data_dynamo', name: 'Data Dynamo', icon: '📈', rarity: 'common', condition: () => appState.vitals.bloodPressure.length + appState.vitals.heartRate.length + appState.vitals.weight.length + appState.vitals.glucose.length >= 50 },
+    { id: 'perfect_month', name: 'Perfect Month', icon: '🌟', rarity: 'legendary', condition: () => appState.streak >= 30 && appState.vitals.bloodPressure.length >= 30 },
+    { id: 'profile_pro', name: 'Profile Pro', icon: '🎨', rarity: 'common', condition: () => appState.medications.length >= 1 && appState.appointments.length >= 1 && appState.goals.length >= 1 },
+    { id: 'never_miss', name: 'Never Miss', icon: '🔔', rarity: 'rare', condition: () => appState.appointments.length >= 3 },
+    { id: 'century_club', name: 'Century Club', icon: '💯', rarity: 'epic', condition: () => appState.vitals.bloodPressure.length >= 100 },
+    { id: 'consistency_king', name: 'Consistency King', icon: '🎯', rarity: 'epic', condition: () => appState.streak >= 21 },
+    { id: 'early_bird', name: 'Early Bird', icon: '🏅', rarity: 'common', condition: () => appState.vitals.bloodPressure.length >= 3 }
 ];
 
 // ============================================
@@ -1091,7 +1099,7 @@ function displayAchievements() {
         const unlocked = appState.achievements.includes(achievement.id);
         
         return `
-            <div class="achievement-badge ${unlocked ? '' : 'locked'}" 
+            <div class="achievement-card ${unlocked ? 'unlocked' : 'locked'}" 
                  title="${achievement.name}">
                 <div class="achievement-icon">${achievement.icon}</div>
                 <div class="achievement-name">${achievement.name}</div>
@@ -1099,6 +1107,22 @@ function displayAchievements() {
             </div>
         `;
     }).join('');
+    
+    // Update progress bar
+    const totalAchievements = achievementDefinitions.length;
+    const unlockedAchievements = appState.achievements.length;
+    const percentage = Math.round((unlockedAchievements / totalAchievements) * 100);
+    
+    const countElement = document.getElementById('achievementCount');
+    const progressBar = document.getElementById('achievementProgressBar');
+    
+    if (countElement) {
+        countElement.textContent = `${unlockedAchievements}/${totalAchievements} (${percentage}%)`;
+    }
+    
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+    }
 }
 
 // ============================================

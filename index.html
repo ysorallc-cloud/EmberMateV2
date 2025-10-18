@@ -5,22 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EmberMate - Your Health Companion</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="mobile-fixes.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- PWA Meta Tags -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#f97316">
-
-<!-- iOS Support -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="EmberMate">
-<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
-
-<!-- Favicon -->
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-128x128.png"></head>
+</head>
 <body>
     <!-- Header -->
     <header class="header">
@@ -251,6 +239,16 @@
                     </div>
                     <div class="achievements-grid" id="achievementsGrid">
                         <!-- Achievements will be dynamically added -->
+                    </div>
+                    <div class="achievement-progress">
+                        <div class="progress-header">
+                            <span class="progress-label">Achievement Progress</span>
+                            <span class="progress-count" id="achievementCount">0/0 (0%)</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="achievementProgressBar" style="width: 0%"></div>
+                        </div>
+                        <p class="progress-message">Keep logging to unlock more! 🔥</p>
                     </div>
                 </div>
             </div>
@@ -627,7 +625,6 @@
     <div class="toast" id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="onboarding-fix.js"></script>
     <script src="app.js"></script>
-    <script src="/pwa-install.js"></script></body>
+</body>
 </html>
