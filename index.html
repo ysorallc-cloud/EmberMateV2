@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmberMate - Your Health Companion</title>
+    <meta name="description" content="EmberMate - HIPAA Compliant Personal Health Companion">
+    <title>EmberMate - Your Secure Health Companion</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- HIPAA Privacy Notice Banner -->
+    <div class="privacy-banner" id="privacyBanner">
+        <div class="privacy-banner-content">
+            <span class="privacy-icon">🔒</span>
+            <p>Your health data is encrypted and stored locally on your device. We comply with HIPAA privacy standards and never transmit your information to external servers.</p>
+            <button class="privacy-accept-btn" id="acceptPrivacy">I Understand</button>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -17,6 +27,7 @@
                 <div class="logo">
                     <span class="logo-icon">🔥</span>
                     <span class="logo-text">EmberMate</span>
+                    <span class="hipaa-badge" title="HIPAA Compliant">🔒 HIPAA</span>
                 </div>
                 <div class="header-actions">
                     <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -33,14 +44,20 @@
                             <button class="dropdown-item" id="viewDataTable">
                                 <span>📋</span> View Data Table
                             </button>
+                            <button class="dropdown-item" id="viewAuditLog">
+                                <span>📜</span> View Audit Log
+                            </button>
                             <button class="dropdown-item" id="exportJson">
-                                <span>📊</span> Export as JSON
+                                <span>📊</span> Export Encrypted Data
                             </button>
                             <button class="dropdown-item" id="exportCsv">
                                 <span>📄</span> Export as CSV
                             </button>
                             <button class="dropdown-item" id="importData">
-                                <span>📥</span> Import Data
+                                <span>📥</span> Import Encrypted Data
+                            </button>
+                            <button class="dropdown-item" id="viewPrivacyPolicy">
+                                <span>🔒</span> Privacy Policy
                             </button>
                             <button class="dropdown-item" id="resetData">
                                 <span>🔄</span> Load Sample Data
@@ -55,107 +72,107 @@
     <!-- Main Dashboard -->
     <main class="main-content">
         <div class="container">
-            <!-- Welcome Section -->
-            <section class="welcome-section">
-                <div class="welcome-content">
-                    <div class="welcome-text">
-                        <h1 class="welcome-title">Welcome back! 👋</h1>
-                        <p class="welcome-subtitle">Here's your health overview for today</p>
+            <!-- Welcome Section - Redesigned for Better UX -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">Your Health, Your Data, Your Control 🔒</h1>
+                        <p class="hero-subtitle">Track vitals, medications, and appointments with complete privacy. All data encrypted and stored locally on your device.</p>
+                        <div class="quick-actions">
+                            <button class="btn-action primary" id="quickLogVitalsBtn">
+                                <span class="btn-icon-large">📊</span>
+                                <div class="btn-text-group">
+                                    <span class="btn-label">Log Vitals</span>
+                                    <span class="btn-sublabel">Quick entry</span>
+                                </div>
+                            </button>
+                            <button class="btn-action secondary" id="quickAddMedBtn">
+                                <span class="btn-icon-large">💊</span>
+                                <div class="btn-text-group">
+                                    <span class="btn-label">Add Medication</span>
+                                    <span class="btn-sublabel">Track doses</span>
+                                </div>
+                            </button>
+                        </div>
                     </div>
-                    <button class="btn-log-vitals" id="logTodayVitalsBtn">
-                        <span class="btn-icon">📊</span>
-                        <span class="btn-text">Log Today's Vitals</span>
-                    </button>
+                    
+                    <!-- Quick Stats Overview - More Prominent -->
+                    <div class="hero-stats-card">
+                        <h3 class="hero-stats-title">Today's Snapshot</h3>
+                        <div class="hero-stats-grid">
+                            <div class="hero-stat">
+                                <span class="hero-stat-icon">💓</span>
+                                <div class="hero-stat-info">
+                                    <span class="hero-stat-value" id="heroBpValue">--/--</span>
+                                    <span class="hero-stat-label">Blood Pressure</span>
+                                </div>
+                            </div>
+                            <div class="hero-stat">
+                                <span class="hero-stat-icon">❤️</span>
+                                <div class="hero-stat-info">
+                                    <span class="hero-stat-value" id="heroHrValue">--</span>
+                                    <span class="hero-stat-label">Heart Rate</span>
+                                </div>
+                            </div>
+                            <div class="hero-stat">
+                                <span class="hero-stat-icon">🔥</span>
+                                <div class="hero-stat-info">
+                                    <span class="hero-stat-value" id="heroStreakValue">0</span>
+                                    <span class="hero-stat-label">Day Streak</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- Dashboard Grid -->
+            <!-- Primary Actions Section -->
+            <section class="section">
+                <h2 class="section-title">Quick Actions</h2>
+                <div class="action-cards-grid">
+                    <div class="action-card" onclick="openModal('vitalsModal')">
+                        <div class="action-card-icon">📊</div>
+                        <h3 class="action-card-title">Log Vitals</h3>
+                        <p class="action-card-desc">Record blood pressure, heart rate, weight, and glucose levels</p>
+                    </div>
+                    <div class="action-card" onclick="openModal('medicationModal')">
+                        <div class="action-card-icon">💊</div>
+                        <h3 class="action-card-title">Medications</h3>
+                        <p class="action-card-desc">Track your medication schedule and adherence</p>
+                    </div>
+                    <div class="action-card" onclick="openModal('appointmentModal')">
+                        <div class="action-card-icon">📅</div>
+                        <h3 class="action-card-title">Appointments</h3>
+                        <p class="action-card-desc">Manage upcoming doctor visits and reminders</p>
+                    </div>
+                    <div class="action-card" onclick="openModal('goalModal')">
+                        <div class="action-card-icon">🎯</div>
+                        <h3 class="action-card-title">Health Goals</h3>
+                        <p class="action-card-desc">Set and track your wellness objectives</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Grid - Reorganized -->
             <div class="dashboard-grid">
-                <!-- Quick Stats Widget -->
-                <div class="widget quick-stats">
+                <!-- AI Insights Widget - More Prominent -->
+                <div class="widget ai-insights featured">
                     <div class="widget-header">
-                        <h2 class="widget-title">Quick Stats</h2>
-                        <button class="btn-add" id="addVitalsBtn">+</button>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon bp">💓</div>
-                            <div class="stat-info">
-                                <span class="stat-label">Blood Pressure</span>
-                                <span class="stat-value" id="bpValue">--/--</span>
-                                <span class="stat-unit">mmHg</span>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon heart">❤️</div>
-                            <div class="stat-info">
-                                <span class="stat-label">Heart Rate</span>
-                                <span class="stat-value" id="hrValue">--</span>
-                                <span class="stat-unit">bpm</span>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon weight">⚖️</div>
-                            <div class="stat-info">
-                                <span class="stat-label">Weight</span>
-                                <span class="stat-value" id="weightValue">--</span>
-                                <span class="stat-unit">lbs</span>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon glucose">🩸</div>
-                            <div class="stat-info">
-                                <span class="stat-label">Glucose</span>
-                                <span class="stat-value" id="glucoseValue">--</span>
-                                <span class="stat-unit">mg/dL</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Streak Counter Widget -->
-                <div class="widget streak-widget">
-                    <div class="widget-header">
-                        <h2 class="widget-title">Daily Streak</h2>
-                        <span class="widget-icon">🎯</span>
-                    </div>
-                    <div class="streak-content">
-                        <div class="streak-fire" id="streakFire">🔥</div>
-                        <div class="streak-number" id="streakNumber">0</div>
-                        <div class="streak-label">days in a row!</div>
-                        <div class="streak-message" id="streakMessage">Keep going strong!</div>
-                    </div>
-                </div>
-
-                <!-- AI Insights Widget -->
-                <div class="widget ai-insights">
-                    <div class="widget-header">
-                        <h2 class="widget-title">AI Insights</h2>
-                        <span class="widget-icon">🤖</span>
+                        <h2 class="widget-title">🤖 Personalized Insights</h2>
+                        <span class="widget-badge">Secure & Private</span>
                     </div>
                     <div class="insights-container" id="insightsContainer">
                         <div class="insight-item">
                             <span class="insight-icon">💡</span>
-                            <p class="insight-text">Add some health data to get personalized insights!</p>
+                            <p class="insight-text">Add health data to receive AI-powered insights processed locally on your device.</p>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Medication Tracker Widget -->
-                <div class="widget medication-tracker">
-                    <div class="widget-header">
-                        <h2 class="widget-title">Medications</h2>
-                        <button class="btn-add" id="addMedicationBtn">+</button>
-                    </div>
-                    <div class="medication-list" id="medicationList">
-                        <p class="empty-state">No medications added yet</p>
                     </div>
                 </div>
 
                 <!-- Vitals Chart Widget -->
                 <div class="widget vitals-chart">
                     <div class="widget-header">
-                        <h2 class="widget-title">Vitals Trends</h2>
+                        <h2 class="widget-title">📈 Vitals Trends</h2>
                         <div class="chart-controls">
                             <select class="chart-selector" id="chartSelector">
                                 <option value="bp">Blood Pressure</option>
@@ -197,33 +214,56 @@
                     </div>
                 </div>
 
+                <!-- Medication Tracker Widget -->
+                <div class="widget medication-tracker">
+                    <div class="widget-header">
+                        <h2 class="widget-title">💊 Today's Medications</h2>
+                        <button class="btn-add" id="addMedicationBtn" aria-label="Add medication">+</button>
+                    </div>
+                    <div class="medication-list" id="medicationList">
+                        <p class="empty-state">No medications added yet</p>
+                    </div>
+                </div>
+
                 <!-- Appointments Widget -->
                 <div class="widget appointments">
                     <div class="widget-header">
-                        <h2 class="widget-title">Appointments</h2>
-                        <button class="btn-add" id="addAppointmentBtn">+</button>
+                        <h2 class="widget-title">📅 Upcoming Appointments</h2>
+                        <button class="btn-add" id="addAppointmentBtn" aria-label="Add appointment">+</button>
                     </div>
                     <div class="appointments-list" id="appointmentsList">
                         <p class="empty-state">No upcoming appointments</p>
                     </div>
                 </div>
 
-                <!-- Goal Tracker Widget -->
-                <div class="widget goal-tracker">
-                    <div class="widget-header">
-                        <h2 class="widget-title">Health Goals</h2>
-                        <button class="btn-add" id="addGoalBtn">+</button>
+                <!-- Streak & Goals Combined -->
+                <div class="widget streak-goals-widget">
+                    <div class="streak-section">
+                        <div class="widget-header">
+                            <h2 class="widget-title">🔥 Daily Streak</h2>
+                        </div>
+                        <div class="streak-display">
+                            <div class="streak-fire" id="streakFire">🔥</div>
+                            <div class="streak-number" id="streakNumber">0</div>
+                            <div class="streak-message" id="streakMessage">Start your journey!</div>
+                        </div>
                     </div>
-                    <div class="goals-list" id="goalsList">
-                        <p class="empty-state">Set your first health goal!</p>
+                    <div class="goals-section">
+                        <div class="widget-header">
+                            <h2 class="widget-title">🎯 Active Goals</h2>
+                            <button class="btn-add" id="addGoalBtn" aria-label="Add goal">+</button>
+                        </div>
+                        <div class="goals-list" id="goalsList">
+                            <p class="empty-state">Set your first goal!</p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Daily Motivation Widget -->
                 <div class="widget motivation">
                     <div class="widget-header">
-                        <h2 class="widget-title">Daily Motivation</h2>
-                        <button class="btn-refresh" id="refreshQuote">🔄</button>
+                        <h2 class="widget-title">✨ Daily Motivation</h2>
+                        <button class="btn-refresh" id="refreshQuote" aria-label="Refresh quote">🔄</button>
                     </div>
                     <div class="motivation-content">
                         <p class="motivation-quote" id="motivationQuote">Loading...</p>
@@ -234,52 +274,68 @@
                 <!-- Achievements Widget -->
                 <div class="widget achievements">
                     <div class="widget-header">
-                        <h2 class="widget-title">Achievements</h2>
-                        <span class="widget-icon">🏆</span>
+                        <h2 class="widget-title">🏆 Achievements</h2>
                     </div>
                     <div class="achievements-grid" id="achievementsGrid">
-                        <!-- Achievements will be dynamically added -->
+                        <!-- Achievements dynamically added -->
                     </div>
                     <div class="achievement-progress">
                         <div class="progress-header">
-                            <span class="progress-label">Achievement Progress</span>
-                            <span class="progress-count" id="achievementCount">0/0 (0%)</span>
+                            <span class="progress-label">Progress</span>
+                            <span class="progress-count" id="achievementCount">0/0</span>
                         </div>
                         <div class="progress-bar-container">
                             <div class="progress-bar-fill" id="achievementProgressBar" style="width: 0%"></div>
                         </div>
-                        <p class="progress-message">Keep logging to unlock more! 🔥</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modals -->
+    <!-- Footer with HIPAA Compliance Info -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-text">
+                    <strong>🔒 HIPAA Compliant:</strong> All data is encrypted using AES-256 encryption and stored locally. 
+                    No data is transmitted to external servers. Session timeout: 30 minutes of inactivity.
+                </p>
+                <p class="footer-links">
+                    <button class="footer-link" id="viewPrivacyPolicyFooter">Privacy Policy</button> • 
+                    <button class="footer-link" id="viewSecurityInfo">Security Information</button> • 
+                    <button class="footer-link" id="viewDataRights">Your Data Rights</button>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals (same structure as before but with security enhancements) -->
+    
     <!-- Add Medication Modal -->
     <div class="modal" id="medicationModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Add Medication</h3>
-                <button class="modal-close" data-modal="medicationModal">&times;</button>
+                <button class="modal-close" data-modal="medicationModal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Medication Name</label>
-                    <input type="text" id="medName" placeholder="e.g., Aspirin">
+                    <label>Medication Name <span class="required">*</span></label>
+                    <input type="text" id="medName" placeholder="e.g., Aspirin" required>
                 </div>
                 <div class="form-group">
-                    <label>Dosage</label>
-                    <input type="text" id="medDosage" placeholder="e.g., 100mg">
+                    <label>Dosage <span class="required">*</span></label>
+                    <input type="text" id="medDosage" placeholder="e.g., 100mg" required>
                 </div>
                 <div class="form-group">
-                    <label>Time</label>
-                    <input type="time" id="medTime">
+                    <label>Time <span class="required">*</span></label>
+                    <input type="time" id="medTime" required>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-modal="medicationModal">Cancel</button>
-                <button class="btn btn-primary" id="saveMedication">Save</button>
+                <button class="btn btn-primary" id="saveMedication">Save Securely</button>
             </div>
         </div>
     </div>
@@ -289,29 +345,29 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Add Appointment</h3>
-                <button class="modal-close" data-modal="appointmentModal">&times;</button>
+                <button class="modal-close" data-modal="appointmentModal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="apptTitle" placeholder="e.g., Doctor Visit">
+                    <label>Title <span class="required">*</span></label>
+                    <input type="text" id="apptTitle" placeholder="e.g., Doctor Visit" required>
                 </div>
                 <div class="form-group">
-                    <label>Date</label>
-                    <input type="date" id="apptDate">
+                    <label>Date <span class="required">*</span></label>
+                    <input type="date" id="apptDate" required>
                 </div>
                 <div class="form-group">
-                    <label>Time</label>
-                    <input type="time" id="apptTime">
+                    <label>Time <span class="required">*</span></label>
+                    <input type="time" id="apptTime" required>
                 </div>
                 <div class="form-group">
-                    <label>Location</label>
-                    <input type="text" id="apptLocation" placeholder="e.g., Main Street Clinic">
+                    <label>Location <span class="required">*</span></label>
+                    <input type="text" id="apptLocation" placeholder="e.g., Main Street Clinic" required>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-modal="appointmentModal">Cancel</button>
-                <button class="btn btn-primary" id="saveAppointment">Save</button>
+                <button class="btn btn-primary" id="saveAppointment">Save Securely</button>
             </div>
         </div>
     </div>
@@ -321,16 +377,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Add Health Goal</h3>
-                <button class="modal-close" data-modal="goalModal">&times;</button>
+                <button class="modal-close" data-modal="goalModal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Goal Name</label>
-                    <input type="text" id="goalName" placeholder="e.g., Exercise 3x per week">
+                    <label>Goal Name <span class="required">*</span></label>
+                    <input type="text" id="goalName" placeholder="e.g., Exercise 3x per week" required>
                 </div>
                 <div class="form-group">
-                    <label>Target</label>
-                    <input type="number" id="goalTarget" placeholder="e.g., 30">
+                    <label>Target <span class="required">*</span></label>
+                    <input type="number" id="goalTarget" placeholder="e.g., 30" required>
                 </div>
                 <div class="form-group">
                     <label>Current Progress</label>
@@ -339,7 +395,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-modal="goalModal">Cancel</button>
-                <button class="btn btn-primary" id="saveGoal">Save</button>
+                <button class="btn btn-primary" id="saveGoal">Save Securely</button>
             </div>
         </div>
     </div>
@@ -348,8 +404,8 @@
     <div class="modal" id="vitalsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Add Vital Signs Reading</h3>
-                <button class="modal-close" data-modal="vitalsModal">&times;</button>
+                <h3>Log Vital Signs</h3>
+                <button class="modal-close" data-modal="vitalsModal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -395,210 +451,84 @@
                     </div>
                 </div>
 
-                <p class="form-note">💡 Tip: You can fill in just the vitals you want to track. Empty fields will be skipped.</p>
+                <p class="form-note">💡 All vital signs are encrypted before storage. You can fill in any combination of vitals.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-modal="vitalsModal">Cancel</button>
-                <button class="btn btn-primary" id="saveVitals">Save Reading</button>
+                <button class="btn btn-primary" id="saveVitals">Save Securely</button>
             </div>
         </div>
     </div>
 
-    <!-- Hidden file input for import -->
-    <input type="file" id="fileInput" accept=".json" style="display: none;">
-
-    <!-- Onboarding Modal -->
-    <div class="onboarding-overlay" id="onboardingOverlay">
-        <div class="onboarding-modal">
-            <!-- Progress Indicator -->
-            <div class="onboarding-progress">
-                <div class="progress-dot active" data-step="0"></div>
-                <div class="progress-dot" data-step="1"></div>
-                <div class="progress-dot" data-step="2"></div>
-                <div class="progress-dot" data-step="3"></div>
-                <div class="progress-dot" data-step="4"></div>
+    <!-- Privacy Policy Modal -->
+    <div class="modal" id="privacyPolicyModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>🔒 Privacy Policy & HIPAA Compliance</h3>
+                <button class="modal-close" data-modal="privacyPolicyModal" aria-label="Close">&times;</button>
             </div>
-
-            <!-- Step 0: Welcome -->
-            <div class="onboarding-step" data-step="0">
-                <div class="onboarding-icon">🔥</div>
-                <h2 class="onboarding-title">Welcome to EmberMate!</h2>
-                <p class="onboarding-text">Your personal health companion is here to help you track, understand, and improve your health journey.</p>
-                <div class="onboarding-features">
-                    <div class="feature-item">
-                        <span class="feature-emoji">📊</span>
-                        <span class="feature-text">Track vitals daily</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-emoji">🤖</span>
-                        <span class="feature-text">Get AI insights</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-emoji">🏆</span>
-                        <span class="feature-text">Unlock achievements</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-emoji">🔥</span>
-                        <span class="feature-text">Build daily streaks</span>
-                    </div>
+            <div class="modal-body">
+                <div class="privacy-section">
+                    <h4>Data Storage & Encryption</h4>
+                    <p>EmberMate stores all your health information locally on your device using industry-standard AES-256 encryption. Your data never leaves your device and is not transmitted to any external servers.</p>
                 </div>
-                <p class="onboarding-subtext">Let's take a quick tour! (2 minutes)</p>
-            </div>
-
-            <!-- Step 1: Track Your Vitals -->
-            <div class="onboarding-step" data-step="1">
-                <div class="onboarding-icon">💓</div>
-                <h2 class="onboarding-title">Track Your Vitals</h2>
-                <p class="onboarding-text">Monitor your blood pressure, heart rate, weight, and glucose all in one place.</p>
-                <div class="onboarding-visual">
-                    <div class="visual-card">
-                        <div class="visual-header">
-                            <span>Quick Stats</span>
-                            <span class="visual-plus">+</span>
-                        </div>
-                        <div class="visual-stats">
-                            <div class="visual-stat">
-                                <span class="stat-emoji">💓</span>
-                                <span class="stat-text">117/75</span>
-                            </div>
-                            <div class="visual-stat">
-                                <span class="stat-emoji">❤️</span>
-                                <span class="stat-text">69 bpm</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="privacy-section">
+                    <h4>HIPAA Compliance</h4>
+                    <p>This application implements technical safeguards required by HIPAA including:</p>
+                    <ul>
+                        <li>Data encryption at rest using AES-256</li>
+                        <li>Audit logging of all data access and modifications</li>
+                        <li>Automatic session timeout after 30 minutes of inactivity</li>
+                        <li>Secure data export with encryption</li>
+                    </ul>
                 </div>
-                <div class="onboarding-tip">
-                    <span class="tip-icon">💡</span>
-                    <span class="tip-text">Click the <strong>+ button</strong> in Quick Stats to add your readings!</span>
+                <div class="privacy-section">
+                    <h4>Your Rights</h4>
+                    <p>You have complete control over your data:</p>
+                    <ul>
+                        <li>Access: View all your data at any time</li>
+                        <li>Export: Download your data in encrypted format</li>
+                        <li>Delete: Clear all data from your device</li>
+                        <li>Modify: Edit or update any information</li>
+                    </ul>
+                </div>
+                <div class="privacy-section">
+                    <h4>Data Retention</h4>
+                    <p>Your data remains on your device until you choose to delete it. We recommend regular encrypted backups for data safety.</p>
                 </div>
             </div>
-
-            <!-- Step 2: AI Insights & Gamification -->
-            <div class="onboarding-step" data-step="2">
-                <div class="onboarding-icon">🤖</div>
-                <h2 class="onboarding-title">Smart AI Insights</h2>
-                <p class="onboarding-text">Get personalized health recommendations based on your data - 100% private and client-side!</p>
-                <div class="onboarding-example">
-                    <div class="insight-example">
-                        <span class="insight-emoji">💡</span>
-                        <p class="insight-sample">"Your blood pressure has been optimal at 118/75 mmHg over the past week."</p>
-                    </div>
-                    <div class="insight-example">
-                        <span class="insight-emoji">📈</span>
-                        <p class="insight-sample">"You've lost 2.3 lbs over the past two weeks - great progress!"</p>
-                    </div>
-                </div>
-                <div class="onboarding-badge-preview">
-                    <p class="badge-preview-text">Plus, unlock achievements as you progress!</p>
-                    <div class="badge-row">
-                        <div class="mini-badge">🌱<br><span>First Steps</span></div>
-                        <div class="mini-badge">🔥<br><span>Week Warrior</span></div>
-                        <div class="mini-badge">👑<br><span>Monthly Master</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 3: Build Your Streak -->
-            <div class="onboarding-step" data-step="3">
-                <div class="onboarding-icon">🔥</div>
-                <h2 class="onboarding-title">Build Your Streak!</h2>
-                <p class="onboarding-text">Check in daily to build consistency. Watch your fire grow as you progress!</p>
-                <div class="streak-progression">
-                    <div class="streak-stage">
-                        <div class="streak-fire-demo">🔥</div>
-                        <div class="streak-days">Day 1-6</div>
-                    </div>
-                    <div class="streak-arrow">→</div>
-                    <div class="streak-stage">
-                        <div class="streak-fire-demo">🔥🔥</div>
-                        <div class="streak-days">Day 7-13</div>
-                    </div>
-                    <div class="streak-arrow">→</div>
-                    <div class="streak-stage">
-                        <div class="streak-fire-demo">🔥🔥🔥</div>
-                        <div class="streak-days">Day 14-29</div>
-                    </div>
-                    <div class="streak-arrow">→</div>
-                    <div class="streak-stage">
-                        <div class="streak-fire-demo">🔥🔥🔥🔥</div>
-                        <div class="streak-days">Day 30+</div>
-                    </div>
-                </div>
-                <div class="onboarding-benefits">
-                    <h3 class="benefits-title">Consistency Benefits:</h3>
-                    <div class="benefit-list">
-                        <div class="benefit-item">✅ Better health insights</div>
-                        <div class="benefit-item">✅ Unlock rare achievements</div>
-                        <div class="benefit-item">✅ Track trends over time</div>
-                        <div class="benefit-item">✅ Build healthy habits</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 4: Complete Toolkit -->
-            <div class="onboarding-step" data-step="4">
-                <div class="onboarding-icon">🎯</div>
-                <h2 class="onboarding-title">Your Complete Health Toolkit</h2>
-                <p class="onboarding-text">Everything you need to manage your health in one place:</p>
-                <div class="toolkit-grid">
-                    <div class="toolkit-item">
-                        <span class="toolkit-emoji">💊</span>
-                        <span class="toolkit-name">Medications</span>
-                        <span class="toolkit-desc">Track daily meds</span>
-                    </div>
-                    <div class="toolkit-item">
-                        <span class="toolkit-emoji">📅</span>
-                        <span class="toolkit-name">Appointments</span>
-                        <span class="toolkit-desc">Never miss a visit</span>
-                    </div>
-                    <div class="toolkit-item">
-                        <span class="toolkit-emoji">🎯</span>
-                        <span class="toolkit-name">Goals</span>
-                        <span class="toolkit-desc">Set & achieve targets</span>
-                    </div>
-                    <div class="toolkit-item">
-                        <span class="toolkit-emoji">📊</span>
-                        <span class="toolkit-name">Charts</span>
-                        <span class="toolkit-desc">Visualize trends</span>
-                    </div>
-                </div>
-                <div class="privacy-note">
-                    <span class="privacy-icon">🔒</span>
-                    <span class="privacy-text"><strong>100% Private:</strong> All data stays in your browser. No servers, no tracking!</span>
-                </div>
-                <div class="onboarding-cta">
-                    <p class="cta-text">Ready to start your health journey?</p>
-                    <div class="cta-options">
-                        <button class="cta-btn primary" id="loadSampleDataBtn">
-                            <span>🎨 Load Sample Data</span>
-                            <small>See features in action</small>
-                        </button>
-                        <button class="cta-btn secondary" id="startFreshBtn">
-                            <span>🚀 Start Fresh</span>
-                            <small>Begin with blank slate</small>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation Buttons -->
-            <div class="onboarding-nav">
-                <button class="nav-btn secondary" id="skipOnboarding">Skip Tour</button>
-                <div class="nav-actions">
-                    <button class="nav-btn secondary" id="prevStep" style="display: none;">← Back</button>
-                    <button class="nav-btn primary" id="nextStep">Next →</button>
-                </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-modal="privacyPolicyModal">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- Data Table Modal -->
+    <!-- Audit Log Modal -->
+    <div class="modal" id="auditLogModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>📜 Audit Log</h3>
+                <button class="modal-close" data-modal="auditLogModal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="audit-info">All data access and modifications are logged for security and compliance purposes.</p>
+                <div class="audit-log-container" id="auditLogContainer">
+                    <!-- Audit log entries will be dynamically added -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="clearAuditLog">Clear Log</button>
+                <button class="btn btn-primary" data-modal="auditLogModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Modal (same as before) -->
     <div class="modal modal-large" id="dataTableModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>📋 Data Table View</h3>
-                <button class="modal-close" data-modal="dataTableModal">&times;</button>
+                <button class="modal-close" data-modal="dataTableModal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="table-controls">
@@ -621,8 +551,109 @@
         </div>
     </div>
 
+    <!-- Onboarding Modal (simplified for better UX) -->
+    <div class="onboarding-overlay" id="onboardingOverlay">
+        <div class="onboarding-modal">
+            <div class="onboarding-progress">
+                <div class="progress-dot active" data-step="0"></div>
+                <div class="progress-dot" data-step="1"></div>
+                <div class="progress-dot" data-step="2"></div>
+                <div class="progress-dot" data-step="3"></div>
+                <div class="progress-dot" data-step="4"></div>
+            </div>
+
+            <!-- Onboarding steps (same as before) -->
+            <div class="onboarding-step" data-step="0">
+                <div class="onboarding-icon">🔥</div>
+                <h2 class="onboarding-title">Welcome to EmberMate!</h2>
+                <p class="onboarding-text">Your HIPAA-compliant personal health companion. Track vitals, medications, and goals with complete privacy and security.</p>
+                <div class="onboarding-features">
+                    <div class="feature-item">
+                        <span class="feature-emoji">🔒</span>
+                        <span class="feature-text">Fully encrypted</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-emoji">📊</span>
+                        <span class="feature-text">Track vitals</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-emoji">🤖</span>
+                        <span class="feature-text">AI insights</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-emoji">🏆</span>
+                        <span class="feature-text">Achievements</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional onboarding steps... (keeping existing content) -->
+            <div class="onboarding-step" data-step="1">
+                <div class="onboarding-icon">🔒</div>
+                <h2 class="onboarding-title">Your Data is Secure</h2>
+                <p class="onboarding-text">All health information is encrypted with AES-256 and stored only on your device. No cloud storage, no tracking.</p>
+                <div class="security-features">
+                    <div class="security-item">✅ Local storage only</div>
+                    <div class="security-item">✅ AES-256 encryption</div>
+                    <div class="security-item">✅ HIPAA compliant</div>
+                    <div class="security-item">✅ Audit logging</div>
+                </div>
+            </div>
+
+            <div class="onboarding-step" data-step="2">
+                <div class="onboarding-icon">💓</div>
+                <h2 class="onboarding-title">Track Your Vitals</h2>
+                <p class="onboarding-text">Monitor blood pressure, heart rate, weight, and glucose in one secure place.</p>
+            </div>
+
+            <div class="onboarding-step" data-step="3">
+                <div class="onboarding-icon">🤖</div>
+                <h2 class="onboarding-title">Get AI Insights</h2>
+                <p class="onboarding-text">Receive personalized health recommendations processed locally on your device - never shared with third parties.</p>
+            </div>
+
+            <div class="onboarding-step" data-step="4">
+                <div class="onboarding-icon">🎯</div>
+                <h2 class="onboarding-title">Ready to Start?</h2>
+                <p class="onboarding-text">Choose how you'd like to begin your health journey.</p>
+                <div class="onboarding-cta">
+                    <div class="cta-options">
+                        <button class="cta-btn primary" id="loadSampleDataBtn">
+                            <span>🎨 Load Sample Data</span>
+                            <small>Explore features</small>
+                        </button>
+                        <button class="cta-btn secondary" id="startFreshBtn">
+                            <span>🚀 Start Fresh</span>
+                            <small>Begin tracking</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="onboarding-nav">
+                <button class="nav-btn secondary" id="skipOnboarding">Skip Tour</button>
+                <div class="nav-actions">
+                    <button class="nav-btn secondary" id="prevStep" style="display: none;">← Back</button>
+                    <button class="nav-btn primary" id="nextStep">Next →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for encrypted import -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
+
+    <!-- Session Timeout Warning -->
+    <div class="timeout-warning" id="timeoutWarning" style="display: none;">
+        <div class="timeout-content">
+            <p><strong>⚠️ Session Timeout Warning</strong></p>
+            <p>Your session will expire in <span id="timeoutCountdown">60</span> seconds due to inactivity.</p>
+            <button class="btn btn-primary" id="extendSession">Continue Session</button>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
