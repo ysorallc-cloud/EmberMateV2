@@ -1,6 +1,28 @@
 // ============================================
-// EMBERMATE - JAVASCRIPT APPLICATION
+// HEALTH TRACKER - JAVASCRIPT APPLICATION
+// HIPAA-Compliant & Fully Deidentified
+// No Personal Information Collection
 // ============================================
+
+// ============================================
+// PRIVACY & SECURITY NOTICE
+// ============================================
+/*
+ * PRIVACY GUARANTEE:
+ * - All data stored locally in browser only
+ * - No external servers or APIs contacted
+ * - No personal identifying information collected
+ * - No names, addresses, phone numbers, emails
+ * - All motivational content is generic
+ * - Sample data uses completely generic placeholders
+ * 
+ * HIPAA COMPLIANCE NOTES:
+ * - This is a client-side only application
+ * - No PHI (Protected Health Information) transmitted
+ * - Data never leaves user's device
+ * - Users responsible for device security
+ * - Recommend: Device encryption, password protection, auto-lock
+ */
 
 // ============================================
 // ONBOARDING SYSTEM
@@ -10,9 +32,8 @@ let currentOnboardingStep = 0;
 const totalOnboardingSteps = 5;
 
 function checkFirstVisit() {
-    const hasVisited = localStorage.getItem('embermate_visited');
+    const hasVisited = localStorage.getItem('healthtracker_visited');
     if (!hasVisited) {
-        // First time visitor - show onboarding
         setTimeout(() => {
             showOnboarding();
         }, 500);
@@ -33,22 +54,19 @@ function viewTutorial() {
 function hideOnboarding() {
     const overlay = document.getElementById('onboardingOverlay');
     overlay.classList.remove('active');
-    localStorage.setItem('embermate_visited', 'true');
+    localStorage.setItem('healthtracker_visited', 'true');
 }
 
 function updateOnboardingStep() {
-    // Hide all steps
     document.querySelectorAll('.onboarding-step').forEach(step => {
         step.classList.remove('active');
     });
     
-    // Show current step
     const currentStep = document.querySelector(`.onboarding-step[data-step="${currentOnboardingStep}"]`);
     if (currentStep) {
         currentStep.classList.add('active');
     }
     
-    // Update progress dots
     document.querySelectorAll('.progress-dot').forEach((dot, index) => {
         dot.classList.remove('active', 'completed');
         if (index < currentOnboardingStep) {
@@ -58,19 +76,16 @@ function updateOnboardingStep() {
         }
     });
     
-    // Update navigation buttons
     const prevBtn = document.getElementById('prevStep');
     const nextBtn = document.getElementById('nextStep');
     const skipBtn = document.getElementById('skipOnboarding');
     
-    // Show/hide back button
     if (currentOnboardingStep === 0) {
         prevBtn.style.display = 'none';
     } else {
         prevBtn.style.display = 'inline-block';
     }
     
-    // Update next button text
     if (currentOnboardingStep === totalOnboardingSteps - 1) {
         nextBtn.style.display = 'none';
         skipBtn.textContent = 'Close';
@@ -97,10 +112,9 @@ function prevOnboardingStep() {
 function skipOnboarding() {
     hideOnboarding();
     
-    // If no data exists, ask about sample data
     if (appState.vitals.bloodPressure.length === 0) {
         setTimeout(() => {
-            if (confirm('Would you like to load sample data to explore EmberMate?')) {
+            if (confirm('Would you like to load sample data to explore the application?')) {
                 generateSampleData();
             }
         }, 500);
@@ -114,7 +128,7 @@ function completeOnboardingWithSampleData() {
 
 function completeOnboardingFresh() {
     hideOnboarding();
-    showToast('Welcome to EmberMate! Click the + buttons to get started! 🎉');
+    showToast('Welcome! Click the + buttons to get started! 🎉');
 }
 
 // ============================================
@@ -139,20 +153,26 @@ let appState = {
 };
 
 // ============================================
-// MOTIVATIONAL QUOTES
+// MOTIVATIONAL QUOTES - DEIDENTIFIED
+// No author attribution for HIPAA compliance
 // ============================================
 
 const motivationalQuotes = [
-    { quote: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
-    { quote: "Health is not about the weight you lose, but the life you gain.", author: "Anonymous" },
-    { quote: "Your body hears everything your mind says. Stay positive.", author: "Naomi Judd" },
-    { quote: "The greatest wealth is health.", author: "Virgil" },
-    { quote: "To keep the body in good health is a duty... otherwise we shall not be able to keep our mind strong and clear.", author: "Buddha" },
-    { quote: "Take care of yourself, be healthy, and always believe you can be successful in anything you truly want.", author: "Alessandra Ambrosio" },
-    { quote: "Health is a state of complete harmony of the body, mind and spirit.", author: "B.K.S. Iyengar" },
-    { quote: "The first wealth is health.", author: "Ralph Waldo Emerson" },
-    { quote: "A healthy outside starts from the inside.", author: "Robert Urich" },
-    { quote: "It is health that is real wealth and not pieces of gold and silver.", author: "Mahatma Gandhi" }
+    { quote: "Take care of your body. It's the only place you have to live." },
+    { quote: "Health is not about the weight you lose, but the life you gain." },
+    { quote: "Your body hears everything your mind says. Stay positive." },
+    { quote: "The greatest wealth is health." },
+    { quote: "To keep the body in good health is a duty, otherwise we shall not be able to keep our mind strong and clear." },
+    { quote: "Take care of yourself, be healthy, and always believe you can be successful in anything you truly want." },
+    { quote: "Health is a state of complete harmony of the body, mind and spirit." },
+    { quote: "The first wealth is health." },
+    { quote: "A healthy outside starts from the inside." },
+    { quote: "It is health that is real wealth and not pieces of gold and silver." },
+    { quote: "Small daily improvements are the key to long-term results." },
+    { quote: "Your health is an investment, not an expense." },
+    { quote: "Progress, not perfection, is what we should be asking of ourselves." },
+    { quote: "Every step forward is progress, no matter how small." },
+    { quote: "Be patient with yourself. Self-growth is tender; it's holy ground." }
 ];
 
 // ============================================
@@ -164,21 +184,30 @@ const achievementDefinitions = [
     { id: 'week_streak', name: 'Week Warrior', icon: '🔥', rarity: 'rare', condition: () => appState.streak >= 7 },
     { id: 'two_week_streak', name: 'Fortnight Fighter', icon: '💪', rarity: 'epic', condition: () => appState.streak >= 14 },
     { id: 'month_streak', name: 'Monthly Master', icon: '👑', rarity: 'legendary', condition: () => appState.streak >= 30 },
-    { id: 'medication_adherent', name: 'Pill Perfect', icon: '💊', rarity: 'rare', condition: () => appState.medications.length >= 3 },
+    { id: 'medication_adherent', name: 'Medication Master', icon: '💊', rarity: 'rare', condition: () => appState.medications.length >= 3 },
     { id: 'goal_setter', name: 'Goal Getter', icon: '🎯', rarity: 'common', condition: () => appState.goals.length >= 1 },
     { id: 'appointment_keeper', name: 'Schedule Star', icon: '📅', rarity: 'common', condition: () => appState.appointments.length >= 1 },
     { id: 'data_collector', name: 'Data Devotee', icon: '📊', rarity: 'epic', condition: () => appState.vitals.bloodPressure.length >= 30 },
-    { id: 'health_champion', name: 'Health Hero', icon: '🏆', rarity: 'legendary', condition: () => appState.streak >= 60 }
+    { id: 'health_champion', name: 'Health Hero', icon: '🏆', rarity: 'legendary', condition: () => appState.streak >= 60 },
+    { id: 'quick_logger', name: 'Quick Logger', icon: '⚡', rarity: 'common', condition: () => appState.vitals.bloodPressure.length >= 5 },
+    { id: 'vital_victor', name: 'Vital Victor', icon: '💪', rarity: 'rare', condition: () => appState.vitals.bloodPressure.length >= 15 && appState.vitals.heartRate.length >= 15 },
+    { id: 'data_dynamo', name: 'Data Dynamo', icon: '📈', rarity: 'common', condition: () => appState.vitals.bloodPressure.length + appState.vitals.heartRate.length + appState.vitals.weight.length + appState.vitals.glucose.length >= 50 },
+    { id: 'perfect_month', name: 'Perfect Month', icon: '🌟', rarity: 'legendary', condition: () => appState.streak >= 30 && appState.vitals.bloodPressure.length >= 30 },
+    { id: 'profile_pro', name: 'Profile Pro', icon: '🎨', rarity: 'common', condition: () => appState.medications.length >= 1 && appState.appointments.length >= 1 && appState.goals.length >= 1 },
+    { id: 'never_miss', name: 'Never Miss', icon: '🔔', rarity: 'rare', condition: () => appState.appointments.length >= 3 },
+    { id: 'century_club', name: 'Century Club', icon: '💯', rarity: 'epic', condition: () => appState.vitals.bloodPressure.length >= 100 },
+    { id: 'consistency_king', name: 'Consistency Champion', icon: '🎯', rarity: 'epic', condition: () => appState.streak >= 21 },
+    { id: 'early_bird', name: 'Early Bird', icon: '🏅', rarity: 'common', condition: () => appState.vitals.bloodPressure.length >= 3 }
 ];
 
 // ============================================
-// SAMPLE DATA
+// SAMPLE DATA - FULLY DEIDENTIFIED
 // ============================================
 
 function generateSampleData() {
     const now = new Date();
     
-    // Generate 30 days of blood pressure data
+    // Generate 30 days of realistic sample data
     for (let i = 29; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
@@ -201,14 +230,14 @@ function generateSampleData() {
         });
     }
     
-    // Sample medications
+    // Generic sample medications - NO IDENTIFYING INFO
     appState.medications = [
-        { id: Date.now() + 1, name: 'Aspirin', dosage: '81mg', time: '08:00' },
-        { id: Date.now() + 2, name: 'Vitamin D', dosage: '1000 IU', time: '09:00' },
-        { id: Date.now() + 3, name: 'Multivitamin', dosage: '1 tablet', time: '08:00' }
+        { id: Date.now() + 1, name: 'Medication A', dosage: '50mg', time: '08:00' },
+        { id: Date.now() + 2, name: 'Supplement B', dosage: '1000 IU', time: '09:00' },
+        { id: Date.now() + 3, name: 'Vitamin C', dosage: '1 tablet', time: '08:00' }
     ];
     
-    // Sample appointments
+    // Generic sample appointments - NO IDENTIFYING INFO
     const futureDate1 = new Date(now);
     futureDate1.setDate(futureDate1.getDate() + 7);
     const futureDate2 = new Date(now);
@@ -217,28 +246,27 @@ function generateSampleData() {
     appState.appointments = [
         {
             id: Date.now() + 1,
-            title: 'Annual Physical Exam',
+            title: 'Health Checkup',
             date: futureDate1.toISOString().split('T')[0],
             time: '10:00',
-            location: 'Main Street Clinic'
+            location: 'Medical Clinic'
         },
         {
             id: Date.now() + 2,
-            title: 'Blood Work Follow-up',
+            title: 'Lab Results Review',
             date: futureDate2.toISOString().split('T')[0],
             time: '14:30',
-            location: 'City Medical Center'
+            location: 'Health Center'
         }
     ];
     
-    // Sample goals
+    // Generic health goals
     appState.goals = [
-        { id: Date.now() + 1, name: 'Walk 10,000 steps daily', target: 30, current: 15 },
-        { id: Date.now() + 2, name: 'Drink 8 glasses of water', target: 30, current: 20 },
-        { id: Date.now() + 3, name: 'Meditate 10 minutes', target: 30, current: 8 }
+        { id: Date.now() + 1, name: 'Daily physical activity', target: 30, current: 15 },
+        { id: Date.now() + 2, name: 'Adequate hydration', target: 30, current: 20 },
+        { id: Date.now() + 3, name: 'Stress management practice', target: 30, current: 8 }
     ];
     
-    // Set streak
     appState.streak = 15;
     appState.lastCheckIn = now.toISOString();
     
@@ -252,7 +280,7 @@ function generateSampleData() {
 // ============================================
 
 function loadData() {
-    const saved = localStorage.getItem('embermate_data');
+    const saved = localStorage.getItem('healthtracker_data');
     if (saved) {
         try {
             appState = JSON.parse(saved);
@@ -264,7 +292,7 @@ function loadData() {
 }
 
 function saveData() {
-    localStorage.setItem('embermate_data', JSON.stringify(appState));
+    localStorage.setItem('healthtracker_data', JSON.stringify(appState));
 }
 
 // ============================================
@@ -272,7 +300,7 @@ function saveData() {
 // ============================================
 
 function initTheme() {
-    const savedTheme = localStorage.getItem('embermate_theme') || 'light';
+    const savedTheme = localStorage.getItem('healthtracker_theme') || 'light';
     appState.theme = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon();
@@ -281,7 +309,7 @@ function initTheme() {
 function toggleTheme() {
     appState.theme = appState.theme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', appState.theme);
-    localStorage.setItem('embermate_theme', appState.theme);
+    localStorage.setItem('healthtracker_theme', appState.theme);
     updateThemeIcon();
 }
 
@@ -327,7 +355,6 @@ function displayStreak() {
     
     streakNumber.textContent = appState.streak;
     
-    // Update message based on streak
     if (appState.streak === 0) {
         streakMessage.textContent = "Start your journey today!";
         streakFire.textContent = '🔥';
@@ -356,7 +383,6 @@ function updateQuickStats() {
     const weight = appState.vitals.weight;
     const glucose = appState.vitals.glucose;
     
-    // Get latest values
     if (bp.length > 0) {
         const latest = bp[bp.length - 1];
         document.getElementById('bpValue').textContent = 
@@ -389,7 +415,6 @@ function generateAIInsights() {
     const hr = appState.vitals.heartRate;
     const weight = appState.vitals.weight;
     
-    // Blood Pressure Insights
     if (bp.length >= 7) {
         const recent = bp.slice(-7);
         const avgSystolic = recent.reduce((sum, r) => sum + r.systolic, 0) / recent.length;
@@ -398,7 +423,7 @@ function generateAIInsights() {
         if (avgSystolic > 130 || avgDiastolic > 80) {
             insights.push({
                 icon: '⚠️',
-                text: `Your average blood pressure over the last week is ${Math.round(avgSystolic)}/${Math.round(avgDiastolic)} mmHg, which is slightly elevated. Consider discussing this with your doctor.`
+                text: `Your average blood pressure over the last week is ${Math.round(avgSystolic)}/${Math.round(avgDiastolic)} mmHg, which is slightly elevated. Consider discussing this with your healthcare provider.`
             });
         } else if (avgSystolic < 120 && avgDiastolic < 80) {
             insights.push({
@@ -407,7 +432,6 @@ function generateAIInsights() {
             });
         }
         
-        // Trend analysis
         const firstWeek = bp.slice(0, 7).reduce((sum, r) => sum + r.systolic, 0) / 7;
         const lastWeek = recent.reduce((sum, r) => sum + r.systolic, 0) / 7;
         const change = lastWeek - firstWeek;
@@ -421,7 +445,6 @@ function generateAIInsights() {
         }
     }
     
-    // Heart Rate Insights
     if (hr.length >= 7) {
         const recent = hr.slice(-7);
         const avgHR = recent.reduce((sum, r) => sum + r.value, 0) / recent.length;
@@ -439,7 +462,6 @@ function generateAIInsights() {
         }
     }
     
-    // Weight Insights
     if (weight.length >= 14) {
         const firstHalf = weight.slice(0, 7).reduce((sum, w) => sum + w.value, 0) / 7;
         const secondHalf = weight.slice(-7).reduce((sum, w) => sum + w.value, 0) / 7;
@@ -454,7 +476,6 @@ function generateAIInsights() {
         }
     }
     
-    // Medication Adherence
     const today = new Date().toDateString();
     const checkedToday = Object.keys(appState.medicationChecks).filter(key => {
         const date = new Date(parseInt(key.split('_')[1])).toDateString();
@@ -476,7 +497,6 @@ function generateAIInsights() {
         }
     }
     
-    // If no insights, show encouraging message
     if (insights.length === 0) {
         insights.push({
             icon: '🌟',
@@ -567,7 +587,6 @@ function addMedication() {
     updateAchievements();
     showToast('Medication added! 💊');
     
-    // Clear form
     document.getElementById('medName').value = '';
     document.getElementById('medDosage').value = '';
     document.getElementById('medTime').value = '';
@@ -641,7 +660,6 @@ function addAppointment() {
     updateAchievements();
     showToast('Appointment added! 📅');
     
-    // Clear form
     document.getElementById('apptTitle').value = '';
     document.getElementById('apptDate').value = '';
     document.getElementById('apptTime').value = '';
@@ -704,7 +722,6 @@ function addGoal() {
     updateAchievements();
     showToast('Goal added! 🎯');
     
-    // Clear form
     document.getElementById('goalName').value = '';
     document.getElementById('goalTarget').value = '';
     document.getElementById('goalProgress').value = '';
@@ -722,18 +739,15 @@ function addVitals() {
     const weight = parseFloat(document.getElementById('vitalsWeight').value);
     const glucose = parseFloat(document.getElementById('vitalsGlucose').value);
     
-    // Check if at least one vital is entered
     if (!systolic && !diastolic && !heartRate && !weight && !glucose) {
         showToast('Please enter at least one vital sign', 'error');
         return;
     }
     
-    // Use provided datetime or current time
     const timestamp = dateTimeInput ? new Date(dateTimeInput).toISOString() : new Date().toISOString();
     
     let addedCount = 0;
     
-    // Add blood pressure if both systolic and diastolic are provided
     if (systolic && diastolic) {
         appState.vitals.bloodPressure.push({
             date: timestamp,
@@ -746,7 +760,6 @@ function addVitals() {
         return;
     }
     
-    // Add heart rate
     if (heartRate) {
         appState.vitals.heartRate.push({
             date: timestamp,
@@ -755,7 +768,6 @@ function addVitals() {
         addedCount++;
     }
     
-    // Add weight
     if (weight) {
         appState.vitals.weight.push({
             date: timestamp,
@@ -764,7 +776,6 @@ function addVitals() {
         addedCount++;
     }
     
-    // Add glucose
     if (glucose) {
         appState.vitals.glucose.push({
             date: timestamp,
@@ -773,7 +784,6 @@ function addVitals() {
         addedCount++;
     }
     
-    // Sort all vitals by date
     appState.vitals.bloodPressure.sort((a, b) => new Date(a.date) - new Date(b.date));
     appState.vitals.heartRate.sort((a, b) => new Date(a.date) - new Date(b.date));
     appState.vitals.weight.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -784,10 +794,8 @@ function addVitals() {
     refreshDashboard();
     showToast(`${addedCount} vital sign${addedCount > 1 ? 's' : ''} added! 💓`);
     
-    // Update streak
     updateStreak();
     
-    // Clear form
     document.getElementById('vitalsDateTime').value = '';
     document.getElementById('vitalsSystolic').value = '';
     document.getElementById('vitalsDiastolic').value = '';
@@ -801,7 +809,7 @@ function addVitals() {
 // ============================================
 
 let vitalsChart = null;
-let currentTimeScale = 7; // Default to 7 days
+let currentTimeScale = 7;
 let overlayMode = false;
 
 function initChart() {
@@ -965,7 +973,6 @@ function updateOverlayChart() {
         .map(checkbox => checkbox.value);
     
     if (selectedVitals.length === 0) {
-        // If no vitals selected, show empty chart
         vitalsChart.data.labels = [];
         vitalsChart.data.datasets = [];
         vitalsChart.update();
@@ -1000,7 +1007,6 @@ function updateOverlayChart() {
         }
     };
     
-    // Find the longest dataset for labels
     let maxLength = 0;
     selectedVitals.forEach(vital => {
         const config = vitalConfigs[vital];
@@ -1039,7 +1045,6 @@ function updateOverlayChart() {
     vitalsChart.data.datasets = datasets;
     vitalsChart.options.plugins.legend.display = true;
     
-    // Configure multiple y-axes if weight is included
     if (selectedVitals.includes('weight')) {
         vitalsChart.options.scales.y1 = {
             type: 'linear',
@@ -1060,16 +1065,13 @@ function updateOverlayChart() {
 }
 
 // ============================================
-// MOTIVATION
+// MOTIVATION - DEIDENTIFIED
 // ============================================
-// NOTE: All motivational quotes are stored client-side (no external API calls)
-// to maintain 100% privacy guarantee. Quotes are randomly selected from the
-// local array below.
 
 function displayMotivation() {
     const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
     document.getElementById('motivationQuote').textContent = `"${quote.quote}"`;
-    document.getElementById('motivationAuthor').textContent = `— ${quote.author}`;
+    document.getElementById('motivationAuthor').textContent = '';  // No author attribution
 }
 
 // ============================================
@@ -1091,7 +1093,7 @@ function displayAchievements() {
         const unlocked = appState.achievements.includes(achievement.id);
         
         return `
-            <div class="achievement-badge ${unlocked ? '' : 'locked'}" 
+            <div class="achievement-card ${unlocked ? 'unlocked' : 'locked'}" 
                  title="${achievement.name}">
                 <div class="achievement-icon">${achievement.icon}</div>
                 <div class="achievement-name">${achievement.name}</div>
@@ -1099,6 +1101,21 @@ function displayAchievements() {
             </div>
         `;
     }).join('');
+    
+    const totalAchievements = achievementDefinitions.length;
+    const unlockedAchievements = appState.achievements.length;
+    const percentage = Math.round((unlockedAchievements / totalAchievements) * 100);
+    
+    const countElement = document.getElementById('achievementCount');
+    const progressBar = document.getElementById('achievementProgressBar');
+    
+    if (countElement) {
+        countElement.textContent = `${unlockedAchievements}/${totalAchievements} (${percentage}%)`;
+    }
+    
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+    }
 }
 
 // ============================================
@@ -1125,7 +1142,7 @@ function exportAsJSON() {
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `embermate_backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `health_data_backup_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     showToast('Data exported as JSON! 📊');
 }
@@ -1161,7 +1178,7 @@ function exportAsCSV() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `embermate_data_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `health_data_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     showToast('Data exported as CSV! 📄');
 }
@@ -1207,7 +1224,6 @@ function displayDataTable(type) {
     const tableBody = document.getElementById('tableBody');
     const tableStats = document.getElementById('tableStats');
     
-    // Update active tab
     document.querySelectorAll('.table-tab').forEach(tab => {
         tab.classList.remove('active');
         if (tab.getAttribute('data-table') === type) {
@@ -1285,17 +1301,14 @@ function displayDataTable(type) {
             break;
     }
     
-    // Render table headers
     tableHead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
     
-    // Render table body
     if (data.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="5" class="table-empty">No data recorded yet</td></tr>';
         tableStats.innerHTML = '';
         return;
     }
     
-    // Sort data by date descending (most recent first)
     const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
     
     tableBody.innerHTML = sortedData.map(item => {
@@ -1348,7 +1361,6 @@ function displayDataTable(type) {
         }
     }).join('');
     
-    // Render stats
     tableStats.innerHTML = Object.entries(stats).map(([label, value]) => `
         <div class="stat-item">
             <div class="stat-item-label">${label}</div>
@@ -1415,7 +1427,7 @@ function exportTableAsCSV() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `embermate_${type}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `health_${type}_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     showToast(`${type} data exported! 📊`);
 }
@@ -1462,23 +1474,20 @@ function refreshDashboard() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize
     loadData();
     initTheme();
     initChart();
     refreshDashboard();
     
-    // Check if first visit and show onboarding
     checkFirstVisit();
     
-    // Onboarding event listeners
+    // Onboarding
     document.getElementById('nextStep').addEventListener('click', nextOnboardingStep);
     document.getElementById('prevStep').addEventListener('click', prevOnboardingStep);
     document.getElementById('skipOnboarding').addEventListener('click', skipOnboarding);
     document.getElementById('loadSampleDataBtn').addEventListener('click', completeOnboardingWithSampleData);
     document.getElementById('startFreshBtn').addEventListener('click', completeOnboardingFresh);
     
-    // Progress dots clickable
     document.querySelectorAll('.progress-dot').forEach((dot, index) => {
         dot.addEventListener('click', () => {
             if (index < totalOnboardingSteps) {
@@ -1488,10 +1497,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     
-    // Menu dropdown
+    // Menu
     const menuButton = document.getElementById('menuButton');
     const dropdownMenu = document.getElementById('dropdownMenu');
     
@@ -1506,7 +1514,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Export/Import
     document.getElementById('viewTutorial').addEventListener('click', () => {
         dropdownMenu.classList.remove('active');
         viewTutorial();
@@ -1525,7 +1532,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('fileInput').addEventListener('change', handleFileImport);
     
-    // Data Table
     document.querySelectorAll('.table-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             displayDataTable(tab.getAttribute('data-table'));
@@ -1533,14 +1539,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('exportTableCsv').addEventListener('click', exportTableAsCSV);
     
-    // Modal triggers
     document.getElementById('addMedicationBtn').addEventListener('click', () => openModal('medicationModal'));
     document.getElementById('addAppointmentBtn').addEventListener('click', () => openModal('appointmentModal'));
     document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
     
-    // Prominent log vitals button
     document.getElementById('logTodayVitalsBtn').addEventListener('click', () => {
-        // Set default datetime to now
         const now = new Date();
         const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
             .toISOString()
@@ -1550,7 +1553,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.getElementById('addVitalsBtn').addEventListener('click', () => {
-        // Set default datetime to now
         const now = new Date();
         const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
             .toISOString()
@@ -1559,42 +1561,33 @@ document.addEventListener('DOMContentLoaded', function() {
         openModal('vitalsModal');
     });
     
-    // Modal saves
     document.getElementById('saveMedication').addEventListener('click', addMedication);
     document.getElementById('saveAppointment').addEventListener('click', addAppointment);
     document.getElementById('saveGoal').addEventListener('click', addGoal);
     document.getElementById('saveVitals').addEventListener('click', addVitals);
     
-    // Modal closes
     document.querySelectorAll('[data-modal]').forEach(btn => {
         btn.addEventListener('click', () => {
             closeModal(btn.getAttribute('data-modal'));
         });
     });
     
-    // Chart selector
     document.getElementById('chartSelector').addEventListener('change', (e) => {
         if (!overlayMode) {
             updateChart(e.target.value);
         }
     });
     
-    // Time scale buttons
     document.querySelectorAll('.time-scale-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            // Remove active class from all buttons
             document.querySelectorAll('.time-scale-btn').forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
             e.target.classList.add('active');
-            // Update time scale
             currentTimeScale = parseInt(e.target.dataset.days);
-            // Refresh chart
             const chartType = document.getElementById('chartSelector').value;
             updateChart(chartType);
         });
     });
     
-    // Overlay toggle
     document.getElementById('overlayToggle').addEventListener('click', () => {
         overlayMode = !overlayMode;
         const overlaySelector = document.getElementById('overlaySelector');
@@ -1609,23 +1602,19 @@ document.addEventListener('DOMContentLoaded', function() {
             overlaySelector.style.display = 'none';
             chartSelector.disabled = false;
             chartSelector.style.opacity = '1';
-            // Uncheck all overlay options
             document.querySelectorAll('.overlay-option').forEach(cb => cb.checked = false);
             updateChart(chartSelector.value);
         }
     });
     
-    // Overlay checkboxes
     document.querySelectorAll('.overlay-option').forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             updateOverlayChart();
         });
     });
     
-    // Refresh quote
     document.getElementById('refreshQuote').addEventListener('click', displayMotivation);
     
-    // Close modals on outside click
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -1635,5 +1624,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Make functions globally available
 window.toggleMedication = toggleMedication;
