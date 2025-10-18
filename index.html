@@ -36,6 +36,9 @@
                 <span class="search-icon">🔍</span>
                 <input type="text" class="search-input" placeholder="Search...">
             </div>
+            <div class="icon-btn" onclick="openReportsModal()" title="Reports">
+                📑
+            </div>
             <div class="icon-btn" onclick="performUndo()" title="Undo last action" id="undoBtn" style="opacity: 0.5;">
                 ↶
             </div>
@@ -56,6 +59,10 @@
             <li class="sidebar-item active" onclick="navigateTo('dashboard')" title="Dashboard Overview">
                 <span class="sidebar-icon">📊</span>
                 <span>Overview</span>
+            </li>
+            <li class="sidebar-item" onclick="navigateTo('glance')" title="At-a-Glance Tables">
+                <span class="sidebar-icon">📋</span>
+                <span>Glance</span>
             </li>
             <li class="sidebar-item" onclick="navigateTo('track')" title="Track Daily Health">
                 <span class="sidebar-icon">📝</span>
@@ -82,8 +89,13 @@
         <!-- Overview Page -->
         <div class="page-container active" id="page-dashboard">
             <div class="page-header">
-                <h1 class="page-title">Health Overview</h1>
-                <p class="page-subtitle">Monday, October 13, 2025</p>
+                <div>
+                    <h1 class="page-title">Health Overview</h1>
+                    <p class="page-subtitle">Monday, October 13, 2025</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary" onclick="openReportsModal()">📑 Reports</button>
+                </div>
             </div>
 
             <!-- Inspirational Quote -->
@@ -232,6 +244,152 @@
                             <td>Yesterday, 9:00 PM</td>
                             <td><span class="badge badge-neutral">📝 Note</span></td>
                             <td>Feeling great today</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Glance Page (At-a-Glance consolidated tables) -->
+        <div class="page-container" id="page-glance">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">At-a-Glance</h1>
+                    <p class="page-subtitle">Quick tables for recent health data</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-secondary" onclick="openReportsModal()">📑 Open Reports</button>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Medications Summary</h3>
+                    <button class="btn btn-primary" onclick="addInlineRow('medications')">
+                        <span>+ Add Medication</span>
+                    </button>
+                </div>
+                <table class="data-table" id="glanceMedicationsTable">
+                    <thead>
+                        <tr>
+                            <th>Medication</th>
+                            <th>Dosage</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="editable-cell" onclick="makeEditable(this)"><strong>Lisinopril</strong></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">10mg</td>
+                            <td class="editable-cell" onclick="makeEditable(this)">8:00 AM</td>
+                            <td><span class="badge badge-success" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Taken</span></td>
+                            <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                        </tr>
+                        <tr>
+                            <td class="editable-cell" onclick="makeEditable(this)"><strong>Metformin</strong></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">500mg</td>
+                            <td class="editable-cell" onclick="makeEditable(this)">12:00 PM</td>
+                            <td><span class="badge badge-warning" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Due Soon</span></td>
+                            <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Vitals Summary</h3>
+                    <button class="btn btn-primary" onclick="addInlineRow('bp')">
+                        <span>+ Log Reading</span>
+                    </button>
+                </div>
+                <table class="data-table" id="glanceVitalsTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Date & Time</th>
+                            <th>Primary</th>
+                            <th>Secondary</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-neutral">📈 BP</span></td>
+                            <td><strong>Today, 7:30 AM</strong></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">128/82</td>
+                            <td class="editable-cell" onclick="makeEditable(this)">HR 72</td>
+                            <td><span class="badge badge-success"><span class="badge-dot"></span>Normal</span></td>
+                            <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-neutral">🩸 Glucose</span></td>
+                            <td><strong>Today, 2:00 PM</strong></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">145 mg/dL</td>
+                            <td class="editable-cell" onclick="makeEditable(this)">After lunch</td>
+                            <td><span class="badge badge-success"><span class="badge-dot"></span>In Range</span></td>
+                            <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Symptoms</h3>
+                    <button class="btn btn-primary" onclick="addInlineRow('symptoms')">
+                        <span>+ Add Symptom</span>
+                    </button>
+                </div>
+                <table class="data-table" id="glanceSymptomsTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Symptom</th>
+                            <th>Severity</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Today</strong></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">Headache</td>
+                            <td><span class="badge badge-warning">Moderate</span></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">Hydrated and rested</td>
+                            <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Upcoming Appointments</h3>
+                    <button class="btn btn-primary" onclick="addInlineRow('appointments')">
+                        <span>+ Add Appointment</span>
+                    </button>
+                </div>
+                <table class="data-table" id="glanceAppointmentsTable">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Provider</th>
+                            <th>Type</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tomorrow, 2:00 PM</strong></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">Primary Care</td>
+                            <td><span class="badge badge-neutral">Check-up</span></td>
+                            <td class="editable-cell" onclick="makeEditable(this)">Annual physical</td>
+                            <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -767,7 +925,7 @@
                         <strong>Privacy Note:</strong> All data is stored locally in your browser. We do not collect, transmit, or store any personal health information on external servers.
                     </p>
                     <button class="btn btn-secondary" style="margin-right: 12px;">📥 Export Data</button>
-                    <button class="btn btn-secondary" style="margin-right: 12px;">📤 Import Data</button>
+                    <button class="btn btn-secondary" style="margin-right: 12px;" onclick="openReportsModal('import')">📤 Import Data</button>
                     <button class="btn btn-secondary" style="margin-right: 12px; background: var(--danger-red); color: white;">🗑️ Clear All Data</button>
                 </div>
             </div>
@@ -787,6 +945,101 @@
 
     </main>
 
+    <!-- Reports Modal -->
+    <div id="reportsModal" class="modal-backdrop" onclick="handleModalBackdropClick(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Reports & Data</h3>
+                <button class="modal-close" onclick="closeReportsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Home View -->
+                <div id="reportsView-home">
+                    <div class="option-grid">
+                        <div class="option-card" onclick="showReportsView('report')">
+                            <div class="option-icon">🧾</div>
+                            <div class="option-title">Generate Report</div>
+                            <div class="option-desc">Create a PDF summary by date and sections</div>
+                        </div>
+                        <div class="option-card" onclick="showReportsView('export')">
+                            <div class="option-icon">📥</div>
+                            <div class="option-title">Export Data</div>
+                            <div class="option-desc">Download encrypted JSON or CSV of your records</div>
+                        </div>
+                        <div class="option-card" onclick="showReportsView('import')">
+                            <div class="option-icon">📤</div>
+                            <div class="option-title">Import Data</div>
+                            <div class="option-desc">Restore or merge from a prior export</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report View -->
+                <div id="reportsView-report" class="hidden">
+                    <div class="form-row">
+                        <label>Start Date <input type="date" id="reportStartDate"></label>
+                        <label>End Date <input type="date" id="reportEndDate"></label>
+                    </div>
+                    <div class="form-row">
+                        <label><input type="checkbox" id="reportSection-medications" checked> Medications</label>
+                        <label><input type="checkbox" id="reportSection-vitals" checked> Vitals</label>
+                        <label><input type="checkbox" id="reportSection-symptoms" checked> Symptoms</label>
+                        <label><input type="checkbox" id="reportSection-appointments" checked> Appointments</label>
+                    </div>
+                    <div class="form-row">
+                        <button class="btn btn-primary" onclick="generateReportPDF()">Generate PDF</button>
+                        <button class="btn btn-secondary" onclick="showReportsView('home')">Back</button>
+                    </div>
+                </div>
+
+                <!-- Export View -->
+                <div id="reportsView-export" class="hidden">
+                    <div class="form-row">
+                        <label>Format
+                            <select id="exportFormat">
+                                <option value="json">JSON (recommended)</option>
+                                <option value="csv">CSV (flattened)</option>
+                            </select>
+                        </label>
+                        <label>Encrypt
+                            <input type="checkbox" id="exportEncrypt" checked>
+                        </label>
+                        <label class="passphrase-group"><span>Passphrase</span>
+                            <input type="password" id="exportPassphrase" placeholder="Enter passphrase">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <button class="btn btn-primary" onclick="handleExport()">Download</button>
+                        <button class="btn btn-secondary" onclick="showReportsView('home')">Back</button>
+                    </div>
+                </div>
+
+                <!-- Import View -->
+                <div id="reportsView-import" class="hidden">
+                    <div class="form-row">
+                        <label>Choose File
+                            <input type="file" id="importFile" accept=".json,.csv,.txt">
+                        </label>
+                        <label class="passphrase-group"><span>Passphrase</span>
+                            <input type="password" id="importPassphrase" placeholder="If encrypted, enter passphrase">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <button class="btn btn-primary" onclick="handleImportValidate()">Validate</button>
+                        <button class="btn btn-secondary" onclick="showReportsView('home')">Back</button>
+                    </div>
+                    <div id="importPreview" class="import-preview hidden"></div>
+                    <div id="importActions" class="form-row hidden">
+                        <button class="btn btn-primary" onclick="applyImport('merge')">Merge</button>
+                        <button class="btn btn-secondary" onclick="applyImport('overwrite')">Overwrite</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="app-redesign.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-9vP4lP7Wb3n+fV2A9g1yJxJkX0g8mV3N5Q9qfGfYQvXjJg0Q/dsMrdFJg9p3qHq3YpZkM8a3JFX99Q0Z0y5QGA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.30/jspdf.plugin.autotable.min.js" integrity="sha512-Lq8k89fB2r6K0V89HIetNqU3zXj7dLfg5s6rR8oS9q8TTQvCwH7Gv9iBqkZ3G+gE6RZp8lq4E9wH2a5QXb5s2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 </html>
