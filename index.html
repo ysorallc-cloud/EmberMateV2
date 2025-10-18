@@ -78,6 +78,16 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <div class="value-prop-banner">
+            <div class="vpb-left">
+                <span>🔒</span>
+                <span>Secure • Private • HIPAA-Compliant</span>
+            </div>
+            <div class="vpb-right">
+                <span class="vpb-dot">🛡️</span><span>Encryption in transit & at rest</span>
+                <span class="vpb-dot">🔐</span><span>Local-first • No tracking</span>
+            </div>
+        </div>
         
         <!-- Overview Page -->
         <div class="page-container active" id="page-dashboard">
@@ -86,11 +96,19 @@
                 <p class="page-subtitle">Monday, October 13, 2025</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Wellness Prompt -->
             <div class="quote-card">
-                <div class="quote-icon">✨</div>
-                <p class="quote-text">"Caring for yourself is not selfish—it's essential."</p>
-                <p class="quote-author">— Eleanor Brownn</p>
+                <div class="quote-icon">🌿</div>
+                <p class="quote-text wellness-prompt">Focus on one healthy choice today.</p>
+            </div>
+
+            <!-- Breathing exercise widget -->
+            <div class="breathing-widget">
+                <div class="breathing-circle" aria-hidden="true"></div>
+                <div>
+                    <div class="breathing-title">Take a calming breath</div>
+                    <div class="breathing-steps">Inhale 4 • Hold 7 • Exhale 8</div>
+                </div>
             </div>
 
             <!-- Instructions -->
@@ -173,7 +191,7 @@
                             <td><strong>Take Lisinopril</strong></td>
                             <td>8:00 AM</td>
                             <td>Medication</td>
-                            <td><span class="badge badge-success"><span class="badge-dot"></span>Completed</span></td>
+                            <td><span class="status-text positive">Completed</span></td>
                             <td>
                                 <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Log Side Effects</button>
                             </td>
@@ -182,7 +200,7 @@
                             <td><strong>Take Metformin</strong></td>
                             <td>12:00 PM</td>
                             <td>Medication</td>
-                            <td><span class="badge badge-warning"><span class="badge-dot"></span>Due Soon</span></td>
+                            <td><span class="status-text negative">Due Soon</span></td>
                             <td>
                                 <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Mark Taken</button>
                             </td>
@@ -191,7 +209,7 @@
                             <td><strong>Check Blood Pressure</strong></td>
                             <td>7:00 PM</td>
                             <td>Vitals</td>
-                            <td><span class="badge badge-neutral"><span class="badge-dot"></span>Pending</span></td>
+                            <td><span class="status-text neutral">Pending</span></td>
                             <td>
                                 <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 13px;">Log Reading</button>
                             </td>
@@ -218,19 +236,19 @@
                         <tr>
                             <td><strong>Lisinopril Taken</strong></td>
                             <td>Today, 8:15 AM</td>
-                            <td><span class="badge badge-neutral">💊 Medication</span></td>
+                            <td><span class="status-text neutral">💊 Medication</span></td>
                             <td>10mg dose</td>
                         </tr>
                         <tr>
                             <td><strong>Blood Pressure Reading</strong></td>
                             <td>Today, 7:30 AM</td>
-                            <td><span class="badge badge-neutral">📈 Vitals</span></td>
+                            <td><span class="status-text neutral">📈 Vitals</span></td>
                             <td>128/82 mmHg, HR 72</td>
                         </tr>
                         <tr>
                             <td><strong>Journal Entry</strong></td>
                             <td>Yesterday, 9:00 PM</td>
-                            <td><span class="badge badge-neutral">📝 Note</span></td>
+                            <td><span class="status-text neutral">📝 Note</span></td>
                             <td>Feeling great today</td>
                         </tr>
                     </tbody>
@@ -245,17 +263,35 @@
                 <p class="page-subtitle">Log medications, vitals, and notes</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Wellness Prompt -->
             <div class="quote-card">
-                <div class="quote-icon">💪</div>
-                <p class="quote-text">"Small daily improvements are the key to staggering long-term results."</p>
-                <p class="quote-author">— Robin Sharma</p>
+                <div class="quote-icon">💚</div>
+                <p class="quote-text wellness-prompt">A short walk can boost your mood.</p>
             </div>
 
             <!-- Instructions -->
             <div class="instruction-banner">
                 <span class="instruction-icon">📝</span>
-                <p><strong>How to use:</strong> Click the tabs below to switch between tracking types. Click any cell to edit it inline, and use the status badges to quickly update medication status.</p>
+                <p><strong>How to use:</strong> Click the tabs below to switch between tracking types. Click any cell to edit it inline, and tap status text to cycle medication state.</p>
+            </div>
+
+            <!-- Unified summary cards -->
+            <div class="card-grid">
+                <div class="summary-card">
+                    <div class="card-title">Medication adherence</div>
+                    <div class="summary-progress"><div class="progress-bar" style="width: 76%; background: var(--success-green);"></div></div>
+                    <div class="card-note">16/21 doses taken this week</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-title">Vitals logged</div>
+                    <div class="summary-progress"><div class="progress-bar" style="width: 85%; background: var(--primary-blue);"></div></div>
+                    <div class="card-note">12/14 readings complete</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-title">Notes & mood</div>
+                    <div class="summary-progress"><div class="progress-bar" style="width: 100%; background: var(--accent-purple);"></div></div>
+                    <div class="card-note">7/7 entries this week</div>
+                </div>
             </div>
 
             <!-- Tabs for different tracking types -->
@@ -293,8 +329,8 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">10mg</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">8:00 AM</td>
                                 <td>Once daily</td>
-                                <td><span class="badge badge-success" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Taken</span></td>
-                                <td><span class="badge badge-neutral">None</span></td>
+                                <td><span class="status-text positive" onclick="cycleStatus(this)" data-cycle="med">Taken</span></td>
+                                <td><span class="status-text neutral">None</span></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Primary Care</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
@@ -303,8 +339,8 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">500mg</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">12:00 PM</td>
                                 <td>Twice daily</td>
-                                <td><span class="badge badge-warning" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Due Soon</span></td>
-                                <td><span class="badge badge-warning">Mild nausea</span></td>
+                                <td><span class="status-text negative" onclick="cycleStatus(this)" data-cycle="med">Due Soon</span></td>
+                                <td><span class="status-text negative">Mild nausea</span></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Specialist</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
@@ -313,8 +349,8 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">20mg</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">8:00 PM</td>
                                 <td>Once daily</td>
-                                <td><span class="badge badge-neutral" onclick="cycleMedStatus(this)"><span class="badge-dot"></span>Pending</span></td>
-                                <td><span class="badge badge-neutral">None</span></td>
+                                <td><span class="status-text neutral" onclick="cycleStatus(this)" data-cycle="med">Pending</span></td>
+                                <td><span class="status-text neutral">None</span></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Primary Care</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
@@ -351,7 +387,7 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">95</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">78 BPM</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Sitting</td>
-                                <td><span class="badge badge-danger"><span class="badge-dot"></span>High</span></td>
+                                <td><span class="status-text negative">High</span></td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
@@ -360,7 +396,7 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">82</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">72 BPM</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Sitting</td>
-                                <td><span class="badge badge-success"><span class="badge-dot"></span>Normal</span></td>
+                                <td><span class="status-text positive">Normal</span></td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                         </tbody>
@@ -391,7 +427,7 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">145</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">After lunch</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">—</td>
-                                <td><span class="badge badge-success"><span class="badge-dot"></span>Normal</span></td>
+                                <td><span class="status-text positive">Normal</span></td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
@@ -399,7 +435,7 @@
                                 <td class="editable-cell" onclick="makeEditable(this)">98</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Fasting</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">—</td>
-                                <td><span class="badge badge-success"><span class="badge-dot"></span>Normal</span></td>
+                                <td><span class="status-text positive">Normal</span></td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                         </tbody>
@@ -458,22 +494,22 @@
                         <tbody>
                             <tr>
                                 <td><strong>Today</strong></td>
-                                <td><span class="badge badge-success">😊 Good</span></td>
-                                <td><span class="badge badge-success">⚡ High</span></td>
+                                <td>😊 Good</td>
+                                <td>⚡ High</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Slept well, feeling energized. Morning walk helped.</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
                                 <td><strong>Yesterday</strong></td>
-                                <td><span class="badge badge-neutral">😐 Okay</span></td>
-                                <td><span class="badge badge-warning">🔋 Moderate</span></td>
+                                <td>😐 Okay</td>
+                                <td>🔋 Moderate</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Slight headache in afternoon, but managed well.</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
                             <tr>
                                 <td><strong>Oct 11</strong></td>
-                                <td><span class="badge badge-success">😊 Good</span></td>
-                                <td><span class="badge badge-success">⚡ High</span></td>
+                                <td>😊 Good</td>
+                                <td>⚡ High</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Great day overall, no issues to report.</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
                             </tr>
@@ -490,11 +526,10 @@
                 <p class="page-subtitle">Analytics and trends</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Wellness Prompt -->
             <div class="quote-card">
-                <div class="quote-icon">📊</div>
-                <p class="quote-text">"What gets measured gets managed."</p>
-                <p class="quote-author">— Peter Drucker</p>
+                <div class="quote-icon">🧘</div>
+                <p class="quote-text wellness-prompt">Stay hydrated—sip water throughout the day.</p>
             </div>
 
             <!-- Instructions -->
@@ -580,11 +615,10 @@
                 <p class="page-subtitle">Appointments and care team</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Wellness Prompt -->
             <div class="quote-card">
                 <div class="quote-icon">🤝</div>
-                <p class="quote-text">"Alone we can do so little; together we can do so much."</p>
-                <p class="quote-author">— Helen Keller</p>
+                <p class="quote-text wellness-prompt">Ask for help when you need it—it's a healthy choice.</p>
             </div>
 
             <!-- Instructions -->
@@ -623,7 +657,7 @@
                             <tr>
                                 <td><strong>Tomorrow, 2:00 PM</strong></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Dr. Sarah Johnson</td>
-                                <td><span class="badge badge-neutral">Check-up</span></td>
+                                <td><span class="status-text neutral">Check-up</span></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Main Clinic, Room 205</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Annual physical</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
@@ -631,7 +665,7 @@
                             <tr>
                                 <td><strong>Oct 20, 10:00 AM</strong></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Dr. Michael Chen</td>
-                                <td><span class="badge badge-warning">Follow-up</span></td>
+                                <td><span class="status-text neutral">Follow-up</span></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Cardiology Center</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Blood pressure review</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
@@ -639,7 +673,7 @@
                             <tr>
                                 <td><strong>Oct 27, 3:30 PM</strong></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Dr. Emily Rodriguez</td>
-                                <td><span class="badge badge-neutral">Consultation</span></td>
+                                <td><span class="status-text neutral">Consultation</span></td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Endocrine Specialists</td>
                                 <td class="editable-cell" onclick="makeEditable(this)">Diabetes management</td>
                                 <td><button class="btn btn-secondary" style="padding: 4px 8px; font-size: 13px;" onclick="deleteRow(this)">🗑️</button></td>
@@ -713,11 +747,10 @@
                 <p class="page-subtitle">Customize your experience</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Wellness Prompt -->
             <div class="quote-card">
                 <div class="quote-icon">⚙️</div>
-                <p class="quote-text">"The secret of change is to focus all of your energy not on fighting the old, but on building the new."</p>
-                <p class="quote-author">— Socrates</p>
+                <p class="quote-text wellness-prompt">Set one small goal for today—you've got this.</p>
             </div>
 
             <div class="data-table-container">
@@ -743,7 +776,7 @@
                     <div style="margin-bottom: 24px;">
                         <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">
                             <input type="checkbox" style="margin-right: 8px;">
-                            Show inspirational quotes
+                            Show wellness prompts
                         </label>
                         <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--gray-700);">
                             <input type="checkbox" style="margin-right: 8px;">

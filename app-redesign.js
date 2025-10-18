@@ -345,24 +345,21 @@ function deleteRow(button) {
     showToast('Row deleted');
 }
 
-// Medication Status Cycling
-function cycleMedStatus(badge) {
-    const statusText = badge.textContent.trim();
-    let newStatus, newClass;
-    
-    const statusCycle = {
-        'Pending': { status: 'Taken', class: 'badge-success' },
-        'Taken': { status: 'Missed', class: 'badge-danger' },
-        'Missed': { status: 'Pending', class: 'badge-neutral' },
-        'Due Soon': { status: 'Taken', class: 'badge-success' }
-    };
-    
-    const next = statusCycle[statusText] || { status: 'Pending', class: 'badge-neutral' };
-    
-    badge.className = `badge ${next.class}`;
-    badge.innerHTML = `<span class="badge-dot"></span>${next.status}`;
-    
-    showToast(`Status updated to ${next.status}`);
+// Minimal status cycling (badge-less)
+function cycleStatus(el) {
+    const context = el.getAttribute('data-cycle');
+    const text = (el.textContent || '').trim();
+    const medCycle = ['Pending', 'Taken', 'Missed'];
+    const genericCycle = ['Pending', 'In Progress', 'Done'];
+    const cycle = context === 'med' ? medCycle : genericCycle;
+    const idx = Math.max(0, cycle.indexOf(text));
+    const next = cycle[(idx + 1) % cycle.length];
+    el.textContent = next;
+    el.classList.remove('positive', 'neutral', 'negative');
+    if (next === 'Taken' || next === 'Done') el.classList.add('positive');
+    else if (next === 'Pending' || next === 'In Progress') el.classList.add('neutral');
+    else el.classList.add('negative');
+    showToast(`Status: ${next}`);
 }
 
 // Toast Notifications
@@ -463,7 +460,21 @@ function initializeCharts() {
 document.addEventListener('DOMContentLoaded', function() {
     updateUndoButton();
     initializeCharts();
-    showToast('Welcome to EmberMate!');
+    // Replace inspirational quotes with wellness prompts already in HTML
+    // Optionally, rotate prompts on each load (internal, no attribution)
+    const prompts = [
+        'Focus on one healthy choice today.',
+        'A short walk can boost your mood.',
+        'Stay hydrated—sip water throughout the day.',
+        'Pause and take three deep breaths.',
+        'Aim for consistent sleep tonight.'
+    ];
+    document.querySelectorAll('.wellness-prompt').forEach((el, i) => {
+        const choice = prompts[(Date.now() + i) % prompts.length];
+        el.textContent = choice;
+    });
+    // No third-party attributions used.
+    showToast('Welcome to EmberMate');
 });
 
 console.log('EmberMate Redesigned - Loaded');
