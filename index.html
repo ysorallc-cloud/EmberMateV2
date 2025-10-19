@@ -86,11 +86,11 @@
                 <p class="page-subtitle">Monday, October 13, 2025</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Inspirational Quote (local, on-device) -->
             <div class="quote-card">
                 <div class="quote-icon">✨</div>
-                <p class="quote-text">"Caring for yourself is not selfish—it's essential."</p>
-                <p class="quote-author">— Eleanor Brownn</p>
+                <p class="quote-text"></p>
+                <p class="quote-author"></p>
             </div>
 
             <!-- Instructions -->
@@ -245,11 +245,11 @@
                 <p class="page-subtitle">Log medications, vitals, and notes</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Inspirational Quote (local, on-device) -->
             <div class="quote-card">
                 <div class="quote-icon">💪</div>
-                <p class="quote-text">"Small daily improvements are the key to staggering long-term results."</p>
-                <p class="quote-author">— Robin Sharma</p>
+                <p class="quote-text"></p>
+                <p class="quote-author"></p>
             </div>
 
             <!-- Instructions -->
@@ -490,11 +490,11 @@
                 <p class="page-subtitle">Analytics and trends</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Inspirational Quote (local, on-device) -->
             <div class="quote-card">
                 <div class="quote-icon">📊</div>
-                <p class="quote-text">"What gets measured gets managed."</p>
-                <p class="quote-author">— Peter Drucker</p>
+                <p class="quote-text"></p>
+                <p class="quote-author"></p>
             </div>
 
             <!-- Instructions -->
@@ -508,11 +508,16 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Blood Pressure Trend</h3>
-                        <select class="chart-filter">
-                            <option>Last 7 Days</option>
-                            <option>Last 30 Days</option>
-                            <option>Last 90 Days</option>
+                        <select class="chart-filter" id="bpTimeFilter">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
                         </select>
+                    </div>
+                    <div class="overlay-controls">
+                        <label><input type="checkbox" id="overlayWeight" checked> Overlay Weight</label>
+                        <label><input type="checkbox" id="overlayGlucose"> Overlay Glucose</label>
+                        <label><input type="checkbox" id="overlayHeartRate"> Overlay Heart Rate</label>
                     </div>
                     <canvas id="bpChart"></canvas>
                 </div>
@@ -520,9 +525,9 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Medication Adherence</h3>
-                        <select class="chart-filter">
-                            <option>Last 7 Days</option>
-                            <option>Last 30 Days</option>
+                        <select class="chart-filter" id="adherenceTimeFilter">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
                         </select>
                     </div>
                     <canvas id="adherenceChart"></canvas>
@@ -533,9 +538,10 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Blood Glucose Levels</h3>
-                        <select class="chart-filter">
-                            <option>Last 7 Days</option>
-                            <option>Last 30 Days</option>
+                        <select class="chart-filter" id="glucoseTimeFilter">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
                         </select>
                     </div>
                     <canvas id="glucoseChart"></canvas>
@@ -572,6 +578,19 @@
                 </div>
             </div>
         </div>
+        
+        <!-- AI Insights Section -->
+        <div class="data-table-container" id="ai-insights-container">
+            <div class="table-header">
+                <h3 class="table-title">AI Insights</h3>
+                <span class="chart-badge">Private • On-device</span>
+            </div>
+            <div style="padding: 16px;">
+                <ul id="aiInsightsList" class="insights-list">
+                    <li class="insight-item">Analyzing your recent data…</li>
+                </ul>
+            </div>
+        </div>
 
         <!-- Care Page (Appointments & Care Team) -->
         <div class="page-container" id="page-care">
@@ -580,11 +599,11 @@
                 <p class="page-subtitle">Appointments and care team</p>
             </div>
 
-            <!-- Inspirational Quote -->
+            <!-- Inspirational Quote (local, on-device) -->
             <div class="quote-card">
                 <div class="quote-icon">🤝</div>
-                <p class="quote-text">"Alone we can do so little; together we can do so much."</p>
-                <p class="quote-author">— Helen Keller</p>
+                <p class="quote-text"></p>
+                <p class="quote-author"></p>
             </div>
 
             <!-- Instructions -->
@@ -786,6 +805,51 @@
         </div>
 
     </main>
+
+    <!-- Quick Log Floating Action Button -->
+    <button class="fab" id="quickLogFab" title="Log Today's Vitals">＋ Log Today's Vitals</button>
+
+    <!-- Quick Log Modal -->
+    <div id="quickLogModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="quickLogTitle">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="quickLogTitle">Log Today's Vitals</h3>
+                <button class="modal-close" id="quickLogClose" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <label>
+                        <span>Systolic (mmHg)</span>
+                        <input type="number" inputmode="numeric" id="ql-systolic" placeholder="e.g., 128">
+                    </label>
+                    <label>
+                        <span>Diastolic (mmHg)</span>
+                        <input type="number" inputmode="numeric" id="ql-diastolic" placeholder="e.g., 82">
+                    </label>
+                    <label>
+                        <span>Heart Rate (BPM)</span>
+                        <input type="number" inputmode="numeric" id="ql-hr" placeholder="e.g., 72">
+                    </label>
+                    <label>
+                        <span>Glucose (mg/dL)</span>
+                        <input type="number" inputmode="numeric" id="ql-glucose" placeholder="e.g., 105">
+                    </label>
+                    <label>
+                        <span>Weight (lbs)</span>
+                        <input type="number" inputmode="decimal" step="0.1" id="ql-weight" placeholder="e.g., 175">
+                    </label>
+                    <label>
+                        <span>Temperature (°F)</span>
+                        <input type="number" inputmode="decimal" step="0.1" id="ql-temp" placeholder="e.g., 98.6">
+                    </label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="quickLogCancel">Cancel</button>
+                <button class="btn btn-primary" id="quickLogSave">Save</button>
+            </div>
+        </div>
+    </div>
 
     <script src="app-redesign.js"></script>
 </body>
