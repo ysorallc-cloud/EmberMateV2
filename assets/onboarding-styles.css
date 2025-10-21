@@ -1,0 +1,18 @@
+
+/* Minimal styles for any optional overlays/tooltips if the host app uses them later.
+   This file is safe to include even if you don't use onboarding tips. */
+.onboard-tip {
+  position: relative;
+  border: 1px dashed rgba(0,0,0,0.2);
+  padding: 8px;
+  border-radius: 8px;
+}
+.onboard-tip .onboard-bubble {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.05);
+}
