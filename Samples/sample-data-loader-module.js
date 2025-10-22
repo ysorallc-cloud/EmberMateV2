@@ -5,7 +5,7 @@
 
 const SampleDataLoader = {
   STORAGE_KEY: 'healthTrackerData',
-  SAMPLE_DATA_URL: '.Samples/sample-data.json',
+  SAMPLE_DATA_URL: './Samples/sample-data.json',
 
   // Initialize the sample data loader
   init() {
