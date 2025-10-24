@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recognition Test - EmberMate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0b0b0c;
+            color: #e7e7ea;
+        }
+        .test-section {
+            background: #121315;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        button {
+            background: #7dd3fc;
+            color: #0b0b0c;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0ea5e9;
+        }
+        .result {
+            background: #191a1d;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #7dd3fc;
+        }
+        .error {
+            border-left-color: #fda4af;
+            background: #2d1b1b;
+        }
+        .success {
+            border-left-color: #86efac;
+            background: #1b2d1b;
+        }
+        input {
+            background: #191a1d;
+            color: #e7e7ea;
+            border: 1px solid #374151;
+            padding: 10px;
+            border-radius: 5px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎤 Voice Recognition Test</h1>
+    
+    <div class="test-section">
+        <h2>Browser Detection</h2>
+        <div id="browser-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Voice Recognition Support</h2>
+        <div id="support-info"></div>
+        <button onclick="testVoiceSupport()">Test Voice Support</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Weight Command Test</h2>
+        <p>Test the weight parsing patterns:</p>
+        <input type="text" id="test-input" placeholder="Enter text like 'add weight 215'" value="add weight 215">
+        <button onclick="testWeightParsing()">Test Weight Parsing</button>
+        <div id="weight-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Live Voice Test</h2>
+        <button id="voice-btn" onclick="toggleVoice()">🎤 Start Voice Test</button>
+        <div id="voice-results"></div>
+    </div>
+
+    <script>
+        // Browser detection
+        const userAgent = navigator.userAgent;
+        const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+        const isChrome = /chrome/i.test(userAgent);
+        const isEdge = /edge/i.test(userAgent);
+        
+        document.getElementById('browser-info').innerHTML = `
+            <div class="result">
+                <strong>User Agent:</strong> ${userAgent}<br>
+                <strong>Safari:</strong> ${isSafari}<br>
+                <strong>Chrome:</strong> ${isChrome}<br>
+                <strong>Edge:</strong> ${isEdge}
+            </div>
+        `;
+        
+        // Voice support test
+        function testVoiceSupport() {
+            const supportDiv = document.getElementById('support-info');
+            
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                supportDiv.innerHTML = '<div class="result success">✅ Voice recognition is supported!</div>';
+            } else {
+                supportDiv.innerHTML = '<div class="result error">❌ Voice recognition is NOT supported</div>';
+            }
+        }
+        
+        // Weight parsing test
+        function testWeightParsing() {
+            const input = document.getElementById('test-input').value;
+            const resultsDiv = document.getElementById('weight-results');
+            
+            const weightPatterns = [
+                /(?:log|add|record|enter)\s+(?:weight|wt|weigh)\s+(\d+(?:\.\d+)?)/i,
+                /(?:weight|wt|weigh)\s+(\d+(?:\.\d+)?)/i,
+                /(\d+(?:\.\d+)?)\s+(?:pounds|lbs|kg|kilograms)/i,
+                /(?:weigh|weighing)\s+(\d+(?:\.\d+)?)/i,
+                /(?:my\s+)?(?:weight|wt)\s+(?:is\s+)?(\d+(?:\.\d+)?)/i,
+                /(?:i\s+)?(?:weigh|weighing)\s+(\d+(?:\.\d+)?)/i
+            ];
+            
+            let results = `<div class="result"><strong>Testing:</strong> "${input}"</div>`;
+            let found = false;
+            
+            for (let i = 0; i < weightPatterns.length; i++) {
+                const pattern = weightPatterns[i];
+                const match = input.match(pattern);
+                results += `<div class="result">Pattern ${i + 1}: ${pattern}<br>Match: ${match ? `✅ "${match[0]}" -> ${match[1]} lbs` : '❌ No match'}</div>`;
+                
+                if (match) {
+                    found = true;
+                    const weight = parseFloat(match[1]);
+                    const valid = weight >= 50 && weight <= 500;
+                    results += `<div class="result ${valid ? 'success' : 'error'}">Weight: ${weight} lbs - ${valid ? '✅ Valid' : '❌ Invalid range'}</div>`;
+                }
+            }
+            
+            if (!found) {
+                results += '<div class="result error">❌ No patterns matched</div>';
+            }
+            
+            resultsDiv.innerHTML = results;
+        }
+        
+        // Live voice test
+        let recognition = null;
+        let isListening = false;
+        
+        function toggleVoice() {
+            if (!isListening) {
+                startVoiceTest();
+            } else {
+                stopVoiceTest();
+            }
+        }
+        
+        function startVoiceTest() {
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                document.getElementById('voice-results').innerHTML = '<div class="result error">❌ Voice recognition not supported</div>';
+                return;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            // Safari-specific settings
+            if (isSafari) {
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                recognition.maxAlternatives = 1;
+                console.log('Using Safari voice settings');
+            } else {
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                recognition.maxAlternatives = 3;
+                console.log('Using Chrome/Edge voice settings');
+            }
+            
+            recognition.onstart = () => {
+                isListening = true;
+                document.getElementById('voice-btn').textContent = '⏹️ Stop Voice Test';
+                document.getElementById('voice-results').innerHTML = '<div class="result">🎤 Listening... Speak now!</div>';
+            };
+            
+            recognition.onresult = (event) => {
+                console.log('Voice result:', event);
+                
+                let bestResult = null;
+                let bestConfidence = 0;
+                
+                for (let i = 0; i < event.results.length; i++) {
+                    const result = event.results[i];
+                    if (result.isFinal) {
+                        for (let j = 0; j < result.length; j++) {
+                            const alternative = result[j];
+                            if (isSafari) {
+                                if (!bestResult) {
+                                    bestResult = alternative.transcript.toLowerCase();
+                                    bestConfidence = alternative.confidence || 0.8;
+                                }
+                            } else {
+                                if (alternative.confidence > bestConfidence) {
+                                    bestConfidence = alternative.confidence;
+                                    bestResult = alternative.transcript.toLowerCase();
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (bestResult) {
+                    document.getElementById('voice-results').innerHTML = `
+                        <div class="result success">✅ Heard: "${bestResult}" (confidence: ${bestConfidence.toFixed(2)})</div>
+                    `;
+                    
+                    // Test weight parsing on the result
+                    setTimeout(() => testWeightParsingOnResult(bestResult), 100);
+                } else {
+                    document.getElementById('voice-results').innerHTML = '<div class="result error">❌ No speech detected</div>';
+                }
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Voice error:', event.error);
+                document.getElementById('voice-results').innerHTML = `<div class="result error">❌ Error: ${event.error}</div>`;
+                stopVoiceTest();
+            };
+            
+            recognition.onend = () => {
+                stopVoiceTest();
+            };
+            
+            try {
+                recognition.start();
+            } catch (e) {
+                document.getElementById('voice-results').innerHTML = `<div class="result error">❌ Failed to start: ${e.message}</div>`;
+            }
+        }
+        
+        function stopVoiceTest() {
+            isListening = false;
+            document.getElementById('voice-btn').textContent = '🎤 Start Voice Test';
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+        
+        function testWeightParsingOnResult(text) {
+            const weightPatterns = [
+                /(?:log|add|record|enter)\s+(?:weight|wt|weigh)\s+(\d+(?:\.\d+)?)/i,
+                /(?:weight|wt|weigh)\s+(\d+(?:\.\d+)?)/i,
+                /(\d+(?:\.\d+)?)\s+(?:pounds|lbs|kg|kilograms)/i,
+                /(?:weigh|weighing)\s+(\d+(?:\.\d+)?)/i,
+                /(?:my\s+)?(?:weight|wt)\s+(?:is\s+)?(\d+(?:\.\d+)?)/i,
+                /(?:i\s+)?(?:weigh|weighing)\s+(\d+(?:\.\d+)?)/i
+            ];
+            
+            for (const pattern of weightPatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    const weight = parseFloat(match[1]);
+                    if (weight >= 50 && weight <= 500) {
+                        document.getElementById('voice-results').innerHTML += `
+                            <div class="result success">✅ Weight command detected: ${weight} lbs</div>
+                        `;
+                        return;
+                    }
+                }
+            }
+            
+            document.getElementById('voice-results').innerHTML += `
+                <div class="result error">❌ No weight command detected in: "${text}"</div>
+            `;
+        }
+        
+        // Run initial tests
+        testVoiceSupport();
+        testWeightParsing();
+    </script>
+</body>
+</html>
