@@ -1,4 +1,4 @@
-export function initStore(app){
+function initStore(app){
   let data=null; try{ data = JSON.parse(localStorage.getItem('embermate_store') || 'null'); }catch{}
   if (!data || typeof data !== 'object' || !Array.isArray(data.rows)){
     data = { version: 3, locale: navigator.language || 'en-US', units: 'imperial', rows: [] };
