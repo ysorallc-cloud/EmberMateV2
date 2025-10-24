@@ -1,4 +1,4 @@
-export function initNav(app){
+function initNav(app){
   const pages = { overview: q('#page-overview'), records: q('#page-records'), settings: q('#page-settings') };
   const links = [...document.querySelectorAll('[data-nav]')];
   function q(s){ return document.querySelector(s); }
