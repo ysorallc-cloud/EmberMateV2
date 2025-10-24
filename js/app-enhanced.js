@@ -11,7 +11,8 @@
  * Then either append ?demo=1 to your URL or run:
  *   window.EmberMate.loadSampleData();
  */
-(function () {
+console.log('🔥 APP-ENHANCED.JS IS LOADING');
+alert('🔥 APP-ENHANCED.JS IS LOADING');(function () {
   const NS = "EmberMate";
   const ls = window.localStorage;
 
