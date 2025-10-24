@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HealthTracker Pro - Personal Health Management</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline';
+             connect-src 'self';
+             font-src 'self' data:;
+             frame-ancestors 'none';
+             base-uri 'self';
+             form-action 'self'">
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
+</head>
+
+<body>
+  <!-- Toast Notifications -->
+  <div id="toast-region" aria-live="polite" aria-atomic="true" class="toast-region"></div>
+
+  <!-- HIPAA Disclaimer Modal -->
+  <div id="hipaa-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚠️ Important Privacy Notice</h2>
+      </div>
+      <div class="modal-body">
+        <h3>HIPAA Compliance Disclaimer</h3>
+        <p><strong>This application is NOT HIPAA compliant and should not be used to store Protected Health Information (PHI) that requires HIPAA compliance.</strong></p>
+        
+        <h4>What This Means:</h4>
+        <ul>
+          <li>This is a personal tracking tool for your own use</li>
+          <li>Data is stored locally in your browser only</li>
+          <li>We do not transmit your health data to any servers</li>
+          <li>This tool is not a substitute for professional medical advice</li>
+          <li>Always consult with healthcare professionals about your health</li>
+        </ul>
+
+        <h4>Your Privacy:</h4>
+        <ul>
+          <li>All data is stored locally on your device</li>
+          <li>You can export and delete your data at any time</li>
+          <li>Clear your browser data to remove all information</li>
+          <li>Use the export feature to create backups</li>
+        </ul>
+
+        <h4>Security Recommendations:</h4>
+        <ul>
+          <li>Do not use on shared or public computers</li>
+          <li>Keep your device password-protected</li>
+          <li>Regularly backup your data using the export feature</li>
+          <li>Do not share sensitive health information via unsecured channels</li>
+        </ul>
+
+        <div class="checkbox-container">
+          <label>
+            <input type="checkbox" id="hipaa-acknowledge" />
+            I understand that this application is not HIPAA compliant and I agree to use it at my own discretion for personal health tracking only.
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="hipaa-accept" disabled>Accept & Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar Navigation -->
+    <nav class="sidenav" aria-label="Primary">
+      <div class="brand">
+        <span class="brand-icon">💊</span>
+        <span>HealthTracker Pro</span>
+      </div>
+      <ul>
+        <li><a href="#dashboard" data-nav aria-current="page">📊 Dashboard</a></li>
+        <li><a href="#medications" data-nav>💊 Medications</a></li>
+        <li><a href="#vitals" data-nav>❤️ Vitals</a></li>
+        <li><a href="#symptoms" data-nav>📝 Symptoms & Side Effects</a></li>
+        <li><a href="#weight" data-nav>⚖️ Weight Tracking</a></li>
+        <li><a href="#goals" data-nav>🎯 Goals & Achievements</a></li>
+        <li><a href="#bulk-entry" data-nav>📋 Bulk Data Entry</a></li>
+        <li><a href="#reports" data-nav>📈 Reports & Export</a></li>
+        <li><a href="#settings" data-nav>⚙️ Settings</a></li>
+      </ul>
+      <div class="sidenav-footer">
+        <button class="btn btn-small" id="quick-export">Quick Export</button>
+        <button class="btn btn-small" id="view-hipaa">Privacy Notice</button>
+      </div>
+    </nav>
+
+    <main id="main" class="main" role="main">
+      
+      <!-- Dashboard Page -->
+      <section id="page-dashboard" data-page hidden>
+        <header class="page-header">
+          <h1>Dashboard</h1>
+          <div class="header-actions">
+            <span id="current-date" class="date-display"></span>
+          </div>
+        </header>
+
+        <!-- Achievement Badges -->
+        <div id="achievement-banner" class="achievement-banner" style="display: none;">
+          <div class="achievement-content">
+            <span class="achievement-icon">🎉</span>
+            <div>
+              <h3 id="achievement-title"></h3>
+              <p id="achievement-message"></p>
+            </div>
+            <button class="achievement-close" onclick="closeAchievement()">×</button>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card-grid">
+          <article class="stat-card">
+            <div class="stat-icon">💊</div>
+            <div class="stat-content">
+              <h3>Today's Medications</h3>
+              <p class="stat-value" id="stat-meds-today">0</p>
+              <p class="stat-label" id="stat-meds-taken">0 taken</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-content">
+              <h3>Latest Blood Pressure</h3>
+              <p class="stat-value" id="stat-bp-latest">--/--</p>
+              <p class="stat-label" id="stat-bp-status">No data</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon">⚖️</div>
+            <div class="stat-content">
+              <h3>Current Weight</h3>
+              <p class="stat-value" id="stat-weight-latest">--</p>
+              <p class="stat-label" id="stat-weight-change">No data</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-content">
+              <h3>Goal Progress</h3>
+              <p class="stat-value" id="stat-goals-progress">0%</p>
+              <p class="stat-label" id="stat-goals-active">0 active goals</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Recent Activity & Upcoming -->
+        <div class="two-column-grid">
+          <article class="card">
+            <h2>Upcoming Medications</h2>
+            <div id="upcoming-meds" class="med-list">
+              <p class="empty-state">No medications scheduled for today</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Recent Vitals</h2>
+            <canvas id="chart-vitals-mini" width="400" height="200"></canvas>
+          </article>
+        </div>
+
+        <!-- Streak Tracker -->
+        <article class="card">
+          <h2>🔥 Tracking Streaks</h2>
+          <div class="streak-grid">
+            <div class="streak-item">
+              <h4>Medication Adherence</h4>
+              <p class="streak-value" id="streak-meds">0 days</p>
+            </div>
+            <div class="streak-item">
+              <h4>Daily Vitals Check</h4>
+              <p class="streak-value" id="streak-vitals">0 days</p>
+            </div>
+            <div class="streak-item">
+              <h4>Weight Tracking</h4>
+              <p class="streak-value" id="streak-weight">0 days</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Settings Page with Clear Data Option -->
+      <section id="page-settings" data-page hidden>
+        <header class="page-header">
+          <h1>Settings</h1>
+        </header>
+
+        <article class="card">
+          <h2>Demo Data Management</h2>
+          <p>This app is pre-loaded with sample demo data to help you explore features. You can clear it anytime and start entering your own health information.</p>
+          <div class="button-group">
+            <button class="btn btn-danger" id="clear-demo-btn">🗑️ Clear Demo Data & Start Fresh</button>
+          </div>
+          <p class="help-text">⚠️ This will remove all demo data. You can then add your own health tracking information.</p>
+        </article>
+
+        <article class="card">
+          <h2>Data Management</h2>
+          <div class="button-group">
+            <button class="btn" id="backup-data">Create Backup</button>
+            <button class="btn btn-danger" id="clear-all-data">Clear All Data</button>
+          </div>
+          <p class="help-text">⚠️ Clearing all data is permanent and cannot be undone. Create a backup first!</p>
+        </article>
+
+        <article class="card">
+          <h2>Privacy & Security</h2>
+          <p>Your health data is stored locally on your device. Review our <a href="#" id="privacy-link">Privacy Notice</a> for more information.</p>
+          <p class="help-text">This application is NOT HIPAA compliant. Do not use for Protected Health Information requiring compliance.</p>
+        </article>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Container for Forms -->
+  <div id="modal-container"></div>
+
+  <!-- Scripts -->
+  <script src="./js/app.js"></script>
+  
+  <!-- AUTO-LOAD SAMPLE DATA ON FIRST VISIT -->
+  <script>
+(function() {
+  'use strict';
+  
+  const STORAGE_KEY = 'healthTrackerData';
+  const SAMPLE_DATA_LOADED_KEY = 'sampleDataAutoLoaded';
+  const HIPAA_ACK_KEY = 'hipaa_acknowledged';
+
+  // Check if this is first visit (no data and haven't auto-loaded before)
+  const hasExistingData = localStorage.getItem(STORAGE_KEY);
+  const hasAutoLoaded = localStorage.getItem(SAMPLE_DATA_LOADED_KEY);
+  
+  if (!hasExistingData && !hasAutoLoaded) {
+    // Auto-load sample data on first visit
+    loadSampleDataInline();
+    localStorage.setItem(SAMPLE_DATA_LOADED_KEY, 'true');
+  }
+
+  function loadSampleDataInline() {
+    const sampleData = {
+      "medications": [
+        {
+          "id": "med_001",
+          "name": "Lisinopril",
+          "dosage": "10mg",
+          "frequency": "Once daily (morning)",
+          "times": ["08:00"],
+          "start_date": "2025-07-22",
+          "prescriber": "Dr. Sarah Chen",
+          "prescriber_contact": "555-0123",
+          "indication": "Blood Pressure Management",
+          "instructions": "Take with full glass of water",
+          "refills_remaining": 3,
+          "pharmacy": "Community Pharmacy",
+          "pharmacy_phone": "555-7890",
+          "notes": "Monitor blood pressure weekly"
+        },
+        {
+          "id": "med_002",
+          "name": "Metformin",
+          "dosage": "500mg",
+          "frequency": "Twice daily (with meals)",
+          "times": ["08:00", "18:00"],
+          "start_date": "2025-07-22",
+          "prescriber": "Dr. Sarah Chen",
+          "prescriber_contact": "555-0123",
+          "indication": "Type 2 Diabetes Management",
+          "instructions": "Take with food to reduce stomach upset",
+          "refills_remaining": 5,
+          "pharmacy": "Community Pharmacy",
+          "pharmacy_phone": "555-7890",
+          "notes": "Check blood sugar levels as directed"
+        },
+        {
+          "id": "med_003",
+          "name": "Atorvastatin",
+          "dosage": "20mg",
+          "frequency": "Once daily (evening)",
+          "times": ["20:00"],
+          "start_date": "2025-07-22",
+          "prescriber": "Dr. Sarah Chen",
+          "prescriber_contact": "555-0123",
+          "indication": "Cholesterol Management",
+          "instructions": "Take in evening for best effectiveness",
+          "refills_remaining": 4,
+          "pharmacy": "Community Pharmacy",
+          "pharmacy_phone": "555-7890",
+          "notes": "Avoid grapefruit juice"
+        },
+        {
+          "id": "med_004",
+          "name": "Levothyroxine",
+          "dosage": "75mcg",
+          "frequency": "Once daily (morning)",
+          "times": ["07:00"],
+          "start_date": "2025-08-05",
+          "prescriber": "Dr. Michael Rodriguez",
+          "prescriber_contact": "555-0456",
+          "indication": "Hypothyroidism",
+          "instructions": "Take 30 minutes before breakfast on empty stomach",
+          "refills_remaining": 5,
+          "pharmacy": "HealthMart Pharmacy",
+          "pharmacy_phone": "555-3456",
+          "notes": "Wait 4 hours before taking calcium or iron"
+        },
+        {
+          "id": "med_005",
+          "name": "Vitamin D3",
+          "dosage": "2000 IU",
+          "frequency": "Once daily",
+          "times": ["08:00"],
+          "start_date": "2025-08-15",
+          "prescriber": "Dr. Sarah Chen",
+          "prescriber_contact": "555-0123",
+          "indication": "Vitamin D Deficiency",
+          "instructions": "Take with meal containing healthy fats",
+          "refills_remaining": 6,
+          "pharmacy": "Community Pharmacy",
+          "pharmacy_phone": "555-7890",
+          "notes": "Over-the-counter supplement"
+        },
+        {
+          "id": "med_006",
+          "name": "Omeprazole",
+          "dosage": "20mg",
+          "frequency": "Once daily (morning)",
+          "times": ["07:30"],
+          "start_date": "2025-09-01",
+          "prescriber": "Dr. Sarah Chen",
+          "prescriber_contact": "555-0123",
+          "indication": "GERD/Acid Reflux",
+          "instructions": "Take 30 minutes before breakfast",
+          "refills_remaining": 2,
+          "pharmacy": "Community Pharmacy",
+          "pharmacy_phone": "555-7890",
+          "notes": "Can take up to 4 days to reach full effect"
+        }
+      ],
+      "vitals": generateVitalsData(),
+      "weight": generateWeightData(),
+      "symptoms": [
+        {
+          "id": "sym_001",
+          "date": "2025-08-10",
+          "time": "14:30",
+          "symptom": "Mild headache",
+          "severity": 3,
+          "related_medication": "Lisinopril",
+          "description": "Slight pressure in temples, resolved with water"
+        },
+        {
+          "id": "sym_002",
+          "date": "2025-08-15",
+          "time": "09:00",
+          "symptom": "Nausea",
+          "severity": 4,
+          "related_medication": "Metformin",
+          "description": "Stomach upset after breakfast, lasted 2 hours"
+        }
+      ],
+      "goals": [
+        {
+          "id": "goal_001",
+          "name": "Reduce Blood Pressure",
+          "target": "Maintain BP below 130/80",
+          "start_date": "2025-07-22",
+          "target_date": "2025-12-31",
+          "progress": 75,
+          "status": "active",
+          "notes": "Making great progress with medication and exercise"
+        },
+        {
+          "id": "goal_002",
+          "name": "Lose 15 pounds",
+          "target": "180 lbs",
+          "start_date": "2025-07-22",
+          "target_date": "2025-12-31",
+          "progress": 85,
+          "status": "active",
+          "notes": "Lost 13 lbs so far, feeling energetic!"
+        },
+        {
+          "id": "goal_003",
+          "name": "Daily Medication Adherence",
+          "target": "95% adherence rate",
+          "start_date": "2025-07-22",
+          "progress": 96,
+          "status": "active",
+          "notes": "Medication reminders working well"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach_001",
+          "name": "First Steps",
+          "description": "Logged first health data",
+          "earned_date": "2025-07-22",
+          "icon": "🎯"
+        },
+        {
+          "id": "ach_002",
+          "name": "Week Warrior",
+          "description": "Tracked health for 7 consecutive days",
+          "earned_date": "2025-07-29",
+          "icon": "🔥"
+        },
+        {
+          "id": "ach_003",
+          "name": "Medication Master",
+          "description": "30 days of consistent medication adherence",
+          "earned_date": "2025-08-22",
+          "icon": "💊"
+        },
+        {
+          "id": "ach_004",
+          "name": "Goal Getter",
+          "description": "Achieved first health goal milestone",
+          "earned_date": "2025-09-15",
+          "icon": "⭐"
+        }
+      ],
+      "settings": {
+        "name": "Demo User",
+        "dob": "1973-05-15",
+        "height": 68,
+        "blood_type": "A+",
+        "target_weight": 180,
+        "target_date": "2025-12-31"
+      }
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleData));
+    console.log('✅ Sample data auto-loaded successfully');
+  }
+
+  function generateVitalsData() {
+    const vitals = [];
+    const startDate = new Date('2025-07-22');
+    const today = new Date();
+    const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+    
+    // Starting values
+    let systolic = 142;
+    let diastolic = 88;
+    let heartRate = 78;
+    
+    for (let i = 0; i <= Math.min(daysDiff, 90); i += 2) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      
+      // Gradual improvement over time
+      systolic = Math.max(110, systolic - (i * 0.35));
+      diastolic = Math.max(65, diastolic - (i * 0.25));
+      heartRate = Math.max(60, heartRate - (i * 0.2));
+      
+      vitals.push({
+        "id": "vital_" + String(i).padStart(3, '0'),
+        "date": date.toISOString().split('T')[0],
+        "time": "08:" + String(Math.floor(Math.random() * 60)).padStart(2, '0'),
+        "systolic": Math.round(systolic),
+        "diastolic": Math.round(diastolic),
+        "heart_rate": Math.round(heartRate),
+        "temperature": 98.6,
+        "oxygen_saturation": 98,
+        "notes": i === 0 ? "Before medication" : ""
+      });
+    }
+    
+    return vitals;
+  }
+
+  function generateWeightData() {
+    const weights = [];
+    const startDate = new Date('2025-07-22');
+    const today = new Date();
+    const daysDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+    
+    let currentWeight = 195;
+    
+    for (let i = 0; i <= Math.min(daysDiff, 90); i += 3) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      
+      // Gradual weight loss
+      currentWeight = Math.max(179.8, currentWeight - 0.15);
+      
+      weights.push({
+        "id": "weight_" + String(i).padStart(3, '0'),
+        "date": date.toISOString().split('T')[0],
+        "weight": Math.round(currentWeight * 10) / 10,
+        "bmi": Math.round((currentWeight / (68 * 68)) * 703 * 10) / 10,
+        "notes": i === 0 ? "Starting weight" : ""
+      });
+    }
+    
+    return weights;
+  }
+})();
+</script>
+
+  <!-- HIPAA Modal Handler - ONE TIME ONLY -->
+  <script>
+(function() {
+  'use strict';
+  
+  const HIPAA_ACK_KEY = 'hipaa_acknowledged';
+  const modal = document.getElementById('hipaa-modal');
+  const checkbox = document.getElementById('hipaa-acknowledge');
+  const acceptBtn = document.getElementById('hipaa-accept');
+  const viewBtn = document.getElementById('view-hipaa');
+
+  if (!modal || !checkbox || !acceptBtn) {
+    console.error('HIPAA modal elements not found');
+    return;
+  }
+
+  // Check if already acknowledged
+  const alreadyAcknowledged = localStorage.getItem(HIPAA_ACK_KEY) === 'true';
+  
+  if (!alreadyAcknowledged) {
+    modal.style.display = 'flex';
+  }
+
+  // Enable accept button when checkbox is checked
+  checkbox.addEventListener('change', function() {
+    acceptBtn.disabled = !checkbox.checked;
+  });
+
+  // Handle accept button
+  acceptBtn.addEventListener('click', function() {
+    localStorage.setItem(HIPAA_ACK_KEY, 'true');
+    modal.style.display = 'none';
+  });
+
+  // Allow viewing the disclaimer again via button
+  if (viewBtn) {
+    viewBtn.addEventListener('click', function() {
+      modal.style.display = 'flex';
+      checkbox.checked = false;
+      acceptBtn.disabled = true;
+    });
+  }
+})();
+</script>
+
+  <!-- Clear Demo Data Handler -->
+  <script>
+(function() {
+  'use strict';
+  
+  const STORAGE_KEY = 'healthTrackerData';
+  const SAMPLE_DATA_LOADED_KEY = 'sampleDataAutoLoaded';
+
+  // Wait for DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  function init() {
+    const clearBtn = document.getElementById('clear-demo-btn');
+    
+    if (!clearBtn) return;
+
+    clearBtn.addEventListener('click', function() {
+      if (!confirm('Clear all demo data and start fresh?\n\nThis will remove all sample health information. You can then add your own data.\n\nThis action cannot be undone!')) {
+        return;
+      }
+      
+      // Clear data and auto-load flag
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SAMPLE_DATA_LOADED_KEY);
+      
+      // Show success message
+      showToast('✅ Demo data cleared! Refreshing...', 'success');
+      
+      // Reload after short delay
+      setTimeout(function() {
+        window.location.reload();
+      }, 1500);
+    });
+  }
+
+  function showToast(message, type) {
+    const colors = {
+      success: { bg: '#d4edda', color: '#155724' },
+      error: { bg: '#f8d7da', color: '#721c24' },
+      info: { bg: '#d1ecf1', color: '#0c5460' }
+    };
+    
+    const toast = document.createElement('div');
+    const style = colors[type] || colors.info;
+    
+    toast.style.cssText = 
+      'position: fixed;' +
+      'top: 20px;' +
+      'right: 20px;' +
+      'padding: 15px 25px;' +
+      'border-radius: 10px;' +
+      'font-weight: 600;' +
+      'z-index: 10001;' +
+      'max-width: 400px;' +
+      'box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);' +
+      'background: ' + style.bg + ';' +
+      'color: ' + style.color + ';';
+    
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(function() {
+      toast.remove();
+    }, 3000);
+  }
+})();
+</script>
+
+</body>
+</html>
