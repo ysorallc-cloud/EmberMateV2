@@ -1,4 +1,7 @@
 {
+  "buildCommand": "echo 'No build required'",
+  "outputDirectory": "./",
+  "framework": null,
   "headers": [
     {
       "source": "/js/(.*)",
@@ -6,24 +9,11 @@
         {
           "key": "Content-Type",
           "value": "text/javascript"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
         }
       ]
     },
     {
-      "source": "/(.*)\\.js$",
-      "headers": [
-        {
-          "key": "Content-Type", 
-          "value": "text/javascript"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)\\.css$",
+      "source": "/assets/(.*).css",
       "headers": [
         {
           "key": "Content-Type",
