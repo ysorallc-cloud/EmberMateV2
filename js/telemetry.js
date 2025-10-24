@@ -1,11 +1,9 @@
-import { Consent } from './consent.js';
-import { Sampling } from './sampling.js';
 
 const K = { conf:'embermate_tele_conf', q:'embermate_tele_queue', recent:'embermate_tele_recent', audit:'embermate_audit', errors:'embermate_errors', store:'embermate_store', consent:'embermate_consent' };
 
-export const Tele = { breadcrumb(event, meta={}){ emit('crumb', { event, meta }, 'vitals'); }, error(e){ emit('error', normalizeError(e), 'errors'); } };
+const Tele = { breadcrumb(event, meta={}){ emit('crumb', { event, meta }, 'vitals'); }, error(e){ emit('error', normalizeError(e), 'errors'); } };
 
-export const DataTools = {
+const DataTools = {
   hookSettings(){
     const btnAll = document.getElementById('btn-export-all');
     const btnEraseQ = document.getElementById('btn-erase-tele');
@@ -88,7 +86,7 @@ function emit(type, body, sampleKey){
   enqueue(enriched);
 }
 
-export function initTelemetry(app){
+function initTelemetry(app){
   // Settings UI controls
   const ep = document.getElementById('tele-endpoint');
   const tok = document.getElementById('tele-token');
@@ -131,4 +129,4 @@ function renderMeta(){
   const q = JSON.parse(localStorage.getItem(K.q)||'[]');
   meta.textContent = 'Queue: ' + q.length + ' items';
 }
-export const TeleUI = { hookSettings(){ /* wired in initTelemetry + DataTools */ } };
+const TeleUI = { hookSettings(){ /* wired in initTelemetry + DataTools */ } };
