@@ -1,4 +1,4 @@
-export const Consent = {
+const Consent = {
   key: 'embermate_consent',
   version: 2,
   init(){
