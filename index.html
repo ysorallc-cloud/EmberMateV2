@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HealthTracker Pro - Personal Health Management</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline';
+             script-src 'self' 'unsafe-inline';
+             connect-src 'self';
+             font-src 'self' data:;
+             frame-ancestors 'none';
+             base-uri 'self';
+             form-action 'self'">
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
+</head>
+
+<body>
+  <!-- Toast Notifications -->
+  <div id="toast-region" aria-live="polite" aria-atomic="true" class="toast-region"></div>
+
+  <!-- HIPAA Disclaimer Modal -->
+  <div id="hipaa-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚠️ Important Privacy Notice</h2>
+      </div>
+      <div class="modal-body">
+        <h3>HIPAA Compliance Disclaimer</h3>
+        <p><strong>This application is NOT HIPAA compliant and should not be used to store Protected Health Information (PHI) that requires HIPAA compliance.</strong></p>
+        
+        <h4>What This Means:</h4>
+        <ul>
+          <li>This is a personal tracking tool for your own use</li>
+          <li>Data is stored locally in your browser only</li>
+          <li>We do not transmit your health data to any servers</li>
+          <li>This tool is not a substitute for professional medical advice</li>
+          <li>Always consult with healthcare professionals about your health</li>
+        </ul>
+
+        <h4>Your Privacy:</h4>
+        <ul>
+          <li>All data is stored locally on your device</li>
+          <li>You can export and delete your data at any time</li>
+          <li>Clear your browser data to remove all information</li>
+          <li>Use the export feature to create backups</li>
+        </ul>
+
+        <h4>Security Recommendations:</h4>
+        <ul>
+          <li>Do not use on shared or public computers</li>
+          <li>Keep your device password-protected</li>
+          <li>Regularly backup your data using the export feature</li>
+          <li>Do not share sensitive health information via unsecured channels</li>
+        </ul>
+
+        <div class="checkbox-container">
+          <label>
+            <input type="checkbox" id="hipaa-acknowledge" />
+            I understand that this application is not HIPAA compliant and I agree to use it at my own discretion for personal health tracking only.
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="hipaa-accept" disabled>Accept & Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar Navigation -->
+    <nav class="sidenav" aria-label="Primary">
+      <div class="brand">
+        <span class="brand-icon">💊</span>
+        <span>HealthTracker Pro</span>
+      </div>
+      <ul>
+        <li><a href="#dashboard" data-nav aria-current="page">📊 Dashboard</a></li>
+        <li><a href="#medications" data-nav>💊 Medications</a></li>
+        <li><a href="#vitals" data-nav>❤️ Vitals</a></li>
+        <li><a href="#symptoms" data-nav>📝 Symptoms & Side Effects</a></li>
+        <li><a href="#weight" data-nav>⚖️ Weight Tracking</a></li>
+        <li><a href="#goals" data-nav>🎯 Goals & Achievements</a></li>
+        <li><a href="#bulk-entry" data-nav>📋 Bulk Data Entry</a></li>
+        <li><a href="#reports" data-nav>📈 Reports & Export</a></li>
+        <li><a href="#settings" data-nav>⚙️ Settings</a></li>
+      </ul>
+      <div class="sidenav-footer">
+        <button class="btn btn-small" id="quick-export">Quick Export</button>
+        <button class="btn btn-small" id="view-hipaa">Privacy Notice</button>
+      </div>
+    </nav>
+
+    <main id="main" class="main" role="main">
+      
+      <!-- Dashboard Page -->
+      <section id="page-dashboard" data-page hidden>
+        <header class="page-header">
+          <h1>Dashboard</h1>
+          <div class="header-actions">
+            <span id="current-date" class="date-display"></span>
+          </div>
+        </header>
+
+        <!-- Achievement Badges -->
+        <div id="achievement-banner" class="achievement-banner" style="display: none;">
+          <div class="achievement-content">
+            <span class="achievement-icon">🎉</span>
+            <div>
+              <h3 id="achievement-title"></h3>
+              <p id="achievement-message"></p>
+            </div>
+            <button class="achievement-close" onclick="closeAchievement()">×</button>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card-grid">
+          <article class="stat-card">
+            <div class="stat-icon">💊</div>
+            <div class="stat-content">
+              <h3>Today's Medications</h3>
+              <p class="stat-value" id="stat-meds-today">0</p>
+              <p class="stat-label" id="stat-meds-taken">0 taken</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-content">
+              <h3>Latest Blood Pressure</h3>
+              <p class="stat-value" id="stat-bp-latest">--/--</p>
+              <p class="stat-label" id="stat-bp-status">No data</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon">⚖️</div>
+            <div class="stat-content">
+              <h3>Current Weight</h3>
+              <p class="stat-value" id="stat-weight-latest">--</p>
+              <p class="stat-label" id="stat-weight-change">No data</p>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-content">
+              <h3>Goal Progress</h3>
+              <p class="stat-value" id="stat-goals-progress">0%</p>
+              <p class="stat-label" id="stat-goals-active">0 active goals</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Recent Activity & Upcoming -->
+        <div class="two-column-grid">
+          <article class="card">
+            <h2>Upcoming Medications</h2>
+            <div id="upcoming-meds" class="med-list">
+              <p class="empty-state">No medications scheduled for today</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Recent Vitals</h2>
+            <canvas id="chart-vitals-mini" width="400" height="200"></canvas>
+          </article>
+        </div>
+
+        <!-- Streak Tracker -->
+        <article class="card">
+          <h2>🔥 Tracking Streaks</h2>
+          <div class="streak-grid">
+            <div class="streak-item">
+              <h4>Medication Adherence</h4>
+              <p class="streak-value" id="streak-meds">0 days</p>
+            </div>
+            <div class="streak-item">
+              <h4>Daily Vitals Check</h4>
+              <p class="streak-value" id="streak-vitals">0 days</p>
+            </div>
+            <div class="streak-item">
+              <h4>Weight Tracking</h4>
+              <p class="streak-value" id="streak-weight">0 days</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Settings Page with Sample Data Controls -->
+      <section id="page-settings" data-page hidden>
+        <header class="page-header">
+          <h1>Settings</h1>
+        </header>
+
+        <article class="card">
+          <h2>Demo & Sample Data</h2>
+          <p>Load sample data to explore the app's features with a complete 90-day health journey including 550+ data points.</p>
+          <div class="button-group">
+            <button class="btn btn-primary" id="load-sample-btn">📊 Load Sample Data</button>
+            <button class="btn btn-danger" id="clear-sample-btn" style="display: none;">🗑️ Clear Sample Data</button>
+          </div>
+          <p class="help-text">💡 Sample data includes medications, vitals, weight tracking, symptoms, goals, and achievements.</p>
+        </article>
+
+        <article class="card">
+          <h2>Data Management</h2>
+          <div class="button-group">
+            <button class="btn" id="backup-data">Create Backup</button>
+            <button class="btn btn-danger" id="clear-all-data">Clear All Data</button>
+          </div>
+          <p class="help-text">⚠️ Clearing all data is permanent and cannot be undone. Create a backup first!</p>
+        </article>
+
+        <article class="card">
+          <h2>Privacy & Security</h2>
+          <p>Your health data is stored locally on your device. Review our <a href="#" id="privacy-link">Privacy Notice</a> for more information.</p>
+          <p class="help-text">This application is NOT HIPAA compliant. Do not use for Protected Health Information requiring compliance.</p>
+        </article>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal Container for Forms -->
+  <div id="modal-container"></div>
+
+  <!-- Scripts -->
+  <script src="./js/app.js"></script>
+  
+  <!-- HIPAA Modal Handler - ONE TIME ONLY -->
+  <script>
+(function() {
+  'use strict';
+  
+  const HIPAA_ACK_KEY = 'hipaa_acknowledged';
+  const modal = document.getElementById('hipaa-modal');
+  const checkbox = document.getElementById('hipaa-acknowledge');
+  const acceptBtn = document.getElementById('hipaa-accept');
+  const viewBtn = document.getElementById('view-hipaa');
+
+  if (!modal || !checkbox || !acceptBtn) {
+    console.error('HIPAA modal elements not found');
+    return;
+  }
+
+  // Check if already acknowledged
+  const alreadyAcknowledged = localStorage.getItem(HIPAA_ACK_KEY) === 'true';
+  
+  if (!alreadyAcknowledged) {
+    modal.style.display = 'flex';
+  }
+
+  // Enable accept button when checkbox is checked
+  checkbox.addEventListener('change', function() {
+    acceptBtn.disabled = !checkbox.checked;
+  });
+
+  // Handle accept button
+  acceptBtn.addEventListener('click', function() {
+    localStorage.setItem(HIPAA_ACK_KEY, 'true');
+    modal.style.display = 'none';
+  });
+
+  // Allow viewing the disclaimer again via button
+  if (viewBtn) {
+    viewBtn.addEventListener('click', function() {
+      modal.style.display = 'flex';
+      checkbox.checked = false;
+      acceptBtn.disabled = true;
+    });
+  }
+})();
+</script>
+
+  <!-- Sample Data Loader -->
+  <script>
+(function() {
+  'use strict';
+  
+  const STORAGE_KEY = 'healthTrackerData';
+  const SAMPLE_DATA_URL = './sample-data.json';
+
+  // Wait for DOM to be fully loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  function init() {
+    const loadBtn = document.getElementById('load-sample-btn');
+    const clearBtn = document.getElementById('clear-sample-btn');
+    
+    if (!loadBtn || !clearBtn) {
+      console.error('Sample data buttons not found');
+      return;
+    }
+
+    // Initialize button visibility
+    updateButtonVisibility();
+
+    // Attach event listeners
+    loadBtn.addEventListener('click', showLoadModal);
+    clearBtn.addEventListener('click', clearData);
+  }
+
+  // Show/hide clear button based on data
+  function updateButtonVisibility() {
+    const clearBtn = document.getElementById('clear-sample-btn');
+    const hasData = localStorage.getItem(STORAGE_KEY);
+    if (clearBtn) {
+      clearBtn.style.display = hasData ? 'block' : 'none';
+    }
+  }
+
+  // Toast notification
+  function showToast(message, type) {
+    type = type || 'info';
+    const colors = {
+      success: { bg: '#d4edda', color: '#155724' },
+      error: { bg: '#f8d7da', color: '#721c24' },
+      info: { bg: '#d1ecf1', color: '#0c5460' }
+    };
+    
+    const toast = document.createElement('div');
+    const style = colors[type] || colors.info;
+    
+    toast.style.cssText = 
+      'position: fixed;' +
+      'top: 20px;' +
+      'right: 20px;' +
+      'padding: 15px 25px;' +
+      'border-radius: 10px;' +
+      'font-weight: 600;' +
+      'z-index: 10001;' +
+      'max-width: 400px;' +
+      'box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);' +
+      'background: ' + style.bg + ';' +
+      'color: ' + style.color + ';' +
+      'animation: slideIn 0.3s ease;';
+    
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(function() {
+      toast.style.animation = 'slideIn 0.3s ease reverse';
+      setTimeout(function() {
+        toast.remove();
+      }, 300);
+    }, 3000);
+  }
+
+  // Load sample data
+  function loadSampleData() {
+    showToast('Loading sample data...', 'info');
+    
+    fetch(SAMPLE_DATA_URL)
+      .then(function(response) {
+        if (!response.ok) throw new Error('Failed to load sample-data.json');
+        return response.json();
+      })
+      .then(function(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        showToast('✅ Sample data loaded! Refreshing...', 'success');
+        updateButtonVisibility();
+        setTimeout(function() {
+          window.location.reload();
+        }, 1500);
+      })
+      .catch(function(error) {
+        showToast('❌ Error: Make sure sample-data.json is in the root directory', 'error');
+        console.error('Error loading sample data:', error);
+      });
+  }
+
+  // Clear data
+  function clearData() {
+    if (!confirm('Clear all health tracking data? This cannot be undone!')) return;
+    
+    localStorage.removeItem(STORAGE_KEY);
+    showToast('🗑️ Data cleared! Refreshing...', 'success');
+    
+    setTimeout(function() {
+      window.location.reload();
+    }, 1500);
+  }
+
+  // Show load modal with info
+  function showLoadModal() {
+    const existing = localStorage.getItem(STORAGE_KEY);
+    let warningHTML = '';
+    
+    if (existing) {
+      warningHTML = 
+        '<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 8px;">' +
+        '<strong style="color: #856404;">⚠️ Warning:</strong>' +
+        '<p style="color: #856404; margin: 5px 0 0 0;">' +
+        'You have existing data. This will replace it! Consider exporting first.' +
+        '</p>' +
+        '</div>';
+    }
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = 
+      'position: fixed;' +
+      'top: 0;' +
+      'left: 0;' +
+      'width: 100%;' +
+      'height: 100%;' +
+      'background: rgba(0, 0, 0, 0.7);' +
+      'display: flex;' +
+      'align-items: center;' +
+      'justify-content: center;' +
+      'z-index: 10000;';
+    
+    modal.innerHTML = 
+      '<div style="background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">' +
+      '<h2 style="margin: 0 0 10px 0; color: #333;">📊 Load Sample Data</h2>' +
+      '<p style="color: #666; margin: 0 0 20px 0;">' +
+      'Load a complete 90-day health journey with 550+ data points including medications, vitals, symptoms, and achievements.' +
+      '</p>' +
+      '<div style="background: #f0f7ff; border-left: 4px solid #667eea; padding: 15px; margin: 15px 0; border-radius: 8px;">' +
+      '<strong style="color: #667eea;">What you\'ll get:</strong>' +
+      '<ul style="margin: 10px 0 0 20px; color: #555;">' +
+      '<li>6 medications with prescriber info</li>' +
+      '<li>90+ days of vitals and weight data</li>' +
+      '<li>15 lbs weight loss journey</li>' +
+      '<li>BP improvement: 142/88 → 111/67</li>' +
+      '<li>Goals, achievements, and appointments</li>' +
+      '</ul>' +
+      '</div>' +
+      warningHTML +
+      '<div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">' +
+      '<button id="modal-cancel" style="padding: 10px 20px; border: 2px solid #ccc; border-radius: 8px; background: white; cursor: pointer; font-weight: 600;">' +
+      'Cancel' +
+      '</button>' +
+      '<button id="modal-confirm" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; cursor: pointer; font-weight: 600;">' +
+      'Load Data' +
+      '</button>' +
+      '</div>' +
+      '<div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee; text-align: center;">' +
+      '<input type="file" id="file-upload" accept=".json" style="display: none;">' +
+      '<label for="file-upload" style="color: #667eea; cursor: pointer; font-weight: 600;">' +
+      '📁 Or upload sample-data.json file' +
+      '</label>' +
+      '</div>' +
+      '</div>';
+    
+    document.body.appendChild(modal);
+    
+    // Event listeners
+    modal.querySelector('#modal-cancel').onclick = function() {
+      modal.remove();
+    };
+    
+    modal.querySelector('#modal-confirm').onclick = function() {
+      modal.remove();
+      loadSampleData();
+    };
+    
+    modal.querySelector('#file-upload').onchange = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = JSON.parse(evt.target.result);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          showToast('✅ File loaded! Refreshing...', 'success');
+          setTimeout(function() {
+            window.location.reload();
+          }, 1500);
+        } catch (err) {
+          showToast('❌ Invalid JSON file', 'error');
+        }
+      };
+      reader.readAsText(file);
+      modal.remove();
+    };
+    
+    modal.onclick = function(e) {
+      if (e.target === modal) modal.remove();
+    };
+  }
+
+  // Add CSS animation
+  const style = document.createElement('style');
+  style.textContent = 
+    '@keyframes slideIn {' +
+    'from { transform: translateX(400px); opacity: 0; }' +
+    'to { transform: translateX(0); opacity: 1; }' +
+    '}';
+  document.head.appendChild(style);
+})();
+</script>
+
+</body>
+</html>
