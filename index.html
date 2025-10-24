@@ -14,7 +14,7 @@
              frame-ancestors 'none';
              base-uri 'self';
              form-action 'self'">
-  <link rel="stylesheet" href="./assets/styles.css" />
+  <link rel="stylesheet" href="assets/styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
 </head>
 
@@ -100,13 +100,13 @@
   </div>
 
   <!-- Load external JS modules -->
-<script src="./js/store.js"></script>
-<script src="./js/consent.js"></script>
-<script src="./js/nav.js"></script>
-<script src="./js/telemetry.js"></script>
-<script src="./js/sampling.js"></script>
-<script src="./js/app.js"></script>
-<script src="./js/app-enhanced.js"></script>
+<script src="js/store.js"></script>
+<script src="js/consent.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/telemetry.js"></script>
+<script src="js/sampling.js"></script>
+<script src="js/app.js"></script>
+<script src="js/app-enhanced.js"></script>
 
   <!-- Sample Data Auto-Loader -->
   <script>
@@ -141,7 +141,7 @@
 
     try {
       // Fetch sample data from sample-data.json
-      const response = await fetch('./sample-data.json');
+      const response = await fetch('sample-data.json');
       
       if (!response.ok) {
         console.warn('Sample data file not found or could not be loaded');
