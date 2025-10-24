@@ -703,7 +703,43 @@
 
   <!-- Scripts -->
   <script src="./js/app.js"></script> 
- <script>
+  <script>
+// HIPAA Modal Handler - One-time acknowledgment
+(function() {
+  const HIPAA_ACK_KEY = 'hipaa_acknowledged';
+  const modal = document.getElementById('hipaa-modal');
+  const checkbox = document.getElementById('hipaa-acknowledge');
+  const acceptBtn = document.getElementById('hipaa-accept');
+  const viewBtn = document.getElementById('view-hipaa');
+
+  // Check if already acknowledged
+  const alreadyAcknowledged = localStorage.getItem(HIPAA_ACK_KEY) === 'true';
+  
+  if (!alreadyAcknowledged) {
+    modal.style.display = 'flex';
+  }
+
+  // Enable accept button when checkbox is checked
+  checkbox.addEventListener('change', () => {
+    acceptBtn.disabled = !checkbox.checked;
+  });
+
+  // Handle accept button
+  acceptBtn.addEventListener('click', () => {
+    localStorage.setItem(HIPAA_ACK_KEY, 'true');
+    modal.style.display = 'none';
+  });
+
+  // Allow viewing the disclaimer again via button
+  if (viewBtn) {
+    viewBtn.addEventListener('click', () => {
+      modal.style.display = 'flex';
+      checkbox.checked = false;
+      acceptBtn.disabled = true;
+    });
+  }
+})();
+</script> <script>
   (function() {
     const STORAGE_KEY = 'healthTrackerData';
     const SAMPLE_DATA_URL = './sample-data.json';
