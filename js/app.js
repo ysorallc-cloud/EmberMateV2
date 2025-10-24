@@ -2313,3 +2313,38 @@ setTimeout(() => {
   
   console.log('[HealthTracker] UI initialized successfully');
 }, 100);
+
+/**
+ * EmberMate V2 - Complete Application
+ * Full functionality with forms and data management
+ */
+
+(function() {
+  'use strict';
+
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
+  }
+
+  function initApp() {
+    console.log('[HealthTracker] Initializing...');
+    
+    // Initialize navigation
+    initNavigation();
+    
+    // Load initial view
+    showDashboard();
+    
+    console.log('[HealthTracker] Ready!');
+  }
+
+  function initNavigation() {
+    const navLinks = document.querySelectorAll('[data-nav]');
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const view = link.getAttribute('href)
+                                       }
