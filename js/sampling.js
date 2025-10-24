@@ -1,4 +1,4 @@
-export const Sampling = {
+const Sampling = {
   key: 'embermate_sampling',
   init(){
     if (!localStorage.getItem(this.key)){
