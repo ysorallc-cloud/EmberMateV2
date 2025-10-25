@@ -641,13 +641,10 @@ function initNavigation() {
       link.setAttribute('aria-current', 'page');
       
       // Show target page
-      console.log('[Navigation] Switching to page:', targetPage);
       pages.forEach(p => p.hidden = true);
       const page = document.getElementById(`page-${targetPage}`);
-      console.log('[Navigation] Target page element:', !!page);
       if (page) {
         page.hidden = false;
-        console.log('[Navigation] Calling loadPage for:', targetPage);
         loadPage(targetPage);
       }
     });
@@ -661,8 +658,7 @@ function initNavigation() {
   }
 }
 
-// Make loadPage globally accessible for nav.js
-window.loadPage = function(pageName) {
+function loadPage(pageName) {
   switch(pageName) {
     case 'dashboard':
       loadDashboard();
@@ -889,7 +885,8 @@ function loadDashboard() {
   try {
     console.log('[Dashboard] Starting dashboard load...');
     
-    // Dashboard will load directly without loading state
+    // Show loading state for dashboard
+    showLoadingState('dashboard-stats', 'Loading health statistics...');
     
     // Update date
     const dateElement = document.getElementById('current-date');
@@ -939,7 +936,7 @@ function loadDashboard() {
         console.error('[Dashboard] Error loading dashboard components:', error);
         showErrorState('dashboard-stats', 'Failed to load dashboard data. Please try refreshing the page.');
       }
-    }, 1000); // Increased delay to ensure DOM is ready
+    }, 500); // Small delay to show loading state
     
   } catch (error) {
     console.error('[Dashboard] Critical error in loadDashboard:', error);
@@ -1211,46 +1208,26 @@ function updateDashboardStats() {
   const medLog = HealthStore.getMedicationLog();
   
   // Medications today
-  const medsTodayEl = document.getElementById('stat-meds-today');
-  if (medsTodayEl) {
-    medsTodayEl.textContent = meds.length;
-  }
-  
-  const medsTakenEl = document.getElementById('stat-meds-taken');
-  if (medsTakenEl) {
-    medsTakenEl.textContent = `${medLog.length} taken`;
-  }
+  document.getElementById('stat-meds-today').textContent = meds.length;
+  document.getElementById('stat-meds-taken').textContent = `${medLog.length} taken`;
   
   // Latest Blood Pressure
   if (vitals.length > 0) {
     const latest = vitals[0];
-    const bpLatestEl = document.getElementById('stat-bp-latest');
-    if (bpLatestEl) {
-      bpLatestEl.textContent = `${latest.systolic}/${latest.diastolic}`;
-    }
-    
-    const bpStatusEl = document.getElementById('stat-bp-status');
-    if (bpStatusEl) {
-      bpStatusEl.textContent = getBPStatus(latest.systolic, latest.diastolic);
-    }
+    document.getElementById('stat-bp-latest').textContent = `${latest.systolic}/${latest.diastolic}`;
+    document.getElementById('stat-bp-status').textContent = getBPStatus(latest.systolic, latest.diastolic);
   }
   
   // Current Weight
   if (weights.length > 0) {
     const latest = weights[0];
-    const weightLatestEl = document.getElementById('stat-weight-latest');
-    if (weightLatestEl) {
-      weightLatestEl.textContent = `${latest.value} lbs`;
-    }
+    document.getElementById('stat-weight-latest').textContent = `${latest.value} lbs`;
     
     if (weights.length > 1) {
       const previous = weights[1];
       const change = latest.value - previous.value;
       const sign = change > 0 ? '+' : '';
-      const weightChangeEl = document.getElementById('stat-weight-change');
-      if (weightChangeEl) {
-        weightChangeEl.textContent = `${sign}${change.toFixed(1)} lbs`;
-      }
+      document.getElementById('stat-weight-change').textContent = `${sign}${change.toFixed(1)} lbs`;
     }
   }
   
@@ -1260,21 +1237,12 @@ function updateDashboardStats() {
     ? Math.round(activeGoals.reduce((sum, g) => sum + g.progress, 0) / activeGoals.length)
     : 0;
   
-  const goalsProgressEl = document.getElementById('stat-goals-progress');
-  if (goalsProgressEl) {
-    goalsProgressEl.textContent = `${avgProgress}%`;
-  }
-  
-  const goalsActiveEl = document.getElementById('stat-goals-active');
-  if (goalsActiveEl) {
-    goalsActiveEl.textContent = `${activeGoals.length} active goals`;
-  }
+  document.getElementById('stat-goals-progress').textContent = `${avgProgress}%`;
+  document.getElementById('stat-goals-active').textContent = `${activeGoals.length} active goals`;
 }
 
 function updateUpcomingMeds() {
   const container = document.getElementById('upcoming-meds');
-  if (!container) return;
-  
   const meds = HealthStore.getMedications();
   
   if (meds.length === 0) {
@@ -1400,16 +1368,11 @@ function drawMiniVitalsChart() {
 // ======================
 
 function loadMedications() {
-  console.log('[Medications] Loading medications page...');
   const container = document.getElementById('medications-list');
   const meds = HealthStore.getMedications();
   
-  console.log('[Medications] Container found:', !!container);
-  console.log('[Medications] Medications count:', meds.length);
-  
   if (meds.length === 0) {
-    // Don't override the static HTML content - it already has comprehensive sample data
-    console.log('[Medications] Using static HTML content with comprehensive sample data');
+    container.innerHTML = '<p class="empty-state">No medications added yet. Click "+ Add Medication" to get started.</p>';
     return;
   }
   
@@ -1547,16 +1510,11 @@ function deleteMedication(id) {
 // ======================
 
 function loadVitals() {
-  console.log('[Vitals] Loading vitals page...');
-  const container = document.getElementById('vitals-list');
+  const tbody = document.getElementById('vitals-tbody');
   const vitals = HealthStore.getVitals();
   
-  console.log('[Vitals] Container found:', !!container);
-  console.log('[Vitals] Vitals count:', vitals.length);
-  
   if (vitals.length === 0) {
-    // Don't override the static HTML content - it already has comprehensive sample data
-    console.log('[Vitals] Using static HTML content with comprehensive sample data');
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center">No vitals recorded yet. Click "+ Record Vitals" to get started.</td></tr>';
     return;
   }
   
@@ -1946,16 +1904,11 @@ function drawSymptomChart() {
 // ======================
 
 function loadWeight() {
-  console.log('[Weight] Loading weight page...');
-  const container = document.getElementById('weight-list');
+  const tbody = document.getElementById('weight-tbody');
   const weights = HealthStore.getWeights();
   
-  console.log('[Weight] Container found:', !!container);
-  console.log('[Weight] Weights count:', weights.length);
-  
   if (weights.length === 0) {
-    // Don't override the static HTML content - it already has comprehensive sample data
-    console.log('[Weight] Using static HTML content with comprehensive sample data');
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center">No weight entries yet. Click "+ Log Weight" to get started.</td></tr>';
     return;
   }
   
