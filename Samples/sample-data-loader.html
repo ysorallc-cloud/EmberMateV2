@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Data Loader - HealthTracker Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .info-box li {
+            margin: 8px 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .file-input-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .file-input-container:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Sample Data Loader</h1>
+        <p class="subtitle">Load realistic health tracking data into HealthTracker Pro</p>
+
+        <div class="info-box">
+            <h3>🎯 What You'll Get:</h3>
+            <ul>
+                <li><strong>Patient:</strong> Alex Johnson, 52 years old</li>
+                <li><strong>Duration:</strong> 90-day health journey</li>
+                <li><strong>Medications:</strong> 6 prescriptions with full details</li>
+                <li><strong>Health Data:</strong> 550+ data points including vitals, symptoms, and achievements</li>
+            </ul>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">-15 lbs</div>
+                <div class="stat-label">Weight Loss</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">97%</div>
+                <div class="stat-label">Adherence Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">142→111</div>
+                <div class="stat-label">BP Systolic</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">550+</div>
+                <div class="stat-label">Data Points</div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="loadSampleDataFromURL()">
+                📥 Load Sample Data from File
+            </button>
+            
+            <div class="file-input-container">
+                <label for="file-input" class="file-label">
+                    📁 Or Click to Upload sample-data.json
+                </label>
+                <input type="file" id="file-input" accept=".json" onchange="loadSampleDataFromFile(event)">
+            </div>
+
+            <button class="btn btn-secondary" onclick="checkCurrentData()">
+                🔍 Check Current Data
+            </button>
+
+            <button class="btn btn-danger" onclick="clearSampleData()">
+                🗑️ Clear All Data
+            </button>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'healthTrackerData';
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        async function loadSampleDataFromURL() {
+            try {
+                showStatus('Loading sample data...', 'info');
+                
+                // Fetch the sample-data.json file
+                const response = await fetch('./sample-data.json');
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load sample data: ${response.status}`);
+                }
+                
+                const sampleData = await response.json();
+                
+                // Store in localStorage
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleData));
+                
+                showStatus('✅ Sample data loaded successfully! You can now open HealthTracker Pro to explore the data.', 'success');
+                
+                console.log('Sample data loaded:', sampleData);
+                
+            } catch (error) {
+                console.error('Error loading sample data:', error);
+                showStatus(`❌ Error: ${error.message}. Make sure sample-data.json is in the same directory.`, 'error');
+            }
+        }
+
+        function loadSampleDataFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const sampleData = JSON.parse(e.target.result);
+                    
+                    // Store in localStorage
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleData));
+                    
+                    showStatus('✅ Sample data loaded successfully from file! You can now open HealthTracker Pro.', 'success');
+                    
+                    console.log('Sample data loaded from file:', sampleData);
+                    
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    showStatus('❌ Error: Invalid JSON file. Please select a valid sample-data.json file.', 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                showStatus('❌ Error reading file. Please try again.', 'error');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function checkCurrentData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            
+            if (!data) {
+                showStatus('ℹ️ No data currently stored. Load sample data to get started!', 'info');
+                return;
+            }
+            
+            try {
+                const parsed = JSON.parse(data);
+                const medCount = parsed.medications?.length || 0;
+                const vitalsBP = parsed.vitals?.blood_pressure?.length || 0;
+                const weightCount = parsed.vitals?.weight?.length || 0;
+                const goalsCount = parsed.goals?.length || 0;
+                
+                showStatus(
+                    `✅ Data found! ${medCount} medications, ${vitalsBP} BP readings, ${weightCount} weight entries, ${goalsCount} goals`,
+                    'success'
+                );
+                
+                console.log('Current data:', parsed);
+                
+            } catch (error) {
+                showStatus('⚠️ Data exists but appears corrupted. Consider clearing and reloading.', 'error');
+            }
+        }
+
+        function clearSampleData() {
+            if (!confirm('Are you sure you want to clear all health tracking data? This cannot be undone!')) {
+                return;
+            }
+            
+            localStorage.removeItem(STORAGE_KEY);
+            showStatus('🗑️ All data cleared successfully!', 'success');
+        }
+
+        // Check if data exists on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkCurrentData();
+        });
+    </script>
+</body>
+</html>

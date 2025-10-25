@@ -1,0 +1,2569 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>EmberMate - Personal Health Management</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             img-src 'self' data:;
+             style-src 'self' 'unsafe-inline' https://vercel.live;
+             script-src 'self' 'unsafe-inline' https://vercel.live;
+             connect-src 'self' https://vercel.live;
+             font-src 'self' data:;
+             frame-ancestors 'none';
+             base-uri 'self';
+             form-action 'self'">
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    /* Mobile-first responsive improvements */
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+      
+      .sidenav {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid #333;
+      }
+      
+      .sidenav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .sidenav li {
+        flex: 1;
+        min-width: 120px;
+      }
+      
+      .sidenav a {
+        padding: 12px 8px;
+        font-size: 0.9em;
+        text-align: center;
+        border-radius: 8px;
+      }
+      
+      .main {
+        margin-left: 0;
+        padding: 15px;
+      }
+      
+      .dashboard-stats > div:first-child {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+      }
+      
+      .dashboard-content {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+      }
+      
+      #quick-add > div {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+      }
+      
+      #quick-add button {
+        padding: 12px !important;
+        font-size: 0.9em !important;
+      }
+      
+      .page-header {
+        margin-bottom: 20px !important;
+      }
+      
+      .page-header h1 {
+        font-size: 1.5em !important;
+      }
+      
+      /* Touch-friendly buttons */
+      button, .btn {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
+      /* Larger form inputs */
+      input, select, textarea {
+        padding: 12px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+      }
+    }
+    
+    /* Navigation improvements */
+    .nav-divider {
+      height: 1px;
+      background: #333;
+      margin: 15px 20px;
+    }
+    
+    .nav-secondary {
+      opacity: 0.7;
+    }
+    
+    .nav-secondary a {
+      font-size: 0.9em;
+      padding: 8px 20px;
+    }
+    
+    /* Quick Add hover effects */
+    #quick-add button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
+    }
+    
+    /* Dashboard Stats hover effects */
+    .dashboard-stats > div > div:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    
+    /* Modern Card Hover Effects */
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    
+    /* Premium Button Hover Effects */
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Premium Card Animations */
+    .premium-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .premium-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    
+    .premium-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .premium-card:hover::before {
+      left: 100%;
+    }
+    
+    /* Premium Gradient Animations */
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .gradient-animated {
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite;
+    }
+    
+    /* Premium Loading States */
+    .premium-loading {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .premium-loading::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 1.5s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    /* Modern Card Styling */
+    .modern-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
+    }
+    
+    .modern-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    /* Responsive Grid */
+    .responsive-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    
+    /* Modern Typography */
+    .modern-heading {
+      color: #1f2937;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+    }
+    
+    .modern-subheading {
+      color: #6b7280;
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .modern-stat {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    /* Loading States */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #7dd3fc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-overlay-content {
+      position: relative;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    .loading-overlay-content::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 30px;
+      height: 30px;
+      margin: -15px 0 0 -15px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #7dd3fc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Tooltip Styles */
+    .tooltip {
+      position: relative;
+      cursor: help;
+    }
+    
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: #1a1d29;
+      color: #e7e7ea;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 12px;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.85em;
+      border: 1px solid #374151;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #1a1d29 transparent transparent transparent;
+    }
+    
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Error States */
+    .error-state {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .error-state .error-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    /* Success States */
+    .success-state {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.05));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .success-state .success-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    /* Better visual hierarchy */
+    .dashboard-stats h3,
+    .page-header h1 {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    
+    /* Improved spacing */
+    .card, .dashboard-stats, #quick-add {
+      margin-bottom: 20px;
+    }
+    
+    /* Better button styling */
+    .btn-primary {
+      background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+      border: none;
+      box-shadow: 0 2px 8px rgba(125, 211, 252, 0.3);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      transform: translateY(-1px);
+    }
+    
+    /* HIPAA Checkbox Styling */
+    .checkbox-container {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(125, 211, 252, 0.1);
+      border-radius: 12px;
+      border: 2px solid rgba(125, 211, 252, 0.3);
+      box-shadow: 0 4px 12px rgba(125, 211, 252, 0.1);
+    }
+    
+    .checkbox-container label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      color: #e7e7ea;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    #hipaa-acknowledge {
+      width: 24px;
+      height: 24px;
+      margin: 0;
+      cursor: pointer;
+      accent-color: #7dd3fc;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transform: scale(1.2);
+      border: 2px solid #7dd3fc;
+      border-radius: 4px;
+      background: #1a1d29;
+    }
+    
+    #hipaa-acknowledge:checked {
+      accent-color: #86efac;
+      border-color: #86efac;
+      background: #86efac;
+    }
+    
+    /* Light Theme Styles */
+    body.light-theme {
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    body.light-theme .sidenav {
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
+    }
+    
+    body.light-theme .sidenav a {
+      color: #475569;
+    }
+    
+    body.light-theme .sidenav a:hover,
+    body.light-theme .sidenav a[aria-current="page"] {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    
+    body.light-theme .checkbox-container {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    body.light-theme .checkbox-container label {
+      color: #1e293b;
+    }
+    
+    body.light-theme .brand {
+      color: #0f172a;
+    }
+    
+    body.light-theme .main {
+      background: #f8fafc;
+    }
+    
+    body.light-theme .dashboard-stats,
+    body.light-theme #quick-add,
+    body.light-theme .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+    
+    body.light-theme h1,
+    body.light-theme h2,
+    body.light-theme h3,
+    body.light-theme h4 {
+      color: #0f172a;
+    }
+    
+    body.light-theme p,
+    body.light-theme span,
+    body.light-theme div {
+      color: #475569;
+    }
+    
+    body.light-theme input,
+    body.light-theme select,
+    body.light-theme textarea {
+      background: #f8fafc;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+    
+    body.light-theme #theme-toggle {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+    
+    body.light-theme #theme-toggle:hover {
+      background: #e2e8f0;
+    }
+    
+    body.light-theme #voice-toggle {
+      background: #0ea5e9;
+      color: #ffffff;
+      border: 1px solid #0284c7;
+    }
+    
+    body.light-theme #voice-toggle:hover {
+      background: #0284c7;
+    }
+    
+    /* Theme transition */
+    body, .sidenav, .main, .dashboard-stats, #quick-add, .card,
+    h1, h2, h3, h4, p, span, div, input, select, textarea {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+    
+    /* Header controls positioning */
+    .header-controls {
+      position: fixed !important;
+      top: 20px !important;
+      right: 20px !important;
+      z-index: 1000 !important;
+    }
+    
+    /* Ensure sidenav doesn't overlap with header controls */
+    .sidenav {
+      z-index: 100;
+    }
+    
+    /* Safari-specific fixes */
+    @supports (-webkit-appearance: none) {
+      .sidenav {
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+      }
+      
+      input, select, textarea {
+        -webkit-appearance: none;
+        border-radius: 8px;
+      }
+      
+      button {
+        -webkit-appearance: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      /* Fix Safari flexbox issues */
+      .dashboard-stats {
+        display: -webkit-flex;
+        display: flex;
+      }
+      
+      .dashboard-content {
+        display: -webkit-grid;
+        display: grid;
+      }
+    }
+  </style>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
+</head>
+
+<body>
+  <!-- Toast Notifications -->
+  <div id="toast-region" aria-live="polite" aria-atomic="true" class="toast-region"></div>
+  
+  <!-- Voice Command Interface -->
+  <div id="voice-interface" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.95); color: white; padding: 25px; border-radius: 16px; display: none; z-index: 1000; min-width: 450px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <div id="voice-status" style="font-size: 1.3em; margin-bottom: 15px; font-weight: bold;">🎤 Ready to Record</div>
+            <div id="voice-transcript" style="color: #a8aab2; margin-bottom: 20px; font-size: 1.1em; min-height: 20px;">Click "🎤 Record" button above to start recording</div>
+    
+    <!-- Confirmation Section -->
+    <div id="voice-confirmation" style="display: none; margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.15); border-radius: 12px; border: 2px solid #fde68a;">
+      <div style="font-size: 1.2em; margin-bottom: 15px; color: #fde68a; font-weight: bold;">📝 Confirm Action</div>
+      <div id="confirmation-details" style="margin-bottom: 20px; font-size: 1.1em; line-height: 1.4;"></div>
+      <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 10px;">
+        <button id="voice-confirm" style="background: #86efac; color: #0b0b0c; padding: 15px 25px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1em; min-width: 120px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'">✅ YES, LOG IT</button>
+        <button id="voice-cancel" style="background: #fda4af; color: #0b0b0c; padding: 15px 25px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1em; min-width: 120px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'">❌ NO, CANCEL</button>
+      </div>
+      <div style="font-size: 0.9em; color: #a8aab2; margin-top: 10px;">Click a button to confirm or cancel this action</div>
+    </div>
+    
+            <!-- Control Buttons -->
+            <div style="display: flex; gap: 15px; justify-content: center;">
+              <button id="voice-stop" style="background: #ef4444; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">⏹️ Stop Recording</button>
+              <button id="voice-test" style="background: #10b981; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🧪 Test Command</button>
+              <button id="voice-help" style="background: #6366f1; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">❓ Help</button>
+            </div>
+  </div>
+
+  <!-- HIPAA Disclaimer Modal -->
+  <div id="hipaa-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚠️ Important Privacy Notice</h2>
+      </div>
+      <div class="modal-body">
+        <h3>HIPAA Compliance Disclaimer</h3>
+        <p><strong>This application is NOT HIPAA compliant and should not be used to store Protected Health Information (PHI) that requires HIPAA compliance.</strong></p>
+        
+        <h4>What This Means:</h4>
+        <ul>
+          <li>This is a personal tracking tool for your own use</li>
+          <li>Data is stored locally in your browser only</li>
+          <li>We do not transmit your health data to any servers</li>
+          <li>This tool is not a substitute for professional medical advice</li>
+          <li>Always consult with healthcare professionals about your health</li>
+        </ul>
+
+        <h4>Your Privacy:</h4>
+        <ul>
+          <li>All data is stored locally on your device</li>
+          <li>You can export and delete your data at any time</li>
+          <li>Clear your browser data to remove all information</li>
+          <li>Use the export feature to create backups</li>
+        </ul>
+
+        <h4>Security Recommendations:</h4>
+        <ul>
+          <li>Do not use on shared or public computers</li>
+          <li>Keep your device password-protected</li>
+          <li>Regularly backup your data using the export feature</li>
+          <li>Do not share sensitive health information via unsecured channels</li>
+        </ul>
+
+        <div class="checkbox-container">
+          <h4 style="color: #7dd3fc; margin: 0 0 15px 0; font-size: 16px;">📋 Please acknowledge:</h4>
+          <label style="display: flex; align-items: center; gap: 15px; cursor: pointer; font-size: 15px; line-height: 1.4;">
+            <input type="checkbox" id="hipaa-acknowledge" style="width: 24px; height: 24px; cursor: pointer; accent-color: #7dd3fc; transform: scale(1.5); flex-shrink: 0;" />
+            <span>I understand that this application is not HIPAA compliant and I agree to use it at my own discretion for personal health tracking only.</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="hipaa-accept" disabled>Accept & Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar Navigation -->
+    <!-- Header Controls - Deep Teal -->
+    <div class="header-controls" style="position: fixed; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 1000;">
+      <button id="voice-toggle" style="background: #0d7377; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s ease; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(13, 115, 119, 0.2);" title="Click to Start Voice Recording">
+        <span style="font-size: 14px;">🎤</span>
+        <span>Voice</span>
+      </button>
+      <button id="theme-toggle" style="background: #333333; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s ease; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(51, 51, 51, 0.2);" title="Toggle Dark/Light Theme">
+        <span style="font-size: 14px;">🌙</span>
+        <span>Theme</span>
+      </button>
+    </div>
+
+    <nav class="sidenav" aria-label="Primary" style="background: #1a1a1a; border-right: 1px solid #333333;">
+      <div class="brand" style="padding: 20px; border-bottom: 1px solid #333333;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+          <span class="brand-icon" style="color: #0d7377; font-size: 20px;">🔥</span>
+          <span style="color: #ffffff; font-weight: 700; font-size: 18px;">EmberMate</span>
+        </a>
+      </div>
+      <ul style="padding: 0; margin: 0; list-style: none;">
+        <li style="margin: 0;"><a href="#dashboard" data-nav aria-current="page" title="Overview and quick actions" style="display: block; padding: 12px 20px; color: #ffffff; text-decoration: none; font-weight: 500; border-left: 3px solid #0d7377; background: rgba(13, 115, 119, 0.2);">📊 Dashboard</a></li>
+        <li style="margin: 0;"><a href="#medications" data-nav title="Track medications and adherence" style="display: block; padding: 12px 20px; color: #cccccc; text-decoration: none; font-weight: 500; transition: all 0.2s ease;">💊 Medications</a></li>
+        <li style="margin: 0;"><a href="#vitals" data-nav title="Monitor blood pressure and vitals" style="display: block; padding: 12px 20px; color: #cccccc; text-decoration: none; font-weight: 500; transition: all 0.2s ease;">❤️ Vitals</a></li>
+        <li style="margin: 0;"><a href="#weight" data-nav title="Track weight and BMI" style="display: block; padding: 12px 20px; color: #cccccc; text-decoration: none; font-weight: 500; transition: all 0.2s ease;">⚖️ Weight</a></li>
+      </ul>
+      <div class="nav-divider" style="height: 1px; background: #333333; margin: 20px 0;"></div>
+      <ul class="nav-secondary" style="padding: 0; margin: 0; list-style: none;">
+        <li style="margin: 0;"><a href="#goals" data-nav title="Set and track health goals" style="display: block; padding: 12px 20px; color: #cccccc; text-decoration: none; font-weight: 500; transition: all 0.2s ease;">🎯 Goals</a></li>
+        <li style="margin: 0;"><a href="#reports" data-nav title="View health reports and trends" style="display: block; padding: 12px 20px; color: #cccccc; text-decoration: none; font-weight: 500; transition: all 0.2s ease;">📈 Reports</a></li>
+        <li style="margin: 0;"><a href="#settings" data-nav title="App settings and preferences" style="display: block; padding: 12px 20px; color: #cccccc; text-decoration: none; font-weight: 500; transition: all 0.2s ease;">⚙️ Settings</a></li>
+      </ul>
+      <div class="sidenav-footer" style="padding: 20px; border-top: 1px solid #333333;">
+        <button class="btn btn-small" id="view-hipaa" title="View privacy and security information" style="background: #0d7377; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 13px; transition: all 0.2s ease; width: 100%;">Privacy Notice</button>
+      </div>
+    </nav>
+
+    <main id="main" class="main" role="main">
+      <div class="loading-overlay" id="loading-overlay" style="display: none; align-items: center; justify-content: center; height: 100vh; background: #f8f9fa;">
+        <div style="text-align: center;">
+          <div style="font-size: 2em; margin-bottom: 20px;">🔥</div>
+          <p style="font-size: 1.2em; color: #666;">Loading EmberMate...</p>
+        </div>
+      </div>
+      
+      <!-- Quick fix to hide loading overlay -->
+      <script>
+        // Immediately hide loading overlay and show app
+        document.addEventListener('DOMContentLoaded', function() {
+          const loadingOverlay = document.getElementById('loading-overlay');
+          const app = document.getElementById('app');
+          const onboardingModal = document.getElementById('onboarding-modal');
+          
+          if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+            loadingOverlay.style.visibility = 'hidden';
+            loadingOverlay.style.opacity = '0';
+          }
+          
+          if (app) {
+            app.style.display = 'block';
+            app.style.visibility = 'visible';
+            app.style.opacity = '1';
+          }
+          
+          // Ensure onboarding modal is hidden initially
+          if (onboardingModal) {
+            onboardingModal.style.display = 'none';
+          }
+          
+          console.log('Loading overlay hidden, app shown');
+        });
+        
+        // Fallback - hide loading overlay after 500ms regardless
+        setTimeout(() => {
+          const loadingOverlay = document.getElementById('loading-overlay');
+          const app = document.getElementById('app');
+          const onboardingModal = document.getElementById('onboarding-modal');
+          
+          if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+            loadingOverlay.style.visibility = 'hidden';
+            loadingOverlay.style.opacity = '0';
+          }
+          
+          if (app) {
+            app.style.display = 'block';
+            app.style.visibility = 'visible';
+            app.style.opacity = '1';
+          }
+          
+          if (onboardingModal) {
+            onboardingModal.style.display = 'none';
+          }
+          
+          console.log('Fallback: Loading overlay hidden, app shown');
+        }, 500);
+        
+        // Emergency fallback - force hide everything after 2 seconds
+        setTimeout(() => {
+          const loadingOverlay = document.getElementById('loading-overlay');
+          const app = document.getElementById('app');
+          
+          if (loadingOverlay) {
+            loadingOverlay.remove();
+          }
+          
+          if (app) {
+            app.style.display = 'block';
+            app.style.visibility = 'visible';
+            app.style.opacity = '1';
+          }
+          
+          console.log('Emergency: Loading overlay removed, app forced visible');
+        }, 2000);
+      </script>
+
+      <!-- Onboarding Modal -->
+      <div id="onboarding-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000;">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+          <div style="background: #121315; border-radius: 16px; padding: 40px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
+            <h2 style="margin-bottom: 10px; color: #e7e7ea;">Welcome to EmberMate!</h2>
+            <p style="color: #a8aab2; font-size: 1.1em;">Your personal health management companion</p>
+          </div>
+          
+          <div style="margin-bottom: 30px;">
+            <h4 style="margin-bottom: 20px; color: #e7e7ea;">What you can do:</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: #a8aab2;">
+                <span style="color: #86efac; font-size: 1.2em;">✅</span>
+                <span>Track medications and adherence</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: #a8aab2;">
+                <span style="color: #86efac; font-size: 1.2em;">✅</span>
+                <span>Monitor vital signs and health metrics</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: #a8aab2;">
+                <span style="color: #86efac; font-size: 1.2em;">✅</span>
+                <span>Log symptoms and side effects</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: #a8aab2;">
+                <span style="color: #86efac; font-size: 1.2em;">✅</span>
+                <span>Set and track health goals</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: #a8aab2;">
+                <span style="color: #86efac; font-size: 1.2em;">✅</span>
+                <span>Use voice commands for quick logging</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div style="display: flex; gap: 15px;">
+            <button id="onboarding-skip" style="background: #374151; color: #e7e7ea; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1;">Skip Tour</button>
+            <button id="onboarding-start" style="background: #7dd3fc; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1;">Start Tour</button>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Onboarding Tour Steps -->
+      <div id="onboarding-tour" style="display: none;">
+        <!-- Step 1: Quick Actions -->
+        <div id="tour-step-1" class="tour-step" style="position: absolute; top: 200px; left: 50%; transform: translateX(-50%); background: #121315; border: 2px solid #7dd3fc; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 1500; max-width: 300px;">
+          <div style="text-align: center;">
+            <h4 style="margin-bottom: 10px; color: #e7e7ea;">⚡ Quick Actions</h4>
+            <p style="color: #a8aab2; font-size: 0.9em; margin-bottom: 15px;">Use these buttons to quickly log health data</p>
+            <button id="tour-next-1" style="background: #7dd3fc; color: #0b0b0c; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Next</button>
+          </div>
+        </div>
+        
+        <!-- Step 2: Stats Overview -->
+        <div id="tour-step-2" class="tour-step" style="position: absolute; top: 400px; left: 50%; transform: translateX(-50%); background: #121315; border: 2px solid #7dd3fc; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 1500; max-width: 300px;">
+          <div style="text-align: center;">
+            <h4 style="margin-bottom: 10px; color: #e7e7ea;">📊 Health Overview</h4>
+            <p style="color: #a8aab2; font-size: 0.9em; margin-bottom: 15px;">Your key health metrics at a glance</p>
+            <button id="tour-next-2" style="background: #7dd3fc; color: #0b0b0c; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Next</button>
+          </div>
+        </div>
+        
+        <!-- Step 3: Navigation -->
+        <div id="tour-step-3" class="tour-step" style="position: absolute; top: 100px; left: 20px; background: #121315; border: 2px solid #7dd3fc; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 1500; max-width: 250px;">
+          <div style="text-align: center;">
+            <h4 style="margin-bottom: 10px; color: #e7e7ea;">🧭 Navigation</h4>
+            <p style="color: #a8aab2; font-size: 0.9em; margin-bottom: 15px;">Access all features from the sidebar</p>
+            <button id="tour-next-3" style="background: #7dd3fc; color: #0b0b0c; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Next</button>
+          </div>
+        </div>
+        
+        <!-- Step 4: Voice Commands -->
+        <div id="tour-step-4" class="tour-step" style="position: absolute; top: 20px; right: 20px; background: #121315; border: 2px solid #7dd3fc; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 1500; max-width: 250px;">
+          <div style="text-align: center;">
+            <h4 style="margin-bottom: 10px; color: #e7e7ea;">🎤 Voice Commands</h4>
+            <p style="color: #a8aab2; font-size: 0.9em; margin-bottom: 15px;">Use voice to quickly log data</p>
+            <button id="tour-complete" style="background: #7dd3fc; color: #0b0b0c; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Complete</button>
+          </div>
+        </div>
+      </div>
+      <div id="app" style="display: block;">
+        <!-- Deep Teal & Black Dashboard Page -->
+        <div id="page-dashboard" data-page="dashboard" style="padding: 0; background: #000000; min-height: 100vh; max-width: 100%; margin: 0;">
+          
+          <!-- Deep Teal Header -->
+          <div style="background: #0d7377; padding: 20px; margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div>
+                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">EmberMate</h1>
+                <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; font-weight: 400;" id="current-date">Your personal health companion</p>
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <button id="start-tour" style="background: #14a085; color: white; padding: 10px 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.2s ease;">
+                  Get Started
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Premium Alert Notifications -->
+          <div id="dashboard-alerts" style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 1px solid #fecaca; border-radius: 16px; padding: 20px; margin-bottom: 32px; display: none; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.29 3.86L1.82 18A2 2 0 0 0 3.64 21H20.36A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12 9V13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12 17H12.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <h4 style="color: #dc2626; margin: 0 0 6px 0; font-size: 18px; font-weight: 700;">Health Alerts</h4>
+                <div id="alert-notifications" style="color: #7f1d1d; font-size: 15px; font-weight: 500;"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Deep Teal Quick Actions -->
+          <div style="padding: 20px; background: #000000; margin-bottom: 8px;">
+            <h2 style="color: #ffffff; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Quick Actions</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+              <button id="quick-add-vitals" style="background: #1a1a1a; color: #ffffff; padding: 20px; border: 1px solid #333333; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="width: 40px; height: 40px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.84 4.61A5.5 5.5 0 0 0 7.5 3L4.5 6A5.5 5.5 0 0 0 20.84 4.61Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div style="text-align: center;">
+                  <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Add Vitals</h3>
+                  <p style="color: #cccccc; margin: 0; font-size: 12px;">Blood pressure, heart rate</p>
+                </div>
+              </button>
+              <button id="quick-add-weight" style="background: #1a1a1a; color: #ffffff; padding: 20px; border: 1px solid #333333; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="width: 40px; height: 40px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2V22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17 5H9.5A3.5 3.5 0 0 0 6 8.5V8.5A3.5 3.5 0 0 0 9.5 12H14.5A3.5 3.5 0 0 0 18 8.5V8.5A3.5 3.5 0 0 0 14.5 5H17Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div style="text-align: center;">
+                  <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Log Weight</h3>
+                  <p style="color: #cccccc; margin: 0; font-size: 12px;">Track your progress</p>
+                </div>
+              </button>
+              <button id="quick-add-med" style="background: #1a1a1a; color: #ffffff; padding: 20px; border: 1px solid #333333; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="width: 40px; height: 40px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 12L11 14L15 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div style="text-align: center;">
+                  <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Log Medication</h3>
+                  <p style="color: #cccccc; margin: 0; font-size: 12px;">Mark as taken</p>
+                </div>
+              </button>
+              <button id="quick-add-symptom" style="background: #1a1a1a; color: #ffffff; padding: 20px; border: 1px solid #333333; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="width: 40px; height: 40px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8L14 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 2V8H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 13H8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 17H8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 9H8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div style="text-align: center;">
+                  <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Add Symptom</h3>
+                  <p style="color: #cccccc; margin: 0; font-size: 12px;">Track how you feel</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Simplified Health Overview -->
+          <div style="padding: 20px; background: #000000; margin-bottom: 8px;">
+            <h2 style="color: #ffffff; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Today's Health</h2>
+            <div id="dashboard-stats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+              <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                  <div style="width: 36px; height: 36px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 12L11 14L15 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Medications</h3>
+                    <p style="color: #cccccc; margin: 0; font-size: 12px;">Today's schedule</p>
+                  </div>
+                </div>
+                <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 6px;" id="stat-meds-today">0</div>
+                <div style="color: #cccccc; font-size: 13px; font-weight: 500;" id="stat-meds-taken">0 taken today</div>
+              </div>
+              <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                  <div style="width: 36px; height: 36px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20.84 4.61A5.5 5.5 0 0 0 7.5 3L4.5 6A5.5 5.5 0 0 0 20.84 4.61Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M18 11H6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M18 15H6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Blood Pressure</h3>
+                    <p style="color: #cccccc; margin: 0; font-size: 12px;">Latest reading</p>
+                  </div>
+                </div>
+                <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 6px;" id="stat-bp-latest">--/--</div>
+                <div style="color: #cccccc; font-size: 13px; font-weight: 500;" id="stat-bp-status">Normal</div>
+              </div>
+              <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                  <div style="width: 36px; height: 36px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2V22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M17 5H9.5A3.5 3.5 0 0 0 6 8.5V8.5A3.5 3.5 0 0 0 9.5 12H14.5A3.5 3.5 0 0 0 18 8.5V8.5A3.5 3.5 0 0 0 14.5 5H17Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Weight</h3>
+                    <p style="color: #cccccc; margin: 0; font-size: 12px;">Current weight</p>
+                  </div>
+                </div>
+                <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 6px;" id="stat-weight-latest">-- lbs</div>
+                <div style="color: #cccccc; font-size: 13px; font-weight: 500;" id="stat-weight-change">+0.0 lbs</div>
+              </div>
+              <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                  <div style="width: 36px; height: 36px; background: #0d7377; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600;">Goals</h3>
+                    <p style="color: #cccccc; margin: 0; font-size: 12px;">Progress tracking</p>
+                  </div>
+                </div>
+                <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 6px;" id="stat-goals-progress">0%</div>
+                <div style="color: #cccccc; font-size: 13px; font-weight: 500;" id="stat-goals-active">0 active goals</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deep Teal Banner Section -->
+          <div style="background: #0d7377; padding: 24px; margin-bottom: 20px; border-radius: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2 style="color: white; margin: 0; font-size: 20px; font-weight: 700;">EMBERMATE HEALTH TRACKING</h2>
+                <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px; font-weight: 400;">Track your health metrics with ease and precision</p>
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <button style="background: #14a085; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s ease;">
+                  START TRACKING >
+                </button>
+              </div>
+            </div>
+          </div>
+            <div style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); padding: 32px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid #e2e8f0;">
+              <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 3V21H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 9L12 6L16 10L20 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="color: #1e293b; margin: 0; font-size: 20px; font-weight: 700;">Health Trends</h3>
+                  <p style="color: #64748b; margin: 0; font-size: 14px; font-weight: 500;">Analytics & insights</p>
+                </div>
+              </div>
+              <div id="trend-analysis" style="margin-bottom: 20px; color: #64748b; font-size: 15px; font-weight: 500; padding: 16px; background: linear-gradient(135deg, rgba(6, 182, 212, 0.05) 0%, rgba(8, 145, 178, 0.02) 100%); border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.1);">
+                <!-- Trend analysis will be loaded here -->
+              </div>
+              <div style="background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0;">
+                <canvas id="chart-vitals-mini" width="400" height="200" style="max-width: 100%; border-radius: 8px;"></canvas>
+              </div>
+            </div>
+            <div style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); padding: 32px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid #e2e8f0;">
+              <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 12L11 14L15 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style="color: #1e293b; margin: 0; font-size: 20px; font-weight: 700;">Medication Status</h3>
+                  <p style="color: #64748b; margin: 0; font-size: 14px; font-weight: 500;">Adherence tracking</p>
+                </div>
+              </div>
+              <div id="medication-status" style="margin-bottom: 20px; color: #64748b; font-size: 15px; font-weight: 500; padding: 16px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.02) 100%); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                <!-- Medication status will be loaded here -->
+              </div>
+              <div style="background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0;">
+                <div id="upcoming-meds" style="color: #64748b; font-size: 15px; font-weight: 500;">No medications scheduled</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Advanced Analytics Section -->
+          <div id="advanced-analytics" style="background: #121315; padding: 20px; border-radius: 16px; margin-top: 20px;">
+            <h3 style="color: #e7e7ea; margin: 0 0 20px 0;">📊 Advanced Analytics</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+              <div>
+                <h4 style="color: #e7e7ea; margin: 0 0 10px 0;">❤️ Blood Pressure Trends</h4>
+                <canvas id="bp-trend-chart" width="300" height="200" style="background: #191a1d; border-radius: 8px;"></canvas>
+              </div>
+              <div>
+                <h4 style="color: #e7e7ea; margin: 0 0 10px 0;">⚖️ Weight Progress</h4>
+                <canvas id="weight-trend-chart" width="300" height="200" style="background: #191a1d; border-radius: 8px;"></canvas>
+              </div>
+              <div>
+                <h4 style="color: #e7e7ea; margin: 0 0 10px 0;">📅 Weekly Summary</h4>
+                <div id="weekly-summary" style="background: #191a1d; padding: 15px; border-radius: 8px;">
+                  <!-- Weekly summary will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Streaks Section -->
+          <div style="background: #121315; padding: 20px; border-radius: 16px; margin-top: 20px;">
+            <h3 style="color: #e7e7ea; margin: 0 0 15px 0;">🔥 Current Streaks</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+              <div style="text-align: center;">
+                <div style="font-size: 1.5em; color: #7dd3fc; font-weight: bold;" id="streak-meds">0 days</div>
+                <div style="color: #a8aab2; font-size: 0.9em;">Medication</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 1.5em; color: #86efac; font-weight: bold;" id="streak-vitals">0 days</div>
+                <div style="color: #a8aab2; font-size: 0.9em;">Vitals</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 1.5em; color: #fde68a; font-weight: bold;" id="streak-weight">0 weeks</div>
+                <div style="color: #a8aab2; font-size: 0.9em;">Weight</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medications Page -->
+        <div id="page-medications" data-page="medications" hidden style="padding: 20px; background: #000000; color: #ffffff;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <div style="background: #0d7377; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">💊 Medications</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Track your medications and adherence</p>
+            </div>
+            <button class="btn btn-primary" id="add-medication" style="background: #0d7377; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;">Add Medication</button>
+          </div>
+          
+          <!-- Medication Summary Grid -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 32px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">6</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Total Medications</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 32px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">95%</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Adherence Rate</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 32px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">2</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Refills Needed</div>
+            </div>
+          </div>
+          
+          <div id="medications-list" style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333;">
+            <h3 style="color: #ffffff; margin: 0 0 20px 0;">Current Medications</h3>
+            <div id="medications-table" style="color: #cccccc;">
+              <div style="display: grid; gap: 16px;">
+                <!-- Metformin -->
+                <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">Metformin 500mg</h4>
+                    <span style="background: #0d7377; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">Type 2 Diabetes</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 12px;">
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Frequency</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Twice daily</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Prescriber</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Dr. Sarah Chen</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Refills</div>
+                      <div style="color: #0d7377; font-size: 14px; font-weight: 600;">2 remaining</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Pharmacy</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Community Pharmacy</div>
+                    </div>
+                  </div>
+                  <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px; font-style: italic;">Take with meals to reduce stomach upset</p>
+                  <div style="display: flex; gap: 8px;">
+                    <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">Mark Taken</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Refill</button>
+                  </div>
+                </div>
+                
+                <!-- Lisinopril -->
+                <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">Lisinopril 10mg</h4>
+                    <span style="background: #0d7377; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">Blood Pressure</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 12px;">
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Frequency</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Once daily (morning)</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Prescriber</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Dr. Sarah Chen</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Refills</div>
+                      <div style="color: #0d7377; font-size: 14px; font-weight: 600;">3 remaining</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Pharmacy</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Community Pharmacy</div>
+                    </div>
+                  </div>
+                  <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px; font-style: italic;">Take in the morning, stay hydrated</p>
+                  <div style="display: flex; gap: 8px;">
+                    <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">Mark Taken</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Refill</button>
+                  </div>
+                </div>
+                
+                <!-- Atorvastatin -->
+                <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">Atorvastatin 20mg</h4>
+                    <span style="background: #0d7377; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">Cholesterol</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 12px;">
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Frequency</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Once daily (evening)</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Prescriber</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Dr. Sarah Chen</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Refills</div>
+                      <div style="color: #0d7377; font-size: 14px; font-weight: 600;">4 remaining</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Pharmacy</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Community Pharmacy</div>
+                    </div>
+                  </div>
+                  <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px; font-style: italic;">Take in the evening for best effectiveness</p>
+                  <div style="display: flex; gap: 8px;">
+                    <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">Mark Taken</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Refill</button>
+                  </div>
+                </div>
+                
+                <!-- Levothyroxine -->
+                <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">Levothyroxine 75mcg</h4>
+                    <span style="background: #0d7377; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">Hypothyroidism</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 12px;">
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Frequency</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Once daily (morning)</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Prescriber</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Dr. Michael Rodriguez</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Refills</div>
+                      <div style="color: #0d7377; font-size: 14px; font-weight: 600;">5 remaining</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Pharmacy</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">HealthMart Pharmacy</div>
+                    </div>
+                  </div>
+                  <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px; font-style: italic;">Take 30 minutes before breakfast, on empty stomach</p>
+                  <div style="display: flex; gap: 8px;">
+                    <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">Mark Taken</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Refill</button>
+                  </div>
+                </div>
+                
+                <!-- Vitamin D3 -->
+                <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">Vitamin D3 2000 IU</h4>
+                    <span style="background: #0d7377; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">Vitamin Deficiency</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 12px;">
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Frequency</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Once daily</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Prescriber</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Dr. Sarah Chen</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Refills</div>
+                      <div style="color: #0d7377; font-size: 14px; font-weight: 600;">6 remaining</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Pharmacy</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Community Pharmacy</div>
+                    </div>
+                  </div>
+                  <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px; font-style: italic;">Take with a meal containing healthy fats</p>
+                  <div style="display: flex; gap: 8px;">
+                    <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">Mark Taken</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Refill</button>
+                  </div>
+                </div>
+                
+                <!-- Omeprazole -->
+                <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">Omeprazole 20mg</h4>
+                    <span style="background: #0d7377; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;">GERD/Acid Reflux</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 12px;">
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Frequency</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Once daily (morning)</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Prescriber</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Dr. Sarah Chen</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Refills</div>
+                      <div style="color: #ff6b6b; font-size: 14px; font-weight: 600;">2 remaining</div>
+                    </div>
+                    <div>
+                      <div style="color: #cccccc; font-size: 13px; margin-bottom: 4px;">Pharmacy</div>
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500;">Community Pharmacy</div>
+                    </div>
+                  </div>
+                  <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px; font-style: italic;">Take 30 minutes before breakfast</p>
+                  <div style="display: flex; gap: 8px;">
+                    <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">Mark Taken</button>
+                    <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                    <button style="background: #ff6b6b; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">Refill Needed</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vitals Page -->
+        <div id="page-vitals" data-page="vitals" hidden style="padding: 20px; background: #000000; color: #ffffff;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <div style="background: #0d7377; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">❤️ Vitals</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Monitor blood pressure and vital signs</p>
+            </div>
+            <button class="btn btn-primary" id="add-vital" style="background: #0d7377; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;">Add Vitals</button>
+          </div>
+          
+          <!-- Vitals Summary Grid -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">111/67</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Latest BP</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">Target Range</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">64</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Heart Rate (bpm)</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">Resting</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">27</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Total Readings</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">90 days</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">95%</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Target Range</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">Achievement</div>
+            </div>
+          </div>
+          
+          <!-- Blood Pressure Trend Chart -->
+          <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; margin-bottom: 24px;">
+            <h3 style="color: #ffffff; margin: 0 0 20px 0;">📈 Blood Pressure Trend (90 Days)</h3>
+            <div style="background: #333333; padding: 20px; border-radius: 8px; text-align: center;">
+              <div style="color: #cccccc; font-size: 16px; margin-bottom: 8px;">📊 Interactive Chart</div>
+              <div style="color: #666666; font-size: 14px;">Starting: 142/88 → Current: 111/67</div>
+              <div style="color: #0d7377; font-size: 14px; margin-top: 8px; font-weight: 600;">31-point improvement in systolic pressure!</div>
+            </div>
+          </div>
+          
+          <!-- Recent Readings -->
+          <div id="vitals-list" style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333;">
+            <h3 style="color: #ffffff; margin: 0 0 20px 0;">📅 Recent Readings</h3>
+            
+            <div style="display: grid; gap: 16px;">
+              <!-- Latest Reading -->
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Reading</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 19, 2025 - 8:30 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">111/67</div>
+                    <div style="color: #cccccc; font-size: 12px;">Blood Pressure</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Target Range</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">64</div>
+                    <div style="color: #cccccc; font-size: 12px;">Heart Rate</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Resting</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">98.6°F</div>
+                    <div style="color: #cccccc; font-size: 12px;">Temperature</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Reading</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+              
+              <!-- Previous Readings -->
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Reading</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 15, 2025 - 9:00 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">112/67</div>
+                    <div style="color: #cccccc; font-size: 12px;">Blood Pressure</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Target Range</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">65</div>
+                    <div style="color: #cccccc; font-size: 12px;">Heart Rate</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Resting</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">98.5°F</div>
+                    <div style="color: #cccccc; font-size: 12px;">Temperature</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                </div>
+                <div style="color: #0d7377; font-size: 12px; font-style: italic; margin-bottom: 8px;">Target range achieved!</div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Reading</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+              
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Reading</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 10, 2025 - 8:45 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">112/68</div>
+                    <div style="color: #cccccc; font-size: 12px;">Blood Pressure</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Target Range</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">65</div>
+                    <div style="color: #cccccc; font-size: 12px;">Heart Rate</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Resting</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">98.4°F</div>
+                    <div style="color: #cccccc; font-size: 12px;">Temperature</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Reading</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+              
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Reading</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 5, 2025 - 8:15 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">113/68</div>
+                    <div style="color: #cccccc; font-size: 12px;">Blood Pressure</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Target Range</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">66</div>
+                    <div style="color: #cccccc; font-size: 12px;">Heart Rate</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Resting</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">98.6°F</div>
+                    <div style="color: #cccccc; font-size: 12px;">Temperature</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Reading</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Symptoms Page -->
+        <div id="page-symptoms" data-page="symptoms" hidden>
+          <div class="page-header">
+            <h1>📝 Symptoms & Side Effects</h1>
+            <button class="btn btn-primary" id="add-symptom">Add Symptom</button>
+          </div>
+          <div id="symptoms-list"></div>
+        </div>
+
+        <!-- Weight Page -->
+        <!-- Weight Page -->
+        <div id="page-weight" data-page="weight" hidden style="padding: 20px; background: #000000; color: #ffffff;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <div style="background: #0d7377; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">⚖️ Weight Tracking</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Track your weight progress and BMI</p>
+            </div>
+            <button class="btn btn-primary" id="add-weight" style="background: #0d7377; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;">Add Weight</button>
+          </div>
+          
+          <!-- Weight Summary Grid -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">179.8</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Current Weight (lbs)</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">Latest Reading</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">-15.2</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Total Lost (lbs)</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">Since July 22</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">24.8</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Current BMI</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">Normal Range</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; text-align: center;">
+              <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">76%</div>
+              <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Goal Progress</div>
+              <div style="color: #0d7377; font-size: 12px; margin-top: 4px;">15.2/20 lbs</div>
+            </div>
+          </div>
+          
+          <!-- Weight Trend Chart -->
+          <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; margin-bottom: 24px;">
+            <h3 style="color: #ffffff; margin: 0 0 20px 0;">📈 Weight Progress Chart (90 Days)</h3>
+            <div style="background: #333333; padding: 20px; border-radius: 8px; text-align: center;">
+              <div style="color: #cccccc; font-size: 16px; margin-bottom: 8px;">📊 Interactive Chart</div>
+              <div style="color: #666666; font-size: 14px;">Starting: 195 lbs → Current: 179.8 lbs</div>
+              <div style="color: #0d7377; font-size: 14px; margin-top: 8px; font-weight: 600;">Consistent downward trend - 15.2 lbs lost!</div>
+            </div>
+          </div>
+          
+          <!-- Recent Weight Entries -->
+          <div id="weight-list" style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333;">
+            <h3 style="color: #ffffff; margin: 0 0 20px 0;">📅 Recent Weight Entries</h3>
+            
+            <div style="display: grid; gap: 16px;">
+              <!-- Latest Entry -->
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Weigh-in</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 19, 2025 - 8:30 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">179.8 lbs</div>
+                    <div style="color: #cccccc; font-size: 12px;">Weight</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Current</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">24.8</div>
+                    <div style="color: #cccccc; font-size: 12px;">BMI</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">-0.4</div>
+                    <div style="color: #cccccc; font-size: 12px;">Change (lbs)</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">From last week</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Entry</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+              
+              <!-- Previous Entries -->
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Weigh-in</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 17, 2025 - 8:30 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">180.2 lbs</div>
+                    <div style="color: #cccccc; font-size: 12px;">Weight</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Previous</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">24.9</div>
+                    <div style="color: #cccccc; font-size: 12px;">BMI</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">-0.6</div>
+                    <div style="color: #cccccc; font-size: 12px;">Change (lbs)</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">From last week</div>
+                  </div>
+                </div>
+                <div style="color: #0d7377; font-size: 12px; font-style: italic; margin-bottom: 8px;">15 pounds lost milestone!</div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Entry</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+              
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Weigh-in</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 14, 2025 - 8:15 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">180.8 lbs</div>
+                    <div style="color: #cccccc; font-size: 12px;">Weight</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Previous</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">25.0</div>
+                    <div style="color: #cccccc; font-size: 12px;">BMI</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">-0.5</div>
+                    <div style="color: #cccccc; font-size: 12px;">Change (lbs)</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">From last week</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Entry</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+              
+              <div style="background: #333333; padding: 20px; border-radius: 12px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 600;">🌅 Morning Weigh-in</h4>
+                  <span style="color: #cccccc; font-size: 14px;">Oct 10, 2025 - 8:45 AM</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 12px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">181.3 lbs</div>
+                    <div style="color: #cccccc; font-size: 12px;">Weight</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Previous</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">25.1</div>
+                    <div style="color: #cccccc; font-size: 12px;">BMI</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">Normal</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 24px; color: #0d7377; font-weight: 700; margin-bottom: 4px;">-0.7</div>
+                    <div style="color: #cccccc; font-size: 12px;">Change (lbs)</div>
+                    <div style="color: #0d7377; font-size: 11px; margin-top: 2px;">From last week</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="background: #0d7377; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">+ Add Entry</button>
+                  <button style="background: #333333; color: #cccccc; border: 1px solid #555555; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goals Page -->
+        <div id="page-goals" data-page="goals" hidden style="padding: 20px; background: #000000; color: #ffffff;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <div style="background: #0d7377; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">🎯 Goals & Achievements</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Set and track your health goals</p>
+            </div>
+            <button class="btn btn-primary" id="add-goal" style="background: #0d7377; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;">Add Goal</button>
+          </div>
+          
+          <!-- Current Streaks -->
+          <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333; margin-bottom: 20px;">
+            <h3 style="color: #ffffff; margin: 0 0 15px 0;">🔥 Current Streaks</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div style="background: #333333; padding: 16px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">7 days</div>
+                <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Medication</div>
+                <div style="color: #666666; font-size: 12px; margin-top: 4px;">Perfect adherence</div>
+              </div>
+              <div style="background: #333333; padding: 16px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">5 days</div>
+                <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Vitals</div>
+                <div style="color: #666666; font-size: 12px; margin-top: 4px;">Daily monitoring</div>
+              </div>
+              <div style="background: #333333; padding: 16px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; color: #0d7377; font-weight: 700; margin-bottom: 8px;">3 weeks</div>
+                <div style="color: #cccccc; font-size: 14px; font-weight: 500;">Weight</div>
+                <div style="color: #666666; font-size: 12px; margin-top: 4px;">Weekly tracking</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Active Goals -->
+          <div style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333333;">
+            <h3 style="color: #ffffff; margin: 0 0 15px 0;">🎯 Active Goals</h3>
+            
+            <div style="display: grid; gap: 12px;">
+              <div style="background: #333333; padding: 16px; border-radius: 8px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 16px;">💊 Medication Adherence</h4>
+                  <span style="background: #0d7377; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">95% Complete</span>
+                </div>
+                <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px;">Take all medications as prescribed for 30 days</p>
+                <div style="background: #555555; border-radius: 4px; height: 8px; margin-bottom: 8px;">
+                  <div style="background: #0d7377; height: 100%; width: 95%; border-radius: 4px;"></div>
+                </div>
+                <div style="color: #cccccc; font-size: 12px;">28/30 days completed</div>
+              </div>
+              
+              <div style="background: #333333; padding: 16px; border-radius: 8px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 16px;">⚖️ Weight Loss</h4>
+                  <span style="background: #0d7377; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">60% Complete</span>
+                </div>
+                <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px;">Lose 5 pounds in 3 months</p>
+                <div style="background: #555555; border-radius: 4px; height: 8px; margin-bottom: 8px;">
+                  <div style="background: #0d7377; height: 100%; width: 60%; border-radius: 4px;"></div>
+                </div>
+                <div style="color: #cccccc; font-size: 12px;">3.0/5.0 lbs lost</div>
+              </div>
+              
+              <div style="background: #333333; padding: 16px; border-radius: 8px; border-left: 4px solid #0d7377;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <h4 style="color: #ffffff; margin: 0; font-size: 16px;">❤️ Blood Pressure</h4>
+                  <span style="background: #0d7377; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">80% Complete</span>
+                </div>
+                <p style="color: #cccccc; margin: 0 0 12px 0; font-size: 14px;">Maintain BP below 120/80 for 2 weeks</p>
+                <div style="background: #555555; border-radius: 4px; height: 8px; margin-bottom: 8px;">
+                  <div style="background: #0d7377; height: 100%; width: 80%; border-radius: 4px;"></div>
+                </div>
+                <div style="color: #cccccc; font-size: 12px;">11/14 days completed</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bulk Entry Page -->
+        <div id="page-bulk-entry" data-page="bulk-entry" hidden style="padding: 20px; color: #e7e7ea;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <h1 style="color: #e7e7ea; margin: 0 0 10px 0;">📋 Bulk Data Entry</h1>
+          </div>
+          <div id="bulk-entry-content" style="background: #121315; padding: 20px; border-radius: 16px;">
+            <h3 style="color: #e7e7ea; margin: 0 0 15px 0;">Bulk Data Entry</h3>
+            
+            <!-- Vitals Bulk Entry -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">❤️ Bulk Vitals Entry</h4>
+              <table style="width: 100%; color: #e7e7ea; margin-bottom: 15px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid #333;">
+                    <th style="padding: 8px;">Date</th>
+                    <th style="padding: 8px;">Systolic</th>
+                    <th style="padding: 8px;">Diastolic</th>
+                    <th style="padding: 8px;">Heart Rate</th>
+                    <th style="padding: 8px;">Temperature</th>
+                    <th style="padding: 8px;">Notes</th>
+                  </tr>
+                </thead>
+                <tbody id="bulk-vitals-tbody">
+                  <!-- Bulk vitals rows will be added here -->
+                </tbody>
+              </table>
+              <div style="display: flex; gap: 10px;">
+                <button id="bulk-vitals-add-row" style="background: #7dd3fc; color: #0b0b0c; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600;">Add Row</button>
+                <button id="bulk-vitals-save" style="background: #86efac; color: #0b0b0c; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600;">Save All</button>
+                <button id="bulk-vitals-clear" style="background: #fda4af; color: #0b0b0c; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600;">Clear</button>
+              </div>
+            </div>
+            
+            <!-- Weight Bulk Entry -->
+            <div>
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">⚖️ Bulk Weight Entry</h4>
+              <table style="width: 100%; color: #e7e7ea; margin-bottom: 15px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid #333;">
+                    <th style="padding: 8px;">Date</th>
+                    <th style="padding: 8px;">Weight (lbs)</th>
+                    <th style="padding: 8px;">Notes</th>
+                  </tr>
+                </thead>
+                <tbody id="bulk-weight-tbody">
+                  <!-- Bulk weight rows will be added here -->
+                </tbody>
+              </table>
+              <div style="display: flex; gap: 10px;">
+                <button id="bulk-weight-add-row" style="background: #7dd3fc; color: #0b0b0c; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600;">Add Row</button>
+                <button id="bulk-weight-save" style="background: #86efac; color: #0b0b0c; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600;">Save All</button>
+                <button id="bulk-weight-clear" style="background: #fda4af; color: #0b0b0c; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600;">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports Page -->
+        <div id="page-reports" data-page="reports" hidden style="padding: 20px; color: #e7e7ea;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <h1 style="color: #e7e7ea; margin: 0 0 10px 0;">📈 Reports & Export</h1>
+          </div>
+          <div id="reports-content" style="background: #121315; padding: 20px; border-radius: 16px;">
+            <h3 style="color: #e7e7ea; margin: 0 0 15px 0;">Generate Reports</h3>
+            
+            <!-- Report Options -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">Select Data to Include:</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="report-medications" checked style="margin-right: 8px;">
+                  💊 Medications
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="report-vitals" checked style="margin-right: 8px;">
+                  ❤️ Vitals
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="report-weight" checked style="margin-right: 8px;">
+                  ⚖️ Weight Tracking
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="report-goals" checked style="margin-right: 8px;">
+                  🎯 Goals & Achievements
+                </label>
+              </div>
+            </div>
+            
+            <!-- Date Range -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">Date Range:</h4>
+              <div style="display: flex; gap: 15px; align-items: center;">
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">From:</label>
+                  <input type="date" id="report-date-from" style="background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 8px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">To:</label>
+                  <input type="date" id="report-date-to" style="background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 8px; border-radius: 6px;">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Export Buttons -->
+            <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+              <button id="generate-report" style="background: #7dd3fc; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                📊 Generate Report
+              </button>
+              <button id="export-json" style="background: #86efac; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                📄 Export JSON
+              </button>
+              <button id="export-csv" style="background: #fde68a; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                📋 Export CSV
+              </button>
+            </div>
+            
+            <!-- Report Preview -->
+            <div id="report-preview" style="background: #191a1d; padding: 20px; border-radius: 8px; border: 1px solid #333;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">Report Preview</h4>
+              <div id="report-content" style="color: #a8aab2;">
+                Click "Generate Report" to see your health data summary here.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerts Page -->
+        <div id="page-alerts" data-page="alerts" hidden style="padding: 20px; color: #e7e7ea;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <h1 style="color: #e7e7ea; margin: 0 0 10px 0;">🚨 Health Alerts</h1>
+            <button class="btn btn-primary" id="add-alert" style="background: #7dd3fc; color: #0b0b0c; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600;">Add Alert</button>
+          </div>
+          
+          <!-- Active Alerts -->
+          <div id="active-alerts" style="background: #121315; padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+            <h3 style="color: #e7e7ea; margin: 0 0 15px 0;">🔔 Active Alerts</h3>
+            <div id="alerts-list">
+              <!-- Active alerts will be displayed here -->
+            </div>
+          </div>
+          
+          <!-- Alert Configuration -->
+          <div id="alert-config" style="background: #121315; padding: 20px; border-radius: 16px;">
+            <h3 style="color: #e7e7ea; margin: 0 0 20px 0;">⚙️ Alert Configuration</h3>
+            
+            <!-- Blood Pressure Alerts -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">❤️ Blood Pressure Alerts</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">High Systolic Threshold:</label>
+                  <input type="number" id="bp-systolic-high" placeholder="140" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">High Diastolic Threshold:</label>
+                  <input type="number" id="bp-diastolic-high" placeholder="90" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Low Systolic Threshold:</label>
+                  <input type="number" id="bp-systolic-low" placeholder="90" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Low Diastolic Threshold:</label>
+                  <input type="number" id="bp-diastolic-low" placeholder="60" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Weight Alerts -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">⚖️ Weight Change Alerts</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Weight Gain Alert (lbs):</label>
+                  <input type="number" id="weight-gain-threshold" placeholder="5" step="0.1" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Weight Loss Alert (lbs):</label>
+                  <input type="number" id="weight-loss-threshold" placeholder="5" step="0.1" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Time Period (days):</label>
+                  <select id="weight-timeframe" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                    <option value="7">7 days</option>
+                    <option value="14">14 days</option>
+                    <option value="30" selected>30 days</option>
+                    <option value="90">90 days</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Alert Frequency:</label>
+                  <select id="weight-alert-frequency" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                    <option value="immediate">Immediate</option>
+                    <option value="daily" selected>Daily</option>
+                    <option value="weekly">Weekly</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Medication Alerts -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">💊 Medication Alerts</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Missed Dose Alert:</label>
+                  <select id="med-missed-alert" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                    <option value="disabled">Disabled</option>
+                    <option value="1hour">1 hour after missed</option>
+                    <option value="2hours" selected>2 hours after missed</option>
+                    <option value="4hours">4 hours after missed</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Refill Reminder (days before):</label>
+                  <input type="number" id="med-refill-reminder" placeholder="7" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Alert Settings -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">🔔 Alert Settings</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="alert-sound" checked style="margin-right: 8px;">
+                  🔊 Sound Alerts
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="alert-visual" checked style="margin-right: 8px;">
+                  👁️ Visual Alerts
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="alert-dashboard" checked style="margin-right: 8px;">
+                  📊 Show on Dashboard
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="alert-email" style="margin-right: 8px;">
+                  📧 Email Notifications
+                </label>
+              </div>
+            </div>
+            
+            <!-- Save Button -->
+            <div style="display: flex; gap: 15px;">
+              <button id="save-alert-settings" style="background: #86efac; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                💾 Save Alert Settings
+              </button>
+              <button id="test-alerts" style="background: #fde68a; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                🧪 Test Alerts
+              </button>
+              <button id="clear-alerts" style="background: #fda4af; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                🗑️ Clear All Alerts
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="page-settings" data-page="settings" hidden style="padding: 20px; color: #e7e7ea;">
+          <div class="page-header" style="margin-bottom: 30px;">
+            <h1 style="color: #e7e7ea; margin: 0 0 10px 0;">⚙️ Settings</h1>
+          </div>
+          <div id="settings-content" style="background: #121315; padding: 20px; border-radius: 16px;">
+            <div style="background: #1a1d29; padding: 15px; border-radius: 8px; border-left: 4px solid #7dd3fc; margin-bottom: 20px;">
+              <h4 style="color: #7dd3fc; margin: 0 0 8px 0;">🔒 HIPAA Compliant</h4>
+              <p style="color: #a8aab2; margin: 0; font-size: 0.9em;">This app stores only de-identified health data. No personally identifiable information (PII) such as names, birth dates, or specific identifiers are collected or stored.</p>
+            </div>
+            <h3 style="color: #e7e7ea; margin: 0 0 20px 0;">Health Settings</h3>
+            
+            <!-- Health Info (De-identified) -->
+            <div style="margin-bottom: 30px;">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Height (inches):</label>
+                  <input type="number" id="setting-height" placeholder="70" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Age Range:</label>
+                  <select id="setting-age-range" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                    <option value="">Select Age Range</option>
+                    <option value="18-25">18-25</option>
+                    <option value="26-35">26-35</option>
+                    <option value="36-45">36-45</option>
+                    <option value="46-55">46-55</option>
+                    <option value="56-65">56-65</option>
+                    <option value="65+">65+</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Weight Goals -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">Weight Goals</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Target Weight (lbs):</label>
+                  <input type="number" id="setting-target-weight" placeholder="175" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+                <div>
+                  <label style="color: #a8aab2; display: block; margin-bottom: 5px;">Target Date:</label>
+                  <input type="date" id="setting-target-date" style="width: 100%; background: #191a1d; color: #e7e7ea; border: 1px solid #333; padding: 10px; border-radius: 6px;">
+                </div>
+              </div>
+              <button id="save-weight-goal" style="background: #7dd3fc; color: #0b0b0c; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 15px;">
+                💾 Save Weight Goal
+              </button>
+            </div>
+            
+            <!-- Notifications -->
+            <div style="margin-bottom: 30px;">
+              <h4 style="color: #e7e7ea; margin: 0 0 15px 0;">Notifications</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="notify-meds" checked style="margin-right: 8px;">
+                  💊 Medication Reminders
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="notify-vitals" checked style="margin-right: 8px;">
+                  ❤️ Vitals Tracking
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="notify-weight" style="margin-right: 8px;">
+                  ⚖️ Weight Tracking
+                </label>
+                <label style="display: flex; align-items: center; color: #a8aab2;">
+                  <input type="checkbox" id="notify-goals" checked style="margin-right: 8px;">
+                  🎯 Goal Updates
+                </label>
+              </div>
+            </div>
+            
+            <!-- Save Settings -->
+            <div style="display: flex; gap: 15px;">
+              <button id="save-settings" style="background: #86efac; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                💾 Save All Settings
+              </button>
+              <button id="reset-settings" style="background: #fda4af; color: #0b0b0c; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                🔄 Reset to Defaults
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Load external JS modules -->
+<script src="js/store.js"></script>
+<script>
+  // Show HIPAA modal first for new users
+  window.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, checking HIPAA acceptance');
+    
+    // Initialize navigation
+    // if (typeof initNav === 'function') {
+    //   console.log('Initializing navigation...');
+    //   initNav();
+    // }
+    const data = localStorage.getItem('healthTrackerData');
+    let hipaaAccepted = false;
+    
+    if (data) {
+      const parsed = JSON.parse(data);
+      hipaaAccepted = parsed.hipaaAccepted || false;
+    }
+    
+    // Show HIPAA modal if not accepted
+    if (!hipaaAccepted) {
+      setTimeout(() => {
+        const hipaaModal = document.getElementById('hipaa-modal');
+        if (hipaaModal) {
+          hipaaModal.style.display = 'block';
+        }
+      }, 500);
+    }
+    
+    // Force dashboard update after a delay to ensure all scripts are loaded
+    setTimeout(() => {
+      console.log('Attempting to refresh dashboard...');
+      
+      // Manual dashboard population as fallback
+      const healthData = localStorage.getItem('healthTrackerData');
+      if (healthData) {
+        try {
+          const data = JSON.parse(healthData);
+          console.log('Found health data:', data);
+          
+          // Update dashboard stats manually
+          const medsCount = data.medications ? data.medications.length : 0;
+          const vitalsCount = data.vitals ? data.vitals.length : 0;
+          const weightsCount = data.weights ? data.weights.length : 0;
+          const goalsCount = data.goals ? data.goals.length : 0;
+          
+          // Update medication count
+          const medsElement = document.getElementById('stat-meds-today');
+          if (medsElement) {
+            medsElement.textContent = medsCount;
+            console.log('Updated medications count:', medsCount);
+          }
+          
+          // Update blood pressure
+          if (data.vitals && data.vitals.length > 0) {
+            const latestVital = data.vitals[0];
+            const bpElement = document.getElementById('stat-bp-latest');
+            if (bpElement) {
+              bpElement.textContent = `${latestVital.systolic}/${latestVital.diastolic}`;
+              console.log('Updated BP:', `${latestVital.systolic}/${latestVital.diastolic}`);
+            }
+          }
+          
+          // Update weight
+          if (data.weights && data.weights.length > 0) {
+            const latestWeight = data.weights[0];
+            const weightElement = document.getElementById('stat-weight-latest');
+            if (weightElement) {
+              weightElement.textContent = `${latestWeight.value} lbs`;
+              console.log('Updated weight:', `${latestWeight.value} lbs`);
+            }
+          }
+          
+          // Update goals
+          const goalsElement = document.getElementById('stat-goals-active');
+          if (goalsElement) {
+            goalsElement.textContent = goalsCount;
+            console.log('Updated goals count:', goalsCount);
+          }
+          
+          // Update current date
+          const dateElement = document.getElementById('current-date');
+          if (dateElement) {
+            dateElement.textContent = new Date().toLocaleDateString('en-US', { 
+              weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+          }
+          
+        } catch (error) {
+          console.error('Error parsing health data:', error);
+        }
+      } else {
+        console.log('No health data found in localStorage');
+      }
+      
+      // Try calling the original functions as well
+      if (typeof window.loadDashboard === 'function') {
+        console.log('Calling loadDashboard...');
+        window.loadDashboard();
+      }
+      if (typeof window.updateDashboardStats === 'function') {
+        console.log('Calling updateDashboardStats...');
+        window.updateDashboardStats();
+      }
+    }, 2000);
+    
+    // Add refresh button functionality
+    const refreshBtn = document.getElementById('refresh-data-btn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', function() {
+        console.log('Refresh button clicked - reloading sample data...');
+        
+        // Clear existing data and force reload
+        localStorage.removeItem('sampleDataLoaded');
+        localStorage.removeItem('sampleDataVersion');
+        
+        // Reload the page to trigger fresh data loading
+        window.location.reload();
+      });
+    }
+    
+    // Add tour button functionality
+    const tourBtn = document.getElementById('start-tour');
+    if (tourBtn) {
+      tourBtn.addEventListener('click', function() {
+        console.log('Tour button clicked - starting guided tour...');
+        
+        // Show onboarding modal
+        const onboardingModal = document.getElementById('onboarding-modal');
+        if (onboardingModal) {
+          onboardingModal.style.display = 'flex';
+        }
+      });
+    }
+  });
+</script>
+<script src="js/consent.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/telemetry.js"></script>
+<script src="js/sampling.js"></script>
+<script src="js/app.js"></script>
+<script src="js/app-enhanced.js"></script>
+
+  <!-- Sample Data Auto-Loader -->
+  <script>
+  (async function() {
+    const SAMPLE_DATA_LOADED_KEY = 'sampleDataLoaded';
+    const SAMPLE_DATA_VERSION_KEY = 'sampleDataVersion';
+    const CURRENT_VERSION = '3.0.0'; // HIPAA compliant version - removed PII
+
+    // Check if sample data has already been loaded
+    const hasLoadedSampleData = localStorage.getItem(SAMPLE_DATA_LOADED_KEY);
+    const loadedVersion = localStorage.getItem(SAMPLE_DATA_VERSION_KEY);
+
+    // Only load sample data if:
+    // 1. Never loaded before, OR
+    // 2. Version has changed
+    if (hasLoadedSampleData === 'true' && loadedVersion === CURRENT_VERSION) {
+      console.log('Sample data already loaded (version ' + CURRENT_VERSION + ')');
+      return;
+    }
+
+    // Check if user already has data (don't overwrite existing data)
+    const hasExistingData = localStorage.getItem('healthTrackerData');
+
+    if (hasExistingData && hasLoadedSampleData !== 'true') {
+      console.log('User has existing data, skipping sample data load');
+      localStorage.setItem(SAMPLE_DATA_LOADED_KEY, 'true');
+      localStorage.setItem(SAMPLE_DATA_VERSION_KEY, CURRENT_VERSION);
+      return;
+    }
+
+    try {
+      // Fetch sample data from sample-data.json
+      const response = await fetch('sample-data.json');
+      
+      if (!response.ok) {
+        console.warn('Sample data file not found or could not be loaded');
+        return;
+      }
+
+      const sampleData = await response.json();
+      console.log('Loading sample data...');
+
+      // Transform sample data to match app's expected structure
+      const transformedData = {
+        medications: sampleData.medications || [],
+        vitals: [], // Will be populated from blood_pressure data
+        symptoms: sampleData.symptoms || [],
+        weights: [], // Will be populated from weight data
+        goals: sampleData.goals || [],
+        medicationLog: [],
+        achievements: sampleData.achievements || [],
+        settings: {
+          height: '70',
+          targetWeight: '175',
+          targetDate: '2025-12-22',
+          notifications: {
+            meds: true,
+            vitals: true,
+            weight: false,
+            goals: true
+          }
+        },
+        hipaaAccepted: true
+      };
+
+      // Transform blood pressure data to vitals format
+      if (sampleData.vitals && sampleData.vitals.blood_pressure) {
+        transformedData.vitals = sampleData.vitals.blood_pressure.map((bp, index) => ({
+          id: `vital-${index}`,
+          date: bp.date,
+          systolic: bp.systolic,
+          diastolic: bp.diastolic,
+          heartRate: sampleData.vitals.heart_rate ? sampleData.vitals.heart_rate[index]?.bpm : null,
+          temperature: 98.6,
+          notes: bp.notes || ''
+        }));
+        console.log('✓ Loaded ' + transformedData.vitals.length + ' sample vitals entries');
+      }
+
+      // Transform weight data
+      if (sampleData.vitals && sampleData.vitals.weight) {
+        transformedData.weights = sampleData.vitals.weight.map((w, index) => ({
+          id: `weight-${index}`,
+          date: w.date,
+          value: w.pounds,
+          notes: w.notes || ''
+        }));
+        console.log('✓ Loaded ' + transformedData.weights.length + ' sample weight entries');
+      }
+
+      // Store transformed data in the correct format
+      localStorage.setItem('healthTrackerData', JSON.stringify(transformedData));
+      console.log('✓ Loaded ' + transformedData.medications.length + ' sample medications');
+      console.log('✓ Loaded ' + transformedData.goals.length + ' sample goals');
+      console.log('✓ Transformed data structure:', transformedData);
+
+      // Mark sample data as loaded with version
+      localStorage.setItem(SAMPLE_DATA_LOADED_KEY, 'true');
+      localStorage.setItem(SAMPLE_DATA_VERSION_KEY, CURRENT_VERSION);
+
+      console.log('✓ Sample data loaded successfully!');
+      
+      // Force dashboard refresh after data is loaded
+      setTimeout(() => {
+        if (typeof loadDashboard === 'function') {
+          console.log('Refreshing dashboard with new data...');
+          loadDashboard();
+        }
+        if (typeof updateDashboardStats === 'function') {
+          console.log('Updating dashboard stats...');
+          updateDashboardStats();
+        }
+      }, 500);
+      
+      // Show success notification if toast function is available
+      if (typeof showToast === 'function') {
+        showToast('✓ Sample data loaded successfully! Explore the app to see example entries.', 'success');
+      }
+
+    } catch (error) {
+      console.error('Error loading sample data:', error);
+      // Don't block app loading if sample data fails
+    }
+  })();
+  </script>
+
+  <!-- Onboarding System -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize onboarding system
+    function initOnboarding() {
+      const onboardingModal = document.getElementById('onboarding-modal');
+      const onboardingTour = document.getElementById('onboarding-tour');
+      const tourSteps = document.querySelectorAll('.tour-step');
+      let currentStep = 0;
+      
+      // Check if user has seen onboarding before
+      if (!localStorage.getItem('embermate-onboarding-completed')) {
+        setTimeout(() => {
+          onboardingModal.style.display = 'flex';
+        }, 2000); // Show after 2 seconds
+      }
+      
+      // Skip onboarding
+      document.getElementById('onboarding-skip').addEventListener('click', () => {
+        onboardingModal.style.display = 'none';
+        localStorage.setItem('embermate-onboarding-completed', 'true');
+      });
+      
+      // Start tour
+      document.getElementById('onboarding-start').addEventListener('click', () => {
+        onboardingModal.style.display = 'none';
+        onboardingTour.style.display = 'block';
+        showTourStep(0);
+      });
+      
+      // Tour navigation
+      function showTourStep(step) {
+        tourSteps.forEach((stepEl, index) => {
+          stepEl.style.display = index === step ? 'block' : 'none';
+        });
+      }
+      
+      // Next buttons
+      document.getElementById('tour-next-1').addEventListener('click', () => showTourStep(1));
+      document.getElementById('tour-next-2').addEventListener('click', () => showTourStep(2));
+      document.getElementById('tour-next-3').addEventListener('click', () => showTourStep(3));
+      
+      // Complete tour
+      document.getElementById('tour-complete').addEventListener('click', () => {
+        onboardingTour.style.display = 'none';
+        localStorage.setItem('embermate-onboarding-completed', 'true');
+        
+        // Show success message
+        if (typeof showToast === 'function') {
+          showToast('🎉 Welcome to EmberMate! You\'re all set to start tracking your health.', 'success');
+        }
+      });
+    }
+    
+    // Initialize onboarding
+    initOnboarding();
+  });
+  </script>
+
+  <!-- Quick Export Utility -->
+  <script>
+  (function() {
+    const quickExportBtn = document.getElementById('quick-export');
+    const viewHipaaBtn = document.getElementById('view-hipaa');
+    
+    if (quickExportBtn) {
+      quickExportBtn.addEventListener('click', function() {
+        const data = {
+          medications: JSON.parse(localStorage.getItem('medications') || '[]'),
+          vitals: JSON.parse(localStorage.getItem('vitals') || '[]'),
+          appointments: JSON.parse(localStorage.getItem('appointments') || '[]'),
+          symptoms: JSON.parse(localStorage.getItem('symptoms') || '[]'),
+          notes: JSON.parse(localStorage.getItem('notes') || '[]'),
+          weight: JSON.parse(localStorage.getItem('weight') || '[]'),
+          goals: JSON.parse(localStorage.getItem('goals') || '[]'),
+          exportDate: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'healthtracker-backup-' + new Date().toISOString().split('T')[0] + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        if (typeof showToast === 'function') {
+          showToast('✓ Data exported successfully', 'success');
+        }
+      });
+    }
+
+    if (viewHipaaBtn) {
+      viewHipaaBtn.addEventListener('click', function() {
+        const modal = document.getElementById('hipaa-modal');
+        if (modal) {
+          modal.style.display = 'flex';
+          
+          // Reset checkbox state
+          const checkbox = document.getElementById('hipaa-acknowledge');
+          const acceptBtn = document.getElementById('hipaa-accept');
+          if (checkbox) checkbox.checked = false;
+          if (acceptBtn) acceptBtn.disabled = true;
+        }
+      });
+    }
+  })();
+  </script>
+
+  <!-- Import Data Utility -->
+  <script>
+  function importData() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = 
+      '<div class="modal-content">' +
+      '<div class="modal-header">' +
+      '<h2>📥 Import Backup Data</h2>' +
+      '</div>' +
+      '<div class="modal-body">' +
+      '<p>Select a backup JSON file to import your health data.</p>' +
+      '<p><strong>Warning:</strong> This will overwrite your current data.</p>' +
+      '<input type="file" id="import-file-input" accept=".json" />' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button class="btn btn-secondary" onclick="this.closest(\'.modal\').remove()">Cancel</button>' +
+      '<button class="btn btn-primary" id="import-confirm-btn">Import</button>' +
+      '</div>' +
+      '</div>';
+    
+    document.body.appendChild(modal);
+    
+    const fileInput = document.getElementById('import-file-input');
+    const confirmBtn = document.getElementById('import-confirm-btn');
+    
+    confirmBtn.onclick = function() {
+      const file = fileInput.files[0];
+      if (!file) {
+        if (typeof showToast === 'function') {
+          showToast('Please select a file', 'error');
+        }
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          
+          // Import each data type
+          if (data.medications) localStorage.setItem('medications', JSON.stringify(data.medications));
+          if (data.vitals) localStorage.setItem('vitals', JSON.stringify(data.vitals));
+          if (data.appointments) localStorage.setItem('appointments', JSON.stringify(data.appointments));
+          if (data.symptoms) localStorage.setItem('symptoms', JSON.stringify(data.symptoms));
+          if (data.notes) localStorage.setItem('notes', JSON.stringify(data.notes));
+          if (data.weight) localStorage.setItem('weight', JSON.stringify(data.weight));
+          if (data.goals) localStorage.setItem('goals', JSON.stringify(data.goals));
+          
+          if (typeof showToast === 'function') {
+            showToast('✓ Data imported successfully! Refreshing...', 'success');
+          }
+          
+          setTimeout(() => window.location.reload(), 1500);
+        } catch (err) {
+          console.error('Import error:', err);
+          if (typeof showToast === 'function') {
+            showToast('❌ Invalid JSON file', 'error');
+          }
+        }
+      };
+      reader.readAsText(file);
+      modal.remove();
+    };
+    
+    modal.onclick = function(e) {
+      if (e.target === modal) modal.remove();
+    };
+  }
+
+  // Add CSS animation
+  const style = document.createElement('style');
+  style.textContent = 
+    '@keyframes slideIn {' +
+    'from { transform: translateX(400px); opacity: 0; }' +
+    'to { transform: translateX(0); opacity: 1; }' +
+    '}' +
+    '@keyframes slideInRight {' +
+    'from { transform: translateX(100%); opacity: 0; }' +
+    'to { transform: translateX(0); opacity: 1; }' +
+    '}' +
+    '@keyframes slideOutRight {' +
+    'from { transform: translateX(0); opacity: 1; }' +
+    'to { transform: translateX(100%); opacity: 0; }' +
+    '}' +
+    '@keyframes bounceIn {' +
+    '0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }' +
+    '50% { transform: translate(-50%, -50%) scale(1.05); }' +
+    '70% { transform: translate(-50%, -50%) scale(0.9); }' +
+    '100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }' +
+    '}' +
+    '@keyframes bounceOut {' +
+    '0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }' +
+    '100% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }' +
+    '}';
+  document.head.appendChild(style);
+  </script>
+
+</body>
+</html>
