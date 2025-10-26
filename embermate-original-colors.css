@@ -1,0 +1,410 @@
+/* ========================================
+   EMBERMATE ORIGINAL COLOR SCHEME
+   Warm, Inviting Health Companion Palette
+   ======================================== */
+
+:root {
+    /* Primary Ember Colors - Warm & Energetic */
+    --primary: #ff6b35;              /* Vibrant ember orange - main brand */
+    --primary-dark: #e85d2a;         /* Deep ember - hover states */
+    --primary-light: #ff8c5a;        /* Light ember - highlights */
+    --primary-glow: rgba(255, 107, 53, 0.3); /* Ember glow effect */
+    
+    /* Secondary Warm Palette */
+    --secondary: #ffa07a;            /* Soft coral - secondary actions */
+    --accent: #ffb347;               /* Warm amber - accents & icons */
+    --accent-light: #ffd280;         /* Light amber - subtle highlights */
+    
+    /* Status Colors - Warm Variants */
+    --success: #10b981;              /* Green (keep for health success) */
+    --success-light: #6ee7b7;
+    --warning: #f59e0b;              /* Warm yellow-orange */
+    --warning-light: #fbbf24;
+    --danger: #ef4444;               /* Red (keep for alerts) */
+    --danger-light: #f87171;
+    --info: #ff8c42;                 /* Warm info orange */
+    --info-light: #ffab73;
+    
+    /* Background & Surface - Warm Tones */
+    --background: #fff8f0;           /* Warm cream - page background */
+    --surface: #ffffff;              /* Pure white - cards */
+    --surface-hover: #fff4e6;        /* Warm white hover */
+    --surface-alt: #ffecd9;          /* Alternate warm surface */
+    
+    /* Text Colors - Warm Browns */
+    --text: #2d1810;                 /* Rich dark brown - primary text */
+    --text-secondary: #8b6f47;       /* Warm tan - secondary text */
+    --text-muted: #a89070;           /* Muted tan - hints */
+    --text-on-primary: #ffffff;      /* White text on orange */
+    
+    /* Border & Dividers - Peachy Tones */
+    --border: #ffe4cc;               /* Light peachy border */
+    --border-medium: #ffd4a3;        /* Medium peachy border */
+    --divider: #fff0e0;              /* Subtle divider */
+    
+    /* Shadows - Warm Shadows */
+    --shadow-sm: 0 1px 2px rgba(255, 107, 53, 0.1);
+    --shadow: 0 4px 6px rgba(255, 107, 53, 0.15);
+    --shadow-lg: 0 10px 15px rgba(255, 107, 53, 0.2);
+    --shadow-xl: 0 20px 25px rgba(255, 107, 53, 0.25);
+    
+    /* Gradients - Ember Themed */
+    --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffa07a 100%);
+    --gradient-warm: linear-gradient(135deg, #ffb347 0%, #ff8c42 100%);
+    --gradient-glow: linear-gradient(135deg, #ff6b35 0%, #e85d2a 100%);
+}
+
+/* ========================================
+   COMPONENT OVERRIDES
+   ======================================== */
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text);
+}
+
+/* Buttons - Primary */
+button:not(.secondary):not(.outline),
+.btn-primary,
+[role="button"] {
+    background: var(--gradient-primary);
+    color: var(--text-on-primary);
+    border: none;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+button:not(.secondary):not(.outline):hover,
+.btn-primary:hover {
+    background: var(--primary-dark);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+}
+
+/* Cards & Surfaces */
+.card,
+.widget,
+.panel,
+[class*="card"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover,
+.widget:hover {
+    box-shadow: var(--shadow);
+    border-color: var(--primary-light);
+}
+
+/* Status Badges - Warm Themed */
+.badge-taken,
+.status-taken {
+    background: linear-gradient(135deg, #10b981 0%, #6ee7b7 100%);
+    border: 1px solid #059669;
+}
+
+.badge-due,
+.status-due {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    border: 1px solid #d97706;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.badge-overdue,
+.status-overdue {
+    background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    border: 1px solid #dc2626;
+}
+
+.badge-pending,
+.status-pending {
+    background: linear-gradient(135deg, #ff8c42 0%, #ffab73 100%);
+    border: 1px solid #ff6b35;
+}
+
+/* Pulse Animation for Due Soon */
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+    }
+}
+
+/* Stats Cards */
+.stat-card,
+.metric-card {
+    background: var(--surface);
+    border-left: 4px solid var(--primary);
+}
+
+.stat-card:hover {
+    border-left-color: var(--accent);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Progress Bars */
+.progress-bar,
+[role="progressbar"] {
+    background: var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.progress-bar-fill,
+.progress-bar > div {
+    background: var(--gradient-primary);
+}
+
+/* Input Fields */
+input,
+select,
+textarea {
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    outline: none;
+}
+
+/* Links */
+a {
+    color: var(--primary);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* Tables */
+table {
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--gradient-warm);
+    color: var(--text-on-primary);
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+    background: var(--surface-hover);
+}
+
+/* Alerts & Notifications */
+.alert-danger,
+.notification-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    border-left: 4px solid #dc2626;
+}
+
+.alert-warning,
+.notification-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    border-left: 4px solid #d97706;
+}
+
+.alert-success,
+.notification-success {
+    background: linear-gradient(135deg, #10b981 0%, #6ee7b7 100%);
+    border-left: 4px solid #059669;
+}
+
+.alert-info,
+.notification-info {
+    background: linear-gradient(135deg, #ff8c42 0%, #ffab73 100%);
+    border-left: 4px solid #ff6b35;
+}
+
+/* Dashboard Summary Card */
+.summary-card,
+.dashboard-summary {
+    background: var(--gradient-glow);
+    color: var(--text-on-primary);
+    border: none;
+    box-shadow: var(--shadow-xl);
+}
+
+/* Health Buddy / Companion */
+.health-buddy,
+.companion-card {
+    background: var(--gradient-warm);
+    border: 2px solid var(--accent);
+}
+
+/* Floating Action Button (FAB) */
+.fab,
+.floating-action-button {
+    background: var(--gradient-primary);
+    color: var(--text-on-primary);
+    box-shadow: var(--shadow-xl);
+}
+
+.fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 25px 35px rgba(255, 107, 53, 0.4);
+}
+
+/* Charts & Graphs */
+.chart-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+/* Tooltips */
+[data-tooltip]::after {
+    background: var(--text);
+    color: var(--text-on-primary);
+    border: 1px solid var(--border-medium);
+}
+
+/* Loading States */
+.loading,
+.skeleton {
+    background: linear-gradient(90deg, 
+        var(--border) 25%, 
+        var(--surface-hover) 50%, 
+        var(--border) 75%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Empty States */
+.empty-state {
+    background: var(--surface-alt);
+    border: 2px dashed var(--border-medium);
+}
+
+.empty-state-icon {
+    color: var(--accent);
+    filter: drop-shadow(0 4px 6px var(--primary-glow));
+}
+
+/* Modal Overlays */
+.modal-overlay {
+    background: rgba(45, 24, 16, 0.6);
+}
+
+.modal-content {
+    background: var(--surface);
+    border: 2px solid var(--primary);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Navigation */
+nav,
+.navbar {
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-lg);
+}
+
+nav a,
+.navbar a {
+    color: var(--text-on-primary);
+}
+
+nav a:hover,
+.navbar a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Footer */
+footer {
+    background: var(--surface-alt);
+    border-top: 2px solid var(--border-medium);
+    color: var(--text-secondary);
+}
+
+/* Scrollbar Styling (Webkit browsers) */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
+
+/* ========================================
+   DARK MODE SUPPORT (Optional)
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #1a0f08;
+        --surface: #2d1810;
+        --surface-hover: #3d2415;
+        --text: #fff8f0;
+        --text-secondary: #d4b896;
+        --border: #4d3520;
+        --border-medium: #6d4a30;
+    }
+    
+    .card,
+    .widget {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* ========================================
+   ANIMATION UTILITIES
+   ======================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px var(--primary-glow); }
+    50% { box-shadow: 0 0 20px var(--primary-glow); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.glow-effect {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    :root {
+        --background: #ffffff;
+        --surface: #ffffff;
+        --text: #000000;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}

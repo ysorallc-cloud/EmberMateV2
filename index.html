@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmberMate - Your Health Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #F7931E;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border-color: #2a2a3e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(22, 33, 62, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .logo::before {
+            content: "🔥";
+            font-size: 2rem;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Critical Alerts Banner */
+        .critical-alerts {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3);
+            animation: pulse-alert 2s infinite;
+        }
+
+        @keyframes pulse-alert {
+            0%, 100% { box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3); }
+            50% { box-shadow: 0 4px 30px rgba(220, 53, 69, 0.6); }
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 2rem;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .alert-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .alert-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-item-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.taken {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 2px solid var(--success-color);
+        }
+
+        .status-badge.due-soon {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+            border: 2px solid var(--warning-color);
+            animation: pulse-warning 1.5s infinite;
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+            }
+        }
+
+        .status-badge.overdue {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+            border: 2px solid var(--danger-color);
+        }
+
+        .status-badge.pending {
+            background: rgba(23, 162, 184, 0.2);
+            color: var(--info-color);
+            border: 2px solid var(--info-color);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-badge.taken .status-indicator {
+            background: var(--success-color);
+        }
+
+        .status-badge.due-soon .status-indicator {
+            background: var(--warning-color);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .status-badge.overdue .status-indicator {
+            background: var(--danger-color);
+        }
+
+        .status-badge.pending .status-indicator {
+            background: var(--info-color);
+        }
+
+        /* Main Content Area */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Medication List */
+        .medication-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .medication-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .medication-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-color);
+        }
+
+        .med-info {
+            flex: 1;
+        }
+
+        .med-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .med-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .med-time {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-right: 1rem;
+        }
+
+        /* Vitals with Abnormal Highlighting */
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .vital-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .vital-card.abnormal {
+            border-color: var(--danger-color);
+            background: rgba(220, 53, 69, 0.1);
+            animation: pulse-vital 2s infinite;
+        }
+
+        @keyframes pulse-vital {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
+            }
+        }
+
+        .vital-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .vital-icon {
+            font-size: 1.5rem;
+        }
+
+        .vital-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .vital-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .vital-card.abnormal .vital-value {
+            color: var(--danger-color);
+            text-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .vital-range {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .vital-card.abnormal .vital-range {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        /* Responsive Mobile Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+        }
+
+        .data-table thead {
+            display: none;
+        }
+
+        .data-table tbody tr {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .data-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table tbody td:last-child {
+            border-bottom: none;
+        }
+
+        .data-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .data-table thead {
+                display: table-header-group;
+            }
+
+            .data-table thead th {
+                background: var(--card-bg);
+                color: var(--primary-color);
+                padding: 1rem;
+                text-align: left;
+                font-weight: 600;
+                border-bottom: 2px solid var(--primary-color);
+            }
+
+            .data-table tbody tr {
+                display: table-row;
+                margin-bottom: 0;
+                padding: 0;
+            }
+
+            .data-table tbody td {
+                display: table-cell;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .data-table tbody td::before {
+                content: none;
+            }
+        }
+
+        /* Floating Action Button (FAB) */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 30px rgba(255, 107, 53, 0.6);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Quick Log Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid var(--primary-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--danger-color);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Onboarding Overlay */
+        .onboarding-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .onboarding-overlay.active {
+            display: flex;
+        }
+
+        .onboarding-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            border: 3px solid var(--primary-color);
+        }
+
+        .onboarding-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .onboarding-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .onboarding-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .onboarding-progress {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: var(--primary-color);
+            transform: scale(1.3);
+        }
+
+        .onboarding-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fab {
+                bottom: 1rem;
+                right: 1rem;
+                width: 56px;
+                height: 56px;
+            }
+
+            .medication-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .med-time {
+                margin-right: 0;
+            }
+
+            .vitals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Onboarding Overlay -->
+    <div class="onboarding-overlay" id="onboardingOverlay">
+        <div class="onboarding-content">
+            <div class="onboarding-icon" id="onboardingIcon">🔥</div>
+            <h2 class="onboarding-title" id="onboardingTitle">Welcome to EmberMate!</h2>
+            <p class="onboarding-description" id="onboardingDescription">
+                Your personal health companion to track medications, vitals, and appointments all in one place.
+            </p>
+            <div class="onboarding-progress">
+                <span class="progress-dot active"></span>
+                <span class="progress-dot"></span>
+                <span class="progress-dot"></span>
+                <span class="progress-dot"></span>
+                <span class="progress-dot"></span>
+            </div>
+            <div class="onboarding-buttons">
+                <button class="btn btn-secondary" id="skipOnboarding">Skip</button>
+                <button class="btn btn-primary" id="nextOnboarding">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">EmberMate</div>
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">📊 Dashboard</button>
+            <button class="nav-tab" data-tab="medications">💊 Medications</button>
+            <button class="nav-tab" data-tab="vitals">❤️ Vitals</button>
+            <button class="nav-tab" data-tab="appointments">📅 Appointments</button>
+            <button class="nav-tab" data-tab="settings">⚙️ Settings</button>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Dashboard Section -->
+        <section class="content-section active" id="dashboard">
+            <!-- Critical Alerts -->
+            <div class="critical-alerts" id="criticalAlerts" style="display: none;">
+                <div class="alert-header">
+                    <span class="alert-icon">⚠️</span>
+                    <h3 class="alert-title">Critical Health Alerts</h3>
+                </div>
+                <div class="alert-items" id="alertItems"></div>
+            </div>
+
+            <!-- Dashboard Summary Cards -->
+            <div class="dashboard-grid">
+                <div class="stat-card tooltip">
+                    <span class="tooltiptext">Latest reading from your vitals log</span>
+                    <div class="stat-header">
+                        <span class="stat-icon">💊</span>
+                    </div>
+                    <div class="stat-value" id="medicationsTaken">0/0</div>
+                    <div class="stat-label">Medications Today</div>
+                    <div class="stat-change positive">
+                        <span>↑</span> On track
+                    </div>
+                </div>
+
+                <div class="stat-card tooltip">
+                    <span class="tooltiptext">Your most recent blood pressure reading</span>
+                    <div class="stat-header">
+                        <span class="stat-icon">❤️</span>
+                    </div>
+                    <div class="stat-value" id="latestBP">--/--</div>
+                    <div class="stat-label">Blood Pressure</div>
+                    <div class="stat-change" id="bpChange">
+                        <span>→</span> Normal range
+                    </div>
+                </div>
+
+                <div class="stat-card tooltip">
+                    <span class="tooltiptext">Days until your next scheduled appointment</span>
+                    <div class="stat-header">
+                        <span class="stat-icon">📅</span>
+                    </div>
+                    <div class="stat-value" id="nextAppt">--</div>
+                    <div class="stat-label">Next Appointment</div>
+                    <div class="stat-change" id="apptChange">
+                        <span>📍</span> View details
+                    </div>
+                </div>
+
+                <div class="stat-card tooltip">
+                    <span class="tooltiptext">Your current Health Buddy level and XP</span>
+                    <div class="stat-header">
+                        <span class="stat-icon">🎮</span>
+                    </div>
+                    <div class="stat-value" id="xpLevel">Lvl 1</div>
+                    <div class="stat-label">Health Progress</div>
+                    <div class="stat-change positive">
+                        <span>🔥</span> <span id="xpPoints">0 XP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📋 Today's Medications</h2>
+                    <button class="btn btn-primary" onclick="openQuickLog()">+ Add Log</button>
+                </div>
+                <div class="medication-list" id="todayMedications">
+                    <div class="empty-state">
+                        <div class="empty-icon">💊</div>
+                        <h3 class="empty-title">No Medications Scheduled</h3>
+                        <p class="empty-description">Add your first medication to get started tracking your health journey.</p>
+                        <button class="btn btn-primary" onclick="switchTab('medications')">Add Medication</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Vitals -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📊 Recent Vitals</h2>
+                    <button class="btn btn-secondary" onclick="switchTab('vitals')">View All</button>
+                </div>
+                <div class="vitals-grid" id="recentVitals">
+                    <div class="empty-state">
+                        <div class="empty-icon">❤️</div>
+                        <h3 class="empty-title">No Vitals Recorded</h3>
+                        <p class="empty-description">Start logging your vitals to monitor your health trends.</p>
+                        <button class="btn btn-primary" onclick="openQuickLog()">Log Vitals</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Medications Section -->
+        <section class="content-section" id="medications">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">💊 All Medications</h2>
+                    <button class="btn btn-primary" onclick="showAddMedicationModal()">+ Add Medication</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Medication</th>
+                            <th>Dosage</th>
+                            <th>Frequency</th>
+                            <th>Next Due</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="medicationsTable">
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-icon">💊</div>
+                                    <h3 class="empty-title">No Medications Added</h3>
+                                    <p class="empty-description">Add your medications to start tracking your medication schedule.</p>
+                                    <button class="btn btn-primary" onclick="showAddMedicationModal()">Add First Medication</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Vitals Section -->
+        <section class="content-section" id="vitals">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">❤️ Vital Signs Log</h2>
+                    <button class="btn btn-primary" onclick="openQuickLog()">+ Log Vitals</button>
+                </div>
+                <div class="vitals-grid" id="allVitals">
+                    <!-- Will be populated with vitals cards -->
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>Blood Pressure</th>
+                            <th>Heart Rate</th>
+                            <th>Temperature</th>
+                            <th>Blood Sugar</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vitalsTable">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-icon">❤️</div>
+                                    <h3 class="empty-title">No Vitals Logged</h3>
+                                    <p class="empty-description">Start tracking your vitals to see trends and get health insights.</p>
+                                    <button class="btn btn-primary" onclick="openQuickLog()">Log First Reading</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Appointments Section -->
+        <section class="content-section" id="appointments">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📅 Appointments</h2>
+                    <button class="btn btn-primary" onclick="showAddAppointmentModal()">+ Schedule Appointment</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Provider</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTable">
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📅</div>
+                                    <h3 class="empty-title">No Appointments Scheduled</h3>
+                                    <p class="empty-description">Keep track of your medical appointments and never miss a check-up.</p>
+                                    <button class="btn btn-primary" onclick="showAddAppointmentModal()">Schedule Appointment</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section class="content-section" id="settings">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">⚙️ Settings</h2>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🎨 Theme</label>
+                    <select class="form-select">
+                        <option>Dark (Default)</option>
+                        <option>Light</option>
+                        <option>Auto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🔔 Notifications</label>
+                    <select class="form-select">
+                        <option>All Notifications</option>
+                        <option>Critical Only</option>
+                        <option>Off</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">📱 Medication Reminders</label>
+                    <select class="form-select">
+                        <option>30 minutes before</option>
+                        <option>1 hour before</option>
+                        <option>At scheduled time</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary">Save Settings</button>
+                    <button class="btn btn-secondary" onclick="resetOnboarding()">Reset Tutorial</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="openQuickLog()" title="Quick Log">+</button>
+
+    <!-- Quick Log Modal -->
+    <div class="modal" id="quickLogModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⚡ Quick Log</h3>
+                <button class="close-btn" onclick="closeQuickLog()">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">What would you like to log?</label>
+                <select class="form-select" id="logType" onchange="updateLogForm()">
+                    <option value="">Select type...</option>
+                    <option value="medication">💊 Medication</option>
+                    <option value="vitals">❤️ Vitals</option>
+                    <option value="symptoms">🤒 Symptoms</option>
+                    <option value="notes">📝 Notes</option>
+                </select>
+            </div>
+            <div id="logFormFields"></div>
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="submitQuickLog()">Save Log Entry</button>
+                <button class="btn btn-secondary" onclick="closeQuickLog()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let appData = {
+            medications: [],
+            vitals: [],
+            appointments: [],
+            logs: [],
+            settings: {
+                onboardingComplete: false,
+                notifications: true,
+                theme: 'dark'
+            },
+            xp: 0,
+            level: 1
+        };
+
+        // Onboarding Steps
+        const onboardingSteps = [
+            {
+                icon: '🔥',
+                title: 'Welcome to EmberMate!',
+                description: 'Your personal health companion to track medications, vitals, and appointments all in one place.'
+            },
+            {
+                icon: '💊',
+                title: 'Track Your Medications',
+                description: 'Never miss a dose! Set up your medication schedule and get timely reminders throughout the day.'
+            },
+            {
+                icon: '❤️',
+                title: 'Monitor Your Vitals',
+                description: 'Log blood pressure, heart rate, temperature, and more. EmberMate alerts you to abnormal readings.'
+            },
+            {
+                icon: '🎮',
+                title: 'Earn Rewards',
+                description: 'Stay motivated! Earn XP for consistent logging, level up your Health Buddy, and unlock achievements.'
+            },
+            {
+                icon: '✨',
+                title: 'Let\'s Get Started!',
+                description: 'Tap the + button anytime to quickly log medications, vitals, or notes. Your health journey begins now!'
+            }
+        ];
+
+        let currentOnboardingStep = 0;
+
+        // Initialize App
+        function initApp() {
+            loadData();
+            
+            if (!appData.settings.onboardingComplete) {
+                showOnboarding();
+            }
+            
+            setupEventListeners();
+            loadSampleData();
+            updateDashboard();
+        }
+
+        // Load Data from LocalStorage
+        function loadData() {
+            const saved = localStorage.getItem('embermate_data');
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+        }
+
+        // Save Data to LocalStorage
+        function saveData() {
+            localStorage.setItem('embermate_data', JSON.stringify(appData));
+        }
+
+        // Onboarding Functions
+        function showOnboarding() {
+            document.getElementById('onboardingOverlay').classList.add('active');
+            updateOnboardingStep();
+        }
+
+        function updateOnboardingStep() {
+            const step = onboardingSteps[currentOnboardingStep];
+            document.getElementById('onboardingIcon').textContent = step.icon;
+            document.getElementById('onboardingTitle').textContent = step.title;
+            document.getElementById('onboardingDescription').textContent = step.description;
+            
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentOnboardingStep);
+            });
+            
+            const nextBtn = document.getElementById('nextOnboarding');
+            nextBtn.textContent = currentOnboardingStep === onboardingSteps.length - 1 ? 'Get Started 🚀' : 'Next →';
+        }
+
+        function nextOnboarding() {
+            if (currentOnboardingStep < onboardingSteps.length - 1) {
+                currentOnboardingStep++;
+                updateOnboardingStep();
+            } else {
+                completeOnboarding();
+            }
+        }
+
+        function skipOnboarding() {
+            completeOnboarding();
+        }
+
+        function completeOnboarding() {
+            appData.settings.onboardingComplete = true;
+            saveData();
+            document.getElementById('onboardingOverlay').classList.remove('active');
+            currentOnboardingStep = 0;
+        }
+
+        function resetOnboarding() {
+            appData.settings.onboardingComplete = false;
+            currentOnboardingStep = 0;
+            saveData();
+            showOnboarding();
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Tab Navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            // Onboarding
+            document.getElementById('nextOnboarding').addEventListener('click', nextOnboarding);
+            document.getElementById('skipOnboarding').addEventListener('click', skipOnboarding);
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Update content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Load Sample Data
+        function loadSampleData() {
+            if (appData.medications.length === 0) {
+                appData.medications = [
+                    {
+                        id: 1,
+                        name: 'Lisinopril',
+                        dosage: '10mg',
+                        frequency: 'Once daily',
+                        time: '08:00',
+                        status: 'taken',
+                        lastTaken: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: 'Metformin',
+                        dosage: '500mg',
+                        frequency: 'Twice daily',
+                        time: '12:00',
+                        status: 'due-soon',
+                        lastTaken: null
+                    },
+                    {
+                        id: 3,
+                        name: 'Aspirin',
+                        dosage: '81mg',
+                        frequency: 'Once daily',
+                        time: '20:00',
+                        status: 'pending',
+                        lastTaken: null
+                    }
+                ];
+            }
+
+            if (appData.vitals.length === 0) {
+                appData.vitals = [
+                    {
+                        id: 1,
+                        timestamp: new Date().toISOString(),
+                        bloodPressure: { systolic: 165, diastolic: 95 },
+                        heartRate: 72,
+                        temperature: 98.6,
+                        bloodSugar: 110,
+                        abnormal: true
+                    },
+                    {
+                        id: 2,
+                        timestamp: new Date(Date.now() - 86400000).toISOString(),
+                        bloodPressure: { systolic: 120, diastolic: 80 },
+                        heartRate: 68,
+                        temperature: 98.2,
+                        bloodSugar: 95,
+                        abnormal: false
+                    }
+                ];
+            }
+
+            if (appData.appointments.length === 0) {
+                appData.appointments = [
+                    {
+                        id: 1,
+                        date: new Date(Date.now() + 3 * 86400000).toISOString(),
+                        time: '10:00 AM',
+                        provider: 'Dr. Smith',
+                        type: 'Primary Care',
+                        status: 'scheduled'
+                    }
+                ];
+            }
+
+            saveData();
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            updateCriticalAlerts();
+            updateStatCards();
+            updateTodayMedications();
+            updateRecentVitals();
+        }
+
+        // Update Critical Alerts
+        function updateCriticalAlerts() {
+            const alerts = [];
+            
+            // Check for high BP
+            const latestVital = appData.vitals[0];
+            if (latestVital && latestVital.abnormal) {
+                alerts.push({
+                    icon: '🩸',
+                    text: `High blood pressure detected: ${latestVital.bloodPressure.systolic}/${latestVital.bloodPressure.diastolic} mmHg`
+                });
+            }
+            
+            // Check for overdue medications
+            const overdueMeds = appData.medications.filter(m => m.status === 'overdue');
+            if (overdueMeds.length > 0) {
+                alerts.push({
+                    icon: '💊',
+                    text: `${overdueMeds.length} overdue medication${overdueMeds.length > 1 ? 's' : ''}`
+                });
+            }
+            
+            // Check for abnormal vitals
+            const abnormalVitals = appData.vitals.filter(v => v.abnormal);
+            if (abnormalVitals.length > 2) {
+                alerts.push({
+                    icon: '⚠️',
+                    text: `Multiple abnormal readings detected in the last 7 days`
+                });
+            }
+            
+            const alertsDiv = document.getElementById('criticalAlerts');
+            const alertItems = document.getElementById('alertItems');
+            
+            if (alerts.length > 0) {
+                alertsDiv.style.display = 'block';
+                alertItems.innerHTML = alerts.map(alert => `
+                    <div class="alert-item">
+                        <span class="alert-item-icon">${alert.icon}</span>
+                        <span>${alert.text}</span>
+                    </div>
+                `).join('');
+            } else {
+                alertsDiv.style.display = 'none';
+            }
+        }
+
+        // Update Stat Cards
+        function updateStatCards() {
+            // Medications
+            const takenToday = appData.medications.filter(m => m.status === 'taken').length;
+            const totalToday = appData.medications.length;
+            document.getElementById('medicationsTaken').textContent = `${takenToday}/${totalToday}`;
+            
+            // Blood Pressure
+            if (appData.vitals.length > 0) {
+                const latest = appData.vitals[0];
+                document.getElementById('latestBP').textContent = 
+                    `${latest.bloodPressure.systolic}/${latest.bloodPressure.diastolic}`;
+                
+                const bpChange = document.getElementById('bpChange');
+                if (latest.abnormal) {
+                    bpChange.innerHTML = '<span>⚠️</span> Above normal';
+                    bpChange.className = 'stat-change negative';
+                } else {
+                    bpChange.innerHTML = '<span>✓</span> Normal range';
+                    bpChange.className = 'stat-change positive';
+                }
+            }
+            
+            // Next Appointment
+            if (appData.appointments.length > 0) {
+                const next = appData.appointments[0];
+                const daysUntil = Math.ceil((new Date(next.date) - new Date()) / 86400000);
+                document.getElementById('nextAppt').textContent = `${daysUntil} days`;
+            }
+            
+            // XP and Level
+            document.getElementById('xpLevel').textContent = `Lvl ${appData.level}`;
+            document.getElementById('xpPoints').textContent = `${appData.xp} XP`;
+        }
+
+        // Update Today's Medications
+        function updateTodayMedications() {
+            const container = document.getElementById('todayMedications');
+            
+            if (appData.medications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💊</div>
+                        <h3 class="empty-title">No Medications Scheduled</h3>
+                        <p class="empty-description">Add your first medication to get started tracking your health journey.</p>
+                        <button class="btn btn-primary" onclick="switchTab('medications')">Add Medication</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.medications.map(med => `
+                <div class="medication-item">
+                    <div class="med-info">
+                        <div class="med-name">${med.name}</div>
+                        <div class="med-details">${med.dosage} • ${med.frequency}</div>
+                    </div>
+                    <div class="med-time">${med.time}</div>
+                    <span class="status-badge ${med.status}">
+                        <span class="status-indicator"></span>
+                        ${med.status.replace('-', ' ').toUpperCase()}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Update Recent Vitals
+        function updateRecentVitals() {
+            const container = document.getElementById('recentVitals');
+            
+            if (appData.vitals.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❤️</div>
+                        <h3 class="empty-title">No Vitals Recorded</h3>
+                        <p class="empty-description">Start logging your vitals to monitor your health trends.</p>
+                        <button class="btn btn-primary" onclick="openQuickLog()">Log Vitals</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const latest = appData.vitals[0];
+            container.innerHTML = `
+                <div class="vital-card ${latest.abnormal ? 'abnormal' : ''}">
+                    <div class="vital-header">
+                        <span class="vital-icon">🩸</span>
+                        <span class="vital-label">Blood Pressure</span>
+                    </div>
+                    <div class="vital-value">${latest.bloodPressure.systolic}/${latest.bloodPressure.diastolic}</div>
+                    <div class="vital-range">${latest.abnormal ? '⚠️ Above normal range' : '✓ Normal range (90-120/60-80)'}</div>
+                </div>
+                <div class="vital-card">
+                    <div class="vital-header">
+                        <span class="vital-icon">💓</span>
+                        <span class="vital-label">Heart Rate</span>
+                    </div>
+                    <div class="vital-value">${latest.heartRate}</div>
+                    <div class="vital-range">✓ Normal (60-100 bpm)</div>
+                </div>
+                <div class="vital-card">
+                    <div class="vital-header">
+                        <span class="vital-icon">🌡️</span>
+                        <span class="vital-label">Temperature</span>
+                    </div>
+                    <div class="vital-value">${latest.temperature}°F</div>
+                    <div class="vital-range">✓ Normal (97-99°F)</div>
+                </div>
+                <div class="vital-card">
+                    <div class="vital-header">
+                        <span class="vital-icon">🩺</span>
+                        <span class="vital-label">Blood Sugar</span>
+                    </div>
+                    <div class="vital-value">${latest.bloodSugar}</div>
+                    <div class="vital-range">✓ Normal (70-140 mg/dL)</div>
+                </div>
+            `;
+        }
+
+        // Quick Log Functions
+        function openQuickLog() {
+            document.getElementById('quickLogModal').classList.add('active');
+        }
+
+        function closeQuickLog() {
+            document.getElementById('quickLogModal').classList.remove('active');
+            document.getElementById('logType').value = '';
+            document.getElementById('logFormFields').innerHTML = '';
+        }
+
+        function updateLogForm() {
+            const type = document.getElementById('logType').value;
+            const formFields = document.getElementById('logFormFields');
+            
+            if (type === 'medication') {
+                formFields.innerHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Select Medication</label>
+                        <select class="form-select">
+                            ${appData.medications.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Taken</label>
+                        <input type="time" class="form-input" value="${new Date().toTimeString().slice(0,5)}">
+                    </div>
+                `;
+            } else if (type === 'vitals') {
+                formFields.innerHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Blood Pressure (Systolic/Diastolic)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="number" class="form-input" placeholder="120">
+                            <span style="align-self: center;">/</span>
+                            <input type="number" class="form-input" placeholder="80">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Heart Rate (bpm)</label>
+                        <input type="number" class="form-input" placeholder="72">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Temperature (°F)</label>
+                        <input type="number" step="0.1" class="form-input" placeholder="98.6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Blood Sugar (mg/dL)</label>
+                        <input type="number" class="form-input" placeholder="100">
+                    </div>
+                `;
+            } else if (type === 'symptoms') {
+                formFields.innerHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Symptom</label>
+                        <input type="text" class="form-input" placeholder="e.g., Headache, Dizziness">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Severity (1-10)</label>
+                        <input type="range" min="1" max="10" value="5" class="form-input">
+                    </div>
+                `;
+            } else if (type === 'notes') {
+                formFields.innerHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Note</label>
+                        <textarea class="form-input" rows="4" placeholder="Add any health notes or observations..."></textarea>
+                    </div>
+                `;
+            }
+        }
+
+        function submitQuickLog() {
+            // Add XP
+            appData.xp += 10;
+            if (appData.xp >= appData.level * 100) {
+                appData.level++;
+                appData.xp = 0;
+            }
+            
+            saveData();
+            closeQuickLog();
+            updateDashboard();
+            
+            // Show success message
+            alert('✅ Entry logged successfully! +10 XP');
+        }
+
+        // Placeholder functions
+        function showAddMedicationModal() {
+            alert('Add Medication modal - Coming soon!');
+        }
+
+        function showAddAppointmentModal() {
+            alert('Add Appointment modal - Coming soon!');
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
