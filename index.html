@@ -62,10 +62,27 @@
                         <h1 class="welcome-title">Welcome back! 👋</h1>
                         <p class="welcome-subtitle">Here's your health overview for today</p>
                     </div>
-                    <button class="btn-log-vitals" id="logTodayVitalsBtn">
-                        <span class="btn-icon">📊</span>
-                        <span class="btn-text">Log Today's Vitals</span>
-                    </button>
+                    <div class="welcome-actions">
+                        <button class="btn-log-vitals" id="logTodayVitalsBtn">
+                            <span class="btn-icon">📊</span>
+                            <span class="btn-text">Log Today's Vitals</span>
+                        </button>
+                        <button class="btn-log-bp" id="logBloodPressureBtn">
+                            <span class="btn-icon">💓</span>
+                            <span class="btn-text">Log Blood Pressure</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Summary Card -->
+            <section class="dashboard-summary">
+                <div class="summary-card">
+                    <div class="summary-icon">⚠️</div>
+                    <div class="summary-content">
+                        <h3 class="summary-title">Health Summary</h3>
+                        <p class="summary-text" id="summaryText">Loading your health data...</p>
+                    </div>
                 </div>
             </section>
 
@@ -75,7 +92,7 @@
                 <div class="widget quick-stats">
                     <div class="widget-header">
                         <h2 class="widget-title">Quick Stats</h2>
-                        <button class="btn-add" id="addVitalsBtn">+</button>
+                        <button class="btn-add" id="addVitalsBtn" title="Add vital signs reading">+</button>
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -127,28 +144,19 @@
                     </div>
                 </div>
 
-                <!-- AI Insights Widget -->
-                <div class="widget ai-insights">
-                    <div class="widget-header">
-                        <h2 class="widget-title">AI Insights</h2>
-                        <span class="widget-icon">🤖</span>
-                    </div>
-                    <div class="insights-container" id="insightsContainer">
-                        <div class="insight-item">
-                            <span class="insight-icon">💡</span>
-                            <p class="insight-text">Add some health data to get personalized insights!</p>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Medication Tracker Widget -->
                 <div class="widget medication-tracker">
                     <div class="widget-header">
                         <h2 class="widget-title">Medications</h2>
-                        <button class="btn-add" id="addMedicationBtn">+</button>
+                        <button class="btn-add" id="addMedicationBtn" title="Add new medication">+</button>
                     </div>
                     <div class="medication-list" id="medicationList">
-                        <p class="empty-state">No medications added yet</p>
+                        <div class="empty-state">
+                            <div class="empty-icon">💊</div>
+                            <h3>No medications added yet</h3>
+                            <p>Click the + button to add your first medication and start tracking your health routine.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -157,22 +165,22 @@
                     <div class="widget-header">
                         <h2 class="widget-title">Vitals Trends</h2>
                         <div class="chart-controls">
-                            <select class="chart-selector" id="chartSelector">
+                            <select class="chart-selector" id="chartSelector" title="Select which vital sign to display">
                                 <option value="bp">Blood Pressure</option>
                                 <option value="hr">Heart Rate</option>
                                 <option value="weight">Weight</option>
                                 <option value="glucose">Glucose</option>
                             </select>
-                            <button class="btn-icon" id="overlayToggle" title="Overlay multiple vitals">
+                            <button class="btn-icon" id="overlayToggle" title="Overlay multiple vitals on the same chart">
                                 <span>📊</span>
                             </button>
                         </div>
                     </div>
                     <div class="chart-time-scale">
-                        <button class="time-scale-btn active" data-days="7">7 Days</button>
-                        <button class="time-scale-btn" data-days="30">30 Days</button>
-                        <button class="time-scale-btn" data-days="90">90 Days</button>
-                        <button class="time-scale-btn" data-days="365">1 Year</button>
+                        <button class="time-scale-btn active" data-days="7" title="Show data for the last 7 days">7 Days</button>
+                        <button class="time-scale-btn" data-days="30" title="Show data for the last 30 days">30 Days</button>
+                        <button class="time-scale-btn" data-days="90" title="Show data for the last 90 days">90 Days</button>
+                        <button class="time-scale-btn" data-days="365" title="Show data for the last year">1 Year</button>
                     </div>
                     <div class="overlay-selector" id="overlaySelector" style="display: none;">
                         <label class="overlay-checkbox">
@@ -201,10 +209,14 @@
                 <div class="widget appointments">
                     <div class="widget-header">
                         <h2 class="widget-title">Appointments</h2>
-                        <button class="btn-add" id="addAppointmentBtn">+</button>
+                        <button class="btn-add" id="addAppointmentBtn" title="Add new appointment">+</button>
                     </div>
                     <div class="appointments-list" id="appointmentsList">
-                        <p class="empty-state">No upcoming appointments</p>
+                        <div class="empty-state">
+                            <div class="empty-icon">📅</div>
+                            <h3>No upcoming appointments</h3>
+                            <p>Add your medical appointments to never miss an important visit.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -212,10 +224,14 @@
                 <div class="widget goal-tracker">
                     <div class="widget-header">
                         <h2 class="widget-title">Health Goals</h2>
-                        <button class="btn-add" id="addGoalBtn">+</button>
+                        <button class="btn-add" id="addGoalBtn" title="Add new health goal">+</button>
                     </div>
                     <div class="goals-list" id="goalsList">
-                        <p class="empty-state">Set your first health goal!</p>
+                        <div class="empty-state">
+                            <div class="empty-icon">🎯</div>
+                            <h3>Set your first health goal!</h3>
+                            <p>Create personalized health goals and track your progress over time.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -330,6 +346,69 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-modal="goalModal">Cancel</button>
                 <button class="btn btn-primary" id="saveGoal">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Blood Pressure Modal -->
+    <div class="modal" id="bloodPressureModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Log Blood Pressure</h3>
+                <button class="modal-close" data-modal="bloodPressureModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <input type="datetime-local" id="bpDateTime">
+                </div>
+                
+                <div class="vitals-section">
+                    <h4 class="section-title">💓 Blood Pressure Reading</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Systolic</label>
+                            <input type="number" id="bpSystolic" placeholder="120" min="50" max="250">
+                        </div>
+                        <div class="form-group">
+                            <label>Diastolic</label>
+                            <input type="number" id="bpDiastolic" placeholder="80" min="30" max="150">
+                        </div>
+                    </div>
+                </div>
+
+                <p class="form-note">💡 Normal blood pressure is typically below 120/80 mmHg</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-modal="bloodPressureModal">Cancel</button>
+                <button class="btn btn-primary" id="saveBloodPressure">Save Reading</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medication Taken Modal -->
+    <div class="modal" id="medicationTakenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Mark Medication as Taken</h3>
+                <button class="modal-close" data-modal="medicationTakenModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="medication-taken-info">
+                    <div class="medication-display">
+                        <span class="medication-icon">💊</span>
+                        <div class="medication-details">
+                            <h4 id="takenMedName">Medication Name</h4>
+                            <p id="takenMedDosage">Dosage</p>
+                            <p id="takenMedTime">Time</p>
+                        </div>
+                    </div>
+                    <p class="confirmation-text">Did you take this medication?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-modal="medicationTakenModal">Cancel</button>
+                <button class="btn btn-primary" id="confirmMedicationTaken">Yes, I took it</button>
             </div>
         </div>
     </div>
@@ -609,6 +688,13 @@
                 <div class="table-stats" id="tableStats"></div>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab-container">
+        <button class="fab" id="quickLogFab" title="Quick Log Vitals">
+            <span class="fab-icon">+</span>
+        </button>
     </div>
 
     <!-- Toast Notification -->

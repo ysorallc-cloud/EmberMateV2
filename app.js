@@ -356,16 +356,51 @@ function updateQuickStats() {
     const weight = appState.vitals.weight;
     const glucose = appState.vitals.glucose;
     
-    // Get latest values
+    // Get latest values and add status badges
     if (bp.length > 0) {
         const latest = bp[bp.length - 1];
-        document.getElementById('bpValue').textContent = 
-            `${Math.round(latest.systolic)}/${Math.round(latest.diastolic)}`;
+        const bpValue = document.getElementById('bpValue');
+        const bpCard = bpValue.closest('.stat-card');
+        
+        bpValue.innerHTML = `${Math.round(latest.systolic)}/${Math.round(latest.diastolic)}`;
+        
+        // Determine BP status
+        let bpStatus = 'normal';
+        if (latest.systolic >= 140 || latest.diastolic >= 90) {
+            bpStatus = 'high';
+        } else if (latest.systolic >= 130 || latest.diastolic >= 80) {
+            bpStatus = 'elevated';
+        }
+        
+        // Update card styling
+        bpCard.className = `stat-card ${bpStatus === 'high' ? 'abnormal' : bpStatus === 'elevated' ? 'elevated' : ''}`;
+        
+        // Add status badge
+        const statusBadge = `<span class="status-badge status-${bpStatus}">${bpStatus.toUpperCase()}</span>`;
+        bpValue.innerHTML += ` ${statusBadge}`;
     }
     
     if (hr.length > 0) {
         const latest = hr[hr.length - 1];
-        document.getElementById('hrValue').textContent = Math.round(latest.value);
+        const hrValue = document.getElementById('hrValue');
+        const hrCard = hrValue.closest('.stat-card');
+        
+        hrValue.innerHTML = Math.round(latest.value);
+        
+        // Determine HR status
+        let hrStatus = 'normal';
+        if (latest.value > 100) {
+            hrStatus = 'high';
+        } else if (latest.value < 60) {
+            hrStatus = 'low';
+        }
+        
+        // Update card styling
+        hrCard.className = `stat-card ${hrStatus === 'high' ? 'abnormal' : ''}`;
+        
+        // Add status badge
+        const statusBadge = `<span class="status-badge status-${hrStatus}">${hrStatus.toUpperCase()}</span>`;
+        hrValue.innerHTML += ` ${statusBadge}`;
     }
     
     if (weight.length > 0) {
@@ -375,129 +410,158 @@ function updateQuickStats() {
     
     if (glucose.length > 0) {
         const latest = glucose[glucose.length - 1];
-        document.getElementById('glucoseValue').textContent = Math.round(latest.value);
+        const glucoseValue = document.getElementById('glucoseValue');
+        const glucoseCard = glucoseValue.closest('.stat-card');
+        
+        glucoseValue.innerHTML = Math.round(latest.value);
+        
+        // Determine glucose status
+        let glucoseStatus = 'normal';
+        if (latest.value > 126) {
+            glucoseStatus = 'high';
+        } else if (latest.value < 70) {
+            glucoseStatus = 'low';
+        }
+        
+        // Update card styling
+        glucoseCard.className = `stat-card ${glucoseStatus === 'high' ? 'abnormal' : ''}`;
+        
+        // Add status badge
+        const statusBadge = `<span class="status-badge status-${glucoseStatus}">${glucoseStatus.toUpperCase()}</span>`;
+        glucoseValue.innerHTML += ` ${statusBadge}`;
     }
 }
 
 // ============================================
-// AI INSIGHTS
+// DASHBOARD SUMMARY
 // ============================================
 
-function generateAIInsights() {
-    const insights = [];
+function updateDashboardSummary() {
+    const summaryText = document.getElementById('summaryText');
     const bp = appState.vitals.bloodPressure;
-    const hr = appState.vitals.heartRate;
-    const weight = appState.vitals.weight;
+    const medications = appState.medications;
     
-    // Blood Pressure Insights
-    if (bp.length >= 7) {
-        const recent = bp.slice(-7);
-        const avgSystolic = recent.reduce((sum, r) => sum + r.systolic, 0) / recent.length;
-        const avgDiastolic = recent.reduce((sum, r) => sum + r.diastolic, 0) / recent.length;
-        
-        if (avgSystolic > 130 || avgDiastolic > 80) {
-            insights.push({
-                icon: '⚠️',
-                text: `Your average blood pressure over the last week is ${Math.round(avgSystolic)}/${Math.round(avgDiastolic)} mmHg, which is slightly elevated. Consider discussing this with your doctor.`
-            });
-        } else if (avgSystolic < 120 && avgDiastolic < 80) {
-            insights.push({
-                icon: '✅',
-                text: `Great news! Your blood pressure has been in the optimal range (${Math.round(avgSystolic)}/${Math.round(avgDiastolic)} mmHg) over the past week.`
-            });
-        }
-        
-        // Trend analysis
-        const firstWeek = bp.slice(0, 7).reduce((sum, r) => sum + r.systolic, 0) / 7;
-        const lastWeek = recent.reduce((sum, r) => sum + r.systolic, 0) / 7;
-        const change = lastWeek - firstWeek;
-        
-        if (Math.abs(change) > 5) {
-            const direction = change > 0 ? 'increased' : 'decreased';
-            insights.push({
-                icon: '📈',
-                text: `Your blood pressure has ${direction} by ${Math.abs(Math.round(change))} mmHg over the monitoring period.`
-            });
-        }
-    }
+    let highBPCount = 0;
+    let dueMedications = 0;
     
-    // Heart Rate Insights
-    if (hr.length >= 7) {
-        const recent = hr.slice(-7);
-        const avgHR = recent.reduce((sum, r) => sum + r.value, 0) / recent.length;
-        
-        if (avgHR > 100) {
-            insights.push({
-                icon: '💓',
-                text: `Your average heart rate (${Math.round(avgHR)} bpm) is elevated. Ensure you're well-rested and managing stress.`
-            });
-        } else if (avgHR >= 60 && avgHR <= 100) {
-            insights.push({
-                icon: '💚',
-                text: `Your resting heart rate (${Math.round(avgHR)} bpm) is within the normal range.`
-            });
-        }
-    }
-    
-    // Weight Insights
-    if (weight.length >= 14) {
-        const firstHalf = weight.slice(0, 7).reduce((sum, w) => sum + w.value, 0) / 7;
-        const secondHalf = weight.slice(-7).reduce((sum, w) => sum + w.value, 0) / 7;
-        const change = secondHalf - firstHalf;
-        
-        if (Math.abs(change) > 2) {
-            const direction = change > 0 ? 'gained' : 'lost';
-            insights.push({
-                icon: '⚖️',
-                text: `You've ${direction} ${Math.abs(change).toFixed(1)} lbs over the past two weeks. ${change < 0 ? 'Great progress!' : 'Keep monitoring your weight.'}`
-            });
-        }
-    }
-    
-    // Medication Adherence
+    // Count high BP readings today
     const today = new Date().toDateString();
-    const checkedToday = Object.keys(appState.medicationChecks).filter(key => {
-        const date = new Date(parseInt(key.split('_')[1])).toDateString();
-        return date === today && appState.medicationChecks[key];
-    }).length;
-    
-    if (appState.medications.length > 0) {
-        const adherenceRate = (checkedToday / appState.medications.length) * 100;
-        if (adherenceRate === 100) {
-            insights.push({
-                icon: '🎉',
-                text: `Perfect medication adherence today! You've taken all ${appState.medications.length} medications.`
-            });
-        } else if (adherenceRate > 0) {
-            insights.push({
-                icon: '💊',
-                text: `You've taken ${checkedToday} of ${appState.medications.length} medications today. Don't forget the rest!`
-            });
-        }
-    }
-    
-    // If no insights, show encouraging message
-    if (insights.length === 0) {
-        insights.push({
-            icon: '🌟',
-            text: 'Keep logging your health data to receive personalized insights!'
+    if (bp.length > 0) {
+        const todayReadings = bp.filter(reading => {
+            const readingDate = new Date(reading.date).toDateString();
+            return readingDate === today && (reading.systolic >= 140 || reading.diastolic >= 90);
         });
+        highBPCount = todayReadings.length;
     }
     
-    return insights;
+    // Count due medications
+    if (medications.length > 0) {
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        
+        dueMedications = medications.filter(med => {
+            const checkKey = `${med.id}_${new Date().setHours(0,0,0,0)}`;
+            const isChecked = appState.medicationChecks[checkKey] || false;
+            
+            if (isChecked) return false;
+            
+            const [hours, minutes] = med.time.split(':').map(Number);
+            const medTime = hours * 60 + minutes;
+            const timeDiff = Math.abs(currentTime - medTime);
+            
+            return timeDiff <= 30;
+        }).length;
+    }
+    
+    // Update summary text
+    let summaryParts = [];
+    if (highBPCount > 0) {
+        summaryParts.push(`⚠️ ${highBPCount} high BP reading${highBPCount > 1 ? 's' : ''} today`);
+    }
+    if (dueMedications > 0) {
+        summaryParts.push(`💊 ${dueMedications} medication${dueMedications > 1 ? 's' : ''} due`);
+    }
+    
+    if (summaryParts.length === 0) {
+        summaryText.textContent = "✅ All good! No urgent health alerts today.";
+    } else {
+        summaryText.textContent = summaryParts.join(', ');
+    }
 }
 
-function displayAIInsights() {
-    const container = document.getElementById('insightsContainer');
-    const insights = generateAIInsights();
+// ============================================
+// BLOOD PRESSURE MODAL
+// ============================================
+
+function addBloodPressure() {
+    const dateTimeInput = document.getElementById('bpDateTime').value;
+    const systolic = parseFloat(document.getElementById('bpSystolic').value);
+    const diastolic = parseFloat(document.getElementById('bpDiastolic').value);
     
-    container.innerHTML = insights.map(insight => `
-        <div class="insight-item">
-            <span class="insight-icon">${insight.icon}</span>
-            <p class="insight-text">${insight.text}</p>
-        </div>
-    `).join('');
+    if (!systolic || !diastolic) {
+        showToast('Please enter both systolic and diastolic values', 'error');
+        return;
+    }
+    
+    const timestamp = dateTimeInput ? new Date(dateTimeInput).toISOString() : new Date().toISOString();
+    
+    appState.vitals.bloodPressure.push({
+        date: timestamp,
+        systolic: systolic,
+        diastolic: diastolic
+    });
+    
+    // Sort by date
+    appState.vitals.bloodPressure.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    saveData();
+    closeModal('bloodPressureModal');
+    refreshDashboard();
+    showToast('Blood pressure reading saved! 💓');
+    
+    // Clear form
+    document.getElementById('bpDateTime').value = '';
+    document.getElementById('bpSystolic').value = '';
+    document.getElementById('bpDiastolic').value = '';
 }
+
+// ============================================
+// MEDICATION TAKEN MODAL
+// ============================================
+
+let currentMedicationId = null;
+
+function openMedicationTakenModal(medId) {
+    const medication = appState.medications.find(med => med.id === medId);
+    if (!medication) return;
+    
+    currentMedicationId = medId;
+    
+    document.getElementById('takenMedName').textContent = medication.name;
+    document.getElementById('takenMedDosage').textContent = medication.dosage;
+    document.getElementById('takenMedTime').textContent = medication.time;
+    
+    openModal('medicationTakenModal');
+}
+
+function confirmMedicationTaken() {
+    if (!currentMedicationId) return;
+    
+    const checkKey = `${currentMedicationId}_${new Date().setHours(0,0,0,0)}`;
+    appState.medicationChecks[checkKey] = true;
+    
+    saveData();
+    closeModal('medicationTakenModal');
+    displayMedications();
+    updateDashboardSummary();
+    showToast('Medication marked as taken! 💊');
+    
+    currentMedicationId = null;
+}
+
+// ============================================
+// AI INSIGHTS (REMOVED - REPLACED WITH DASHBOARD SUMMARY)
+// ============================================
 
 // ============================================
 // MEDICATIONS
@@ -507,23 +571,39 @@ function displayMedications() {
     const container = document.getElementById('medicationList');
     
     if (appState.medications.length === 0) {
-        container.innerHTML = '<p class="empty-state">No medications added yet</p>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">💊</div>
+                <h3>No medications added yet</h3>
+                <p>Click the + button to add your first medication and start tracking your health routine.</p>
+            </div>
+        `;
         return;
     }
     
-    const today = new Date().toDateString();
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
     
     container.innerHTML = appState.medications.map(med => {
         const checkKey = `${med.id}_${new Date().setHours(0,0,0,0)}`;
         const isChecked = appState.medicationChecks[checkKey] || false;
         
+        // Parse medication time
+        const [hours, minutes] = med.time.split(':').map(Number);
+        const medTime = hours * 60 + minutes;
+        
+        // Check if medication is due soon (within 30 minutes of scheduled time)
+        const timeDiff = Math.abs(currentTime - medTime);
+        const isDueSoon = timeDiff <= 30 && !isChecked;
+        
         return `
-            <div class="medication-item">
+            <div class="medication-item ${isDueSoon ? 'due-soon' : ''}" ${isDueSoon ? `onclick="openMedicationTakenModal(${med.id})"` : ''}>
                 <div class="medication-info">
                     <span class="medication-name">${med.name}</span>
                     <div>
                         <span class="medication-dosage">${med.dosage}</span>
                         <span class="medication-time"> • ${med.time}</span>
+                        ${isDueSoon ? '<span class="due-badge">Due Soon</span>' : ''}
                     </div>
                 </div>
                 <input 
@@ -531,6 +611,7 @@ function displayMedications() {
                     class="medication-checkbox" 
                     ${isChecked ? 'checked' : ''}
                     onchange="toggleMedication(${med.id})"
+                    ${isDueSoon ? 'style="display: none;"' : ''}
                 >
             </div>
         `;
@@ -581,7 +662,13 @@ function displayAppointments() {
     const container = document.getElementById('appointmentsList');
     
     if (appState.appointments.length === 0) {
-        container.innerHTML = '<p class="empty-state">No upcoming appointments</p>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <h3>No upcoming appointments</h3>
+                <p>Add your medical appointments to never miss an important visit.</p>
+            </div>
+        `;
         return;
     }
     
@@ -656,7 +743,13 @@ function displayGoals() {
     const container = document.getElementById('goalsList');
     
     if (appState.goals.length === 0) {
-        container.innerHTML = '<p class="empty-state">Set your first health goal!</p>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🎯</div>
+                <h3>Set your first health goal!</h3>
+                <p>Create personalized health goals and track your progress over time.</p>
+            </div>
+        `;
         return;
     }
     
@@ -1201,6 +1294,139 @@ function openDataTable() {
     displayDataTable('bloodPressure');
 }
 
+function generateMobileCards(data, type) {
+    const tableContainer = document.querySelector('.table-container');
+    
+    // Create mobile cards container if it doesn't exist
+    let mobileContainer = document.getElementById('mobileCardsContainer');
+    if (!mobileContainer) {
+        mobileContainer = document.createElement('div');
+        mobileContainer.id = 'mobileCardsContainer';
+        mobileContainer.className = 'mobile-cards-container';
+        tableContainer.appendChild(mobileContainer);
+    }
+    
+    if (data.length === 0) {
+        mobileContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><h3>No data recorded yet</h3><p>Start logging your health data to see it here.</p></div>';
+        return;
+    }
+    
+    // Sort data by date descending (most recent first)
+    const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    mobileContainer.innerHTML = sortedData.map(item => {
+        const date = new Date(item.date);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        
+        switch(type) {
+            case 'bloodPressure':
+                const bpStatus = item.systolic < 120 && item.diastolic < 80 ? 'Normal' :
+                               item.systolic < 130 && item.diastolic < 80 ? 'Elevated' : 'High';
+                return `
+                    <div class="table-card">
+                        <div class="card-header">
+                            <div class="card-title">Blood Pressure</div>
+                            <div class="card-value">${Math.round(item.systolic)}/${Math.round(item.diastolic)}</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="card-detail">
+                                <div class="card-detail-label">Date</div>
+                                <div class="card-detail-value">${dateStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Time</div>
+                                <div class="card-detail-value">${timeStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Status</div>
+                                <div class="card-detail-value">${bpStatus}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'heartRate':
+                const hrStatus = item.value >= 60 && item.value <= 100 ? 'Normal' :
+                               item.value < 60 ? 'Low' : 'High';
+                return `
+                    <div class="table-card">
+                        <div class="card-header">
+                            <div class="card-title">Heart Rate</div>
+                            <div class="card-value">${Math.round(item.value)} bpm</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="card-detail">
+                                <div class="card-detail-label">Date</div>
+                                <div class="card-detail-value">${dateStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Time</div>
+                                <div class="card-detail-value">${timeStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Status</div>
+                                <div class="card-detail-value">${hrStatus}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'weight':
+                const index = data.indexOf(item);
+                const prevWeight = index > 0 ? data[index - 1].value : item.value;
+                const weightChange = item.value - prevWeight;
+                const changeStr = weightChange === 0 ? '—' : 
+                                (weightChange > 0 ? '↗️ +' : '↘️ ') + Math.abs(weightChange).toFixed(1) + ' lbs';
+                return `
+                    <div class="table-card">
+                        <div class="card-header">
+                            <div class="card-title">Weight</div>
+                            <div class="card-value">${item.value.toFixed(1)} lbs</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="card-detail">
+                                <div class="card-detail-label">Date</div>
+                                <div class="card-detail-value">${dateStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Time</div>
+                                <div class="card-detail-value">${timeStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Change</div>
+                                <div class="card-detail-value">${changeStr}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'glucose':
+                const glucoseStatus = item.value >= 70 && item.value <= 100 ? 'Normal' :
+                                    item.value < 70 ? 'Low' : 'High';
+                return `
+                    <div class="table-card">
+                        <div class="card-header">
+                            <div class="card-title">Glucose</div>
+                            <div class="card-value">${Math.round(item.value)} mg/dL</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="card-detail">
+                                <div class="card-detail-label">Date</div>
+                                <div class="card-detail-value">${dateStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Time</div>
+                                <div class="card-detail-value">${timeStr}</div>
+                            </div>
+                            <div class="card-detail">
+                                <div class="card-detail-label">Status</div>
+                                <div class="card-detail-value">${glucoseStatus}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+    }).join('');
+}
+
 function displayDataTable(type) {
     currentTableType = type;
     const tableHead = document.getElementById('tableHead');
@@ -1294,6 +1520,9 @@ function displayDataTable(type) {
         tableStats.innerHTML = '';
         return;
     }
+    
+    // Generate mobile cards
+    generateMobileCards(data, type);
     
     // Sort data by date descending (most recent first)
     const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1445,7 +1674,7 @@ function showToast(message, type = 'success') {
 function refreshDashboard() {
     updateQuickStats();
     displayStreak();
-    displayAIInsights();
+    updateDashboardSummary();
     displayMedications();
     displayAppointments();
     displayGoals();
@@ -1549,6 +1778,28 @@ document.addEventListener('DOMContentLoaded', function() {
         openModal('vitalsModal');
     });
     
+    // Log Blood Pressure button
+    document.getElementById('logBloodPressureBtn').addEventListener('click', () => {
+        // Set default datetime to now
+        const now = new Date();
+        const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+        document.getElementById('bpDateTime').value = localDateTime;
+        openModal('bloodPressureModal');
+    });
+    
+    // Quick Log FAB
+    document.getElementById('quickLogFab').addEventListener('click', () => {
+        // Set default datetime to now
+        const now = new Date();
+        const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+        document.getElementById('vitalsDateTime').value = localDateTime;
+        openModal('vitalsModal');
+    });
+    
     document.getElementById('addVitalsBtn').addEventListener('click', () => {
         // Set default datetime to now
         const now = new Date();
@@ -1564,6 +1815,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('saveAppointment').addEventListener('click', addAppointment);
     document.getElementById('saveGoal').addEventListener('click', addGoal);
     document.getElementById('saveVitals').addEventListener('click', addVitals);
+    document.getElementById('saveBloodPressure').addEventListener('click', addBloodPressure);
+    document.getElementById('confirmMedicationTaken').addEventListener('click', confirmMedicationTaken);
     
     // Modal closes
     document.querySelectorAll('[data-modal]').forEach(btn => {
@@ -1637,3 +1890,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Make functions globally available
 window.toggleMedication = toggleMedication;
+window.openMedicationTakenModal = openMedicationTakenModal;

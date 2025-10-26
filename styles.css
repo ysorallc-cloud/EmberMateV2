@@ -283,6 +283,47 @@ body {
     font-weight: 600;
 }
 
+/* Welcome Actions */
+.welcome-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.btn-log-bp {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: linear-gradient(135deg, var(--danger), #e63946);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(255, 0, 110, 0.3);
+    white-space: nowrap;
+}
+
+.btn-log-bp:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 0, 110, 0.4);
+}
+
+.btn-log-bp:active {
+    transform: translateY(0);
+}
+
+.btn-log-bp .btn-icon {
+    font-size: 1.5rem;
+}
+
+.btn-log-bp .btn-text {
+    font-weight: 600;
+}
+
 /* Mobile responsiveness for log vitals button */
 @media (max-width: 768px) {
     .welcome-content {
@@ -290,12 +331,147 @@ body {
         align-items: stretch;
     }
     
-    .btn-log-vitals {
+    .welcome-actions {
+        flex-direction: column;
+    }
+    
+    .btn-log-vitals,
+    .btn-log-bp {
         width: 100%;
         justify-content: center;
         font-size: 1.25rem;
         padding: var(--spacing-lg);
     }
+}
+
+/* ============================================
+   DASHBOARD SUMMARY
+   ============================================ */
+
+.dashboard-summary {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.summary-card {
+    background: linear-gradient(135deg, var(--warning), #ffbe0b);
+    color: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    box-shadow: 0 4px 16px rgba(255, 190, 11, 0.3);
+    transition: var(--transition);
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(255, 190, 11, 0.4);
+}
+
+.summary-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.summary-text {
+    font-size: 1.125rem;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+/* ============================================
+   FLOATING ACTION BUTTON
+   ============================================ */
+
+.fab-container {
+    position: fixed;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    z-index: 1000;
+}
+
+.fab {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 24px rgba(255, 107, 53, 0.6);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+.fab-icon {
+    font-weight: 300;
+    line-height: 1;
+}
+
+/* ============================================
+   MEDICATION TAKEN MODAL
+   ============================================ */
+
+.medication-taken-info {
+    text-align: center;
+    padding: var(--spacing-lg) 0;
+}
+
+.medication-display {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-xl);
+    border-left: 4px solid var(--primary);
+}
+
+.medication-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.medication-details h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.medication-details p {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.confirmation-text {
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 /* ============================================
@@ -416,6 +592,48 @@ body {
 .stat-unit {
     font-size: 0.875rem;
     color: var(--text-secondary);
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-normal {
+    background: rgba(107, 207, 127, 0.2);
+    color: var(--success);
+}
+
+.status-elevated {
+    background: rgba(255, 190, 11, 0.2);
+    color: var(--warning);
+}
+
+.status-high {
+    background: rgba(255, 0, 110, 0.2);
+    color: var(--danger);
+}
+
+.status-low {
+    background: rgba(76, 201, 240, 0.2);
+    color: var(--info);
+}
+
+/* Highlight abnormal vitals */
+.stat-card.abnormal {
+    border: 2px solid var(--danger);
+    background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(255, 0, 110, 0.05));
+}
+
+.stat-card.elevated {
+    border: 2px solid var(--warning);
+    background: linear-gradient(135deg, rgba(255, 190, 11, 0.1), rgba(255, 190, 11, 0.05));
 }
 
 /* ============================================
@@ -554,6 +772,28 @@ body {
     height: 24px;
     cursor: pointer;
     accent-color: var(--success);
+}
+
+.medication-item.due-soon {
+    background: linear-gradient(135deg, rgba(255, 190, 11, 0.1), rgba(255, 190, 11, 0.05));
+    border: 2px solid var(--warning);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.medication-item.due-soon:hover {
+    background: linear-gradient(135deg, rgba(255, 190, 11, 0.2), rgba(255, 190, 11, 0.1));
+    transform: scale(1.02);
+}
+
+.due-badge {
+    background: var(--warning);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: var(--spacing-sm);
 }
 
 /* ============================================
@@ -1139,9 +1379,96 @@ body {
 
 .empty-state {
     text-align: center;
-    padding: var(--spacing-xl);
+    padding: var(--spacing-2xl);
     color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    opacity: 0.5;
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-state h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.empty-state p {
     font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 250px;
+}
+
+/* ============================================
+   MOBILE TABLE CARDS
+   ============================================ */
+
+.table-card {
+    display: none;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    transition: var(--transition);
+}
+
+.table-card:hover {
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.card-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.card-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.card-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.card-detail-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+}
+
+.card-detail-value {
+    font-weight: 500;
 }
 
 /* ============================================
@@ -1154,7 +1481,6 @@ body {
     }
     
     .quick-stats,
-    .ai-insights,
     .vitals-chart,
     .motivation,
     .achievements {
@@ -1171,6 +1497,27 @@ body {
     
     .container {
         padding: 0 var(--spacing-md);
+    }
+    
+    /* Show mobile cards instead of table */
+    .data-table {
+        display: none;
+    }
+    
+    .table-card {
+        display: block;
+    }
+    
+    /* FAB positioning for mobile */
+    .fab-container {
+        bottom: var(--spacing-lg);
+        right: var(--spacing-lg);
+    }
+    
+    .fab {
+        width: 56px;
+        height: 56px;
+        font-size: 1.75rem;
     }
 }
 
