@@ -69,6 +69,17 @@
                 </div>
             </section>
 
+            <!-- Dashboard Summary Card -->
+            <section class="dashboard-summary">
+                <div class="summary-header">
+                    <h2 class="summary-title">Health Overview</h2>
+                    <div class="summary-timestamp" id="summaryTimestamp">Last updated: --</div>
+                </div>
+                <div class="summary-alerts" id="summaryAlerts">
+                    <!-- Critical alerts will be populated here -->
+                </div>
+            </section>
+
             <!-- Dashboard Grid -->
             <div class="dashboard-grid">
                 <!-- Quick Stats Widget -->
@@ -610,6 +621,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fabQuickLog" title="Quick Log Vitals">
+        <span class="fab-icon">📊</span>
+        <span class="fab-text">Quick Log</span>
+    </button>
 
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>

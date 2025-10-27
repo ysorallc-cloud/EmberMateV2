@@ -347,6 +347,126 @@ function displayStreak() {
 }
 
 // ============================================
+// DASHBOARD SUMMARY
+// ============================================
+
+function updateDashboardSummary() {
+    const timestamp = document.getElementById('summaryTimestamp');
+    const alertsContainer = document.getElementById('summaryAlerts');
+    
+    // Update timestamp
+    const now = new Date();
+    timestamp.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+    
+    // Generate alerts
+    const alerts = generateHealthAlerts();
+    
+    if (alerts.length === 0) {
+        alertsContainer.innerHTML = `
+            <div class="alert-card info">
+                <div class="alert-icon">✅</div>
+                <div class="alert-content">
+                    <div class="alert-title">All Good!</div>
+                    <div class="alert-description">No critical health alerts at this time.</div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    alertsContainer.innerHTML = alerts.map(alert => `
+        <div class="alert-card ${alert.type}">
+            <div class="alert-icon">${alert.icon}</div>
+            <div class="alert-content">
+                <div class="alert-title">${alert.title}</div>
+                <div class="alert-description">${alert.description}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function generateHealthAlerts() {
+    const alerts = [];
+    const now = new Date();
+    
+    // Check for high blood pressure readings
+    const bp = appState.vitals.bloodPressure;
+    if (bp.length > 0) {
+        const latest = bp[bp.length - 1];
+        if (latest.systolic > 130 || latest.diastolic > 80) {
+            alerts.push({
+                type: 'critical',
+                icon: '⚠️',
+                title: 'High Blood Pressure',
+                description: `Latest reading: ${Math.round(latest.systolic)}/${Math.round(latest.diastolic)} mmHg. Consider consulting your doctor.`
+            });
+        }
+    }
+    
+    // Check for overdue medications
+    const today = new Date().toDateString();
+    const overdueMeds = appState.medications.filter(med => {
+        const checkKey = `${med.id}_${new Date().setHours(0,0,0,0)}`;
+        return !appState.medicationChecks[checkKey];
+    });
+    
+    if (overdueMeds.length > 0) {
+        alerts.push({
+            type: 'warning',
+            icon: '💊',
+            title: 'Overdue Medications',
+            description: `${overdueMeds.length} medication${overdueMeds.length > 1 ? 's' : ''} not taken today: ${overdueMeds.map(m => m.name).join(', ')}`
+        });
+    }
+    
+    // Check for abnormal vitals
+    const hr = appState.vitals.heartRate;
+    if (hr.length > 0) {
+        const latest = hr[hr.length - 1];
+        if (latest.value > 100 || latest.value < 60) {
+            alerts.push({
+                type: 'warning',
+                icon: '❤️',
+                title: 'Abnormal Heart Rate',
+                description: `Latest reading: ${Math.round(latest.value)} bpm. Normal range is 60-100 bpm.`
+            });
+        }
+    }
+    
+    const glucose = appState.vitals.glucose;
+    if (glucose.length > 0) {
+        const latest = glucose[glucose.length - 1];
+        if (latest.value > 100 || latest.value < 70) {
+            alerts.push({
+                type: 'warning',
+                icon: '🩸',
+                title: 'Abnormal Glucose',
+                description: `Latest reading: ${Math.round(latest.value)} mg/dL. Normal range is 70-100 mg/dL.`
+            });
+        }
+    }
+    
+    // Check for upcoming appointments
+    const upcomingAppts = appState.appointments.filter(appt => {
+        const apptDate = new Date(appt.date);
+        const diffTime = apptDate - now;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 && diffDays <= 3;
+    });
+    
+    if (upcomingAppts.length > 0) {
+        alerts.push({
+            type: 'info',
+            icon: '📅',
+            title: 'Upcoming Appointments',
+            description: `${upcomingAppts.length} appointment${upcomingAppts.length > 1 ? 's' : ''} in the next 3 days`
+        });
+    }
+    
+    return alerts;
+}
+
+// ============================================
 // QUICK STATS
 // ============================================
 
@@ -356,26 +476,97 @@ function updateQuickStats() {
     const weight = appState.vitals.weight;
     const glucose = appState.vitals.glucose;
     
-    // Get latest values
+    // Update Blood Pressure
+    const bpCard = document.querySelector('.stat-card.bp').parentElement;
     if (bp.length > 0) {
         const latest = bp[bp.length - 1];
-        document.getElementById('bpValue').textContent = 
-            `${Math.round(latest.systolic)}/${Math.round(latest.diastolic)}`;
+        const bpValue = document.getElementById('bpValue');
+        bpValue.textContent = `${Math.round(latest.systolic)}/${Math.round(latest.diastolic)}`;
+        
+        // Add status and highlighting
+        bpCard.className = 'stat-card has-status';
+        if (latest.systolic > 130 || latest.diastolic > 80) {
+            bpCard.classList.add('status-danger', 'abnormal');
+        } else if (latest.systolic > 120 || latest.diastolic > 80) {
+            bpCard.classList.add('status-warning');
+        } else {
+            bpCard.classList.add('status-normal');
+        }
+        
+        // Add tooltip
+        bpCard.setAttribute('data-tooltip', `Latest reading: ${Math.round(latest.systolic)}/${Math.round(latest.diastolic)} mmHg`);
+        bpCard.classList.add('tooltip');
+    } else {
+        bpCard.className = 'stat-card';
+        bpCard.removeAttribute('data-tooltip');
+        bpCard.classList.remove('tooltip');
     }
     
+    // Update Heart Rate
+    const hrCard = document.querySelector('.stat-card.heart').parentElement;
     if (hr.length > 0) {
         const latest = hr[hr.length - 1];
-        document.getElementById('hrValue').textContent = Math.round(latest.value);
+        const hrValue = document.getElementById('hrValue');
+        hrValue.textContent = Math.round(latest.value);
+        
+        // Add status and highlighting
+        hrCard.className = 'stat-card has-status';
+        if (latest.value > 100 || latest.value < 60) {
+            hrCard.classList.add('status-danger', 'abnormal');
+        } else {
+            hrCard.classList.add('status-normal');
+        }
+        
+        // Add tooltip
+        hrCard.setAttribute('data-tooltip', `Latest reading: ${Math.round(latest.value)} bpm`);
+        hrCard.classList.add('tooltip');
+    } else {
+        hrCard.className = 'stat-card';
+        hrCard.removeAttribute('data-tooltip');
+        hrCard.classList.remove('tooltip');
     }
     
+    // Update Weight
+    const weightCard = document.querySelector('.stat-card.weight').parentElement;
     if (weight.length > 0) {
         const latest = weight[weight.length - 1];
-        document.getElementById('weightValue').textContent = Math.round(latest.value);
+        const weightValue = document.getElementById('weightValue');
+        weightValue.textContent = Math.round(latest.value);
+        
+        // Add status (weight doesn't have abnormal ranges, just info)
+        weightCard.className = 'stat-card has-status status-info';
+        
+        // Add tooltip
+        weightCard.setAttribute('data-tooltip', `Latest reading: ${latest.value.toFixed(1)} lbs`);
+        weightCard.classList.add('tooltip');
+    } else {
+        weightCard.className = 'stat-card';
+        weightCard.removeAttribute('data-tooltip');
+        weightCard.classList.remove('tooltip');
     }
     
+    // Update Glucose
+    const glucoseCard = document.querySelector('.stat-card.glucose').parentElement;
     if (glucose.length > 0) {
         const latest = glucose[glucose.length - 1];
-        document.getElementById('glucoseValue').textContent = Math.round(latest.value);
+        const glucoseValue = document.getElementById('glucoseValue');
+        glucoseValue.textContent = Math.round(latest.value);
+        
+        // Add status and highlighting
+        glucoseCard.className = 'stat-card has-status';
+        if (latest.value > 100 || latest.value < 70) {
+            glucoseCard.classList.add('status-danger', 'abnormal');
+        } else {
+            glucoseCard.classList.add('status-normal');
+        }
+        
+        // Add tooltip
+        glucoseCard.setAttribute('data-tooltip', `Latest reading: ${Math.round(latest.value)} mg/dL`);
+        glucoseCard.classList.add('tooltip');
+    } else {
+        glucoseCard.className = 'stat-card';
+        glucoseCard.removeAttribute('data-tooltip');
+        glucoseCard.classList.remove('tooltip');
     }
 }
 
@@ -507,18 +698,54 @@ function displayMedications() {
     const container = document.getElementById('medicationList');
     
     if (appState.medications.length === 0) {
-        container.innerHTML = '<p class="empty-state">No medications added yet</p>';
+        container.innerHTML = `
+            <div class="empty-state-enhanced">
+                <div class="empty-state-icon">💊</div>
+                <div class="empty-state-title">No Medications Added</div>
+                <div class="empty-state-description">Start tracking your daily medications to stay on top of your health routine.</div>
+                <button class="empty-state-cta" onclick="openModal('medicationModal')">
+                    <span>+</span> Add First Medication
+                </button>
+            </div>
+        `;
         return;
     }
     
     const today = new Date().toDateString();
+    const now = new Date();
     
     container.innerHTML = appState.medications.map(med => {
         const checkKey = `${med.id}_${new Date().setHours(0,0,0,0)}`;
         const isChecked = appState.medicationChecks[checkKey] || false;
         
+        // Determine status based on time and check status
+        const medTime = med.time.split(':');
+        const medDateTime = new Date();
+        medDateTime.setHours(parseInt(medTime[0]), parseInt(medTime[1]), 0, 0);
+        
+        const timeDiff = now - medDateTime;
+        const hoursDiff = timeDiff / (1000 * 60 * 60);
+        
+        let status = 'pending';
+        let statusClass = 'pending';
+        let statusText = 'Pending';
+        
+        if (isChecked) {
+            status = 'taken';
+            statusClass = 'taken';
+            statusText = 'Taken';
+        } else if (hoursDiff > 2) {
+            status = 'overdue';
+            statusClass = 'overdue';
+            statusText = 'Overdue';
+        } else if (hoursDiff > 0) {
+            status = 'due-soon';
+            statusClass = 'due-soon';
+            statusText = 'Due Soon';
+        }
+        
         return `
-            <div class="medication-item">
+            <div class="medication-item has-status ${statusClass}">
                 <div class="medication-info">
                     <span class="medication-name">${med.name}</span>
                     <div>
@@ -526,12 +753,15 @@ function displayMedications() {
                         <span class="medication-time"> • ${med.time}</span>
                     </div>
                 </div>
-                <input 
-                    type="checkbox" 
-                    class="medication-checkbox" 
-                    ${isChecked ? 'checked' : ''}
-                    onchange="toggleMedication(${med.id})"
-                >
+                <div class="medication-status">
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                    <input 
+                        type="checkbox" 
+                        class="medication-checkbox" 
+                        ${isChecked ? 'checked' : ''}
+                        onchange="toggleMedication(${med.id})"
+                    >
+                </div>
             </div>
         `;
     }).join('');
@@ -581,7 +811,16 @@ function displayAppointments() {
     const container = document.getElementById('appointmentsList');
     
     if (appState.appointments.length === 0) {
-        container.innerHTML = '<p class="empty-state">No upcoming appointments</p>';
+        container.innerHTML = `
+            <div class="empty-state-enhanced">
+                <div class="empty-state-icon">📅</div>
+                <div class="empty-state-title">No Appointments Scheduled</div>
+                <div class="empty-state-description">Keep track of your medical appointments and never miss an important visit.</div>
+                <button class="empty-state-cta" onclick="openModal('appointmentModal')">
+                    <span>+</span> Add Appointment
+                </button>
+            </div>
+        `;
         return;
     }
     
@@ -656,7 +895,16 @@ function displayGoals() {
     const container = document.getElementById('goalsList');
     
     if (appState.goals.length === 0) {
-        container.innerHTML = '<p class="empty-state">Set your first health goal!</p>';
+        container.innerHTML = `
+            <div class="empty-state-enhanced">
+                <div class="empty-state-icon">🎯</div>
+                <div class="empty-state-title">No Goals Set Yet</div>
+                <div class="empty-state-description">Set health goals and track your progress to achieve better wellness outcomes.</div>
+                <button class="empty-state-cta" onclick="openModal('goalModal')">
+                    <span>+</span> Set First Goal
+                </button>
+            </div>
+        `;
         return;
     }
     
@@ -1206,6 +1454,7 @@ function displayDataTable(type) {
     const tableHead = document.getElementById('tableHead');
     const tableBody = document.getElementById('tableBody');
     const tableStats = document.getElementById('tableStats');
+    const tableContainer = document.querySelector('.table-container');
     
     // Update active tab
     document.querySelectorAll('.table-tab').forEach(tab => {
@@ -1298,55 +1547,178 @@ function displayDataTable(type) {
     // Sort data by date descending (most recent first)
     const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    tableBody.innerHTML = sortedData.map(item => {
-        const date = new Date(item.date);
-        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        
-        switch(type) {
-            case 'bloodPressure':
-                const bpStatus = item.systolic < 120 && item.diastolic < 80 ? '✅ Normal' :
-                               item.systolic < 130 && item.diastolic < 80 ? '⚠️ Elevated' :
-                               '🔴 High';
-                return `<tr>
-                    <td>${dateStr}</td>
-                    <td>${timeStr}</td>
-                    <td><strong>${Math.round(item.systolic)}</strong></td>
-                    <td><strong>${Math.round(item.diastolic)}</strong></td>
-                    <td>${bpStatus}</td>
-                </tr>`;
-            case 'heartRate':
-                const hrStatus = item.value >= 60 && item.value <= 100 ? '✅ Normal' :
-                               item.value < 60 ? '⚠️ Low' : '🔴 High';
-                return `<tr>
-                    <td>${dateStr}</td>
-                    <td>${timeStr}</td>
-                    <td><strong>${Math.round(item.value)} bpm</strong></td>
-                    <td>${hrStatus}</td>
-                </tr>`;
-            case 'weight':
-                const index = data.indexOf(item);
-                const prevWeight = index > 0 ? data[index - 1].value : item.value;
-                const weightChange = item.value - prevWeight;
-                const changeStr = weightChange === 0 ? '—' : 
-                                (weightChange > 0 ? '↗️ +' : '↘️ ') + Math.abs(weightChange).toFixed(1) + ' lbs';
-                return `<tr>
-                    <td>${dateStr}</td>
-                    <td>${timeStr}</td>
-                    <td><strong>${item.value.toFixed(1)} lbs</strong></td>
-                    <td>${changeStr}</td>
-                </tr>`;
-            case 'glucose':
-                const glucoseStatus = item.value >= 70 && item.value <= 100 ? '✅ Normal' :
-                                    item.value < 70 ? '⚠️ Low' : '🔴 High';
-                return `<tr>
-                    <td>${dateStr}</td>
-                    <td>${timeStr}</td>
-                    <td><strong>${Math.round(item.value)} mg/dL</strong></td>
-                    <td>${glucoseStatus}</td>
-                </tr>`;
-        }
-    }).join('');
+    // Check if mobile layout should be used
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Mobile card layout
+        tableContainer.classList.add('mobile-card-layout');
+        tableBody.innerHTML = sortedData.map(item => {
+            const date = new Date(item.date);
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            switch(type) {
+                case 'bloodPressure':
+                    const bpStatus = item.systolic < 120 && item.diastolic < 80 ? 'Normal' :
+                                   item.systolic < 130 && item.diastolic < 80 ? 'Elevated' : 'High';
+                    const bpStatusClass = item.systolic < 120 && item.diastolic < 80 ? 'normal' :
+                                        item.systolic < 130 && item.diastolic < 80 ? 'warning' : 'danger';
+                    return `
+                        <div class="mobile-card">
+                            <div class="mobile-card-header">
+                                <div class="mobile-card-title">${dateStr}</div>
+                                <div class="mobile-card-status ${bpStatusClass}">${bpStatus}</div>
+                            </div>
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Time</div>
+                                    <div class="mobile-card-value">${timeStr}</div>
+                                </div>
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Systolic</div>
+                                    <div class="mobile-card-value ${item.systolic > 130 ? 'abnormal' : ''}">${Math.round(item.systolic)}</div>
+                                </div>
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Diastolic</div>
+                                    <div class="mobile-card-value ${item.diastolic > 80 ? 'abnormal' : ''}">${Math.round(item.diastolic)}</div>
+                                </div>
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">mmHg</div>
+                                    <div class="mobile-card-value">mmHg</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                case 'heartRate':
+                    const hrStatus = item.value >= 60 && item.value <= 100 ? 'Normal' :
+                                   item.value < 60 ? 'Low' : 'High';
+                    const hrStatusClass = item.value >= 60 && item.value <= 100 ? 'normal' :
+                                        item.value < 60 ? 'warning' : 'danger';
+                    return `
+                        <div class="mobile-card">
+                            <div class="mobile-card-header">
+                                <div class="mobile-card-title">${dateStr}</div>
+                                <div class="mobile-card-status ${hrStatusClass}">${hrStatus}</div>
+                            </div>
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Time</div>
+                                    <div class="mobile-card-value">${timeStr}</div>
+                                </div>
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Heart Rate</div>
+                                    <div class="mobile-card-value ${item.value > 100 || item.value < 60 ? 'abnormal' : ''}">${Math.round(item.value)} bpm</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                case 'weight':
+                    const index = data.indexOf(item);
+                    const prevWeight = index > 0 ? data[index - 1].value : item.value;
+                    const weightChange = item.value - prevWeight;
+                    const changeStr = weightChange === 0 ? '—' : 
+                                    (weightChange > 0 ? '↗️ +' : '↘️ ') + Math.abs(weightChange).toFixed(1) + ' lbs';
+                    return `
+                        <div class="mobile-card">
+                            <div class="mobile-card-header">
+                                <div class="mobile-card-title">${dateStr}</div>
+                                <div class="mobile-card-status normal">Weight</div>
+                            </div>
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Time</div>
+                                    <div class="mobile-card-value">${timeStr}</div>
+                                </div>
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Weight</div>
+                                    <div class="mobile-card-value">${item.value.toFixed(1)} lbs</div>
+                                </div>
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Change</div>
+                                    <div class="mobile-card-value">${changeStr}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                case 'glucose':
+                    const glucoseStatus = item.value >= 70 && item.value <= 100 ? 'Normal' :
+                                        item.value < 70 ? 'Low' : 'High';
+                    const glucoseStatusClass = item.value >= 70 && item.value <= 100 ? 'normal' :
+                                            item.value < 70 ? 'warning' : 'danger';
+                    return `
+                        <div class="mobile-card">
+                            <div class="mobile-card-header">
+                                <div class="mobile-card-title">${dateStr}</div>
+                                <div class="mobile-card-status ${glucoseStatusClass}">${glucoseStatus}</div>
+                            </div>
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Time</div>
+                                    <div class="mobile-card-value">${timeStr}</div>
+                                </div>
+                                <div class="mobile-card-field">
+                                    <div class="mobile-card-label">Glucose</div>
+                                    <div class="mobile-card-value ${item.value > 100 || item.value < 70 ? 'abnormal' : ''}">${Math.round(item.value)} mg/dL</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            }
+        }).join('');
+    } else {
+        // Desktop table layout
+        tableContainer.classList.remove('mobile-card-layout');
+        tableBody.innerHTML = sortedData.map(item => {
+            const date = new Date(item.date);
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            switch(type) {
+                case 'bloodPressure':
+                    const bpStatus = item.systolic < 120 && item.diastolic < 80 ? '✅ Normal' :
+                                   item.systolic < 130 && item.diastolic < 80 ? '⚠️ Elevated' :
+                                   '🔴 High';
+                    return `<tr>
+                        <td>${dateStr}</td>
+                        <td>${timeStr}</td>
+                        <td><strong>${Math.round(item.systolic)}</strong></td>
+                        <td><strong>${Math.round(item.diastolic)}</strong></td>
+                        <td>${bpStatus}</td>
+                    </tr>`;
+                case 'heartRate':
+                    const hrStatus = item.value >= 60 && item.value <= 100 ? '✅ Normal' :
+                                   item.value < 60 ? '⚠️ Low' : '🔴 High';
+                    return `<tr>
+                        <td>${dateStr}</td>
+                        <td>${timeStr}</td>
+                        <td><strong>${Math.round(item.value)} bpm</strong></td>
+                        <td>${hrStatus}</td>
+                    </tr>`;
+                case 'weight':
+                    const index = data.indexOf(item);
+                    const prevWeight = index > 0 ? data[index - 1].value : item.value;
+                    const weightChange = item.value - prevWeight;
+                    const changeStr = weightChange === 0 ? '—' : 
+                                    (weightChange > 0 ? '↗️ +' : '↘️ ') + Math.abs(weightChange).toFixed(1) + ' lbs';
+                    return `<tr>
+                        <td>${dateStr}</td>
+                        <td>${timeStr}</td>
+                        <td><strong>${item.value.toFixed(1)} lbs</strong></td>
+                        <td>${changeStr}</td>
+                    </tr>`;
+                case 'glucose':
+                    const glucoseStatus = item.value >= 70 && item.value <= 100 ? '✅ Normal' :
+                                        item.value < 70 ? '⚠️ Low' : '🔴 High';
+                    return `<tr>
+                        <td>${dateStr}</td>
+                        <td>${timeStr}</td>
+                        <td><strong>${Math.round(item.value)} mg/dL</strong></td>
+                        <td>${glucoseStatus}</td>
+                    </tr>`;
+            }
+        }).join('');
+    }
     
     // Render stats
     tableStats.innerHTML = Object.entries(stats).map(([label, value]) => `
